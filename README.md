@@ -1,0 +1,135 @@
+# kaspa.org
+
+## Stack
+
+- Next.js App Router
+- React 19
+- Tailwind CSS 4
+- PixiJS + CreateJS for the DAG visualization
+- Playwright for smoke testing
+
+## Routes
+
+- `/` landing page with the live DAG hero
+- `/lore` protocol overview and positioning
+- `/hodl` wallets, exchanges, and on-ramp links
+- `/build` developer resources and API/SDK entry points
+
+## Local Development
+
+Install dependencies and start the dev server:
+
+```bash
+nvm use
+npm install
+npm run dev
+```
+
+Open `http://localhost:3000`.
+
+For LAN device testing, use:
+
+```bash
+npm run dev:lan
+```
+
+That starts `next dev` on the detected LAN IP and prints the device-reachable
+URL. If auto-detection picks the wrong host, override it with
+`NEXT_DEV_HOST=192.168.1.50 npm run dev:lan`.
+
+The AI launcher calls a same-origin route at `/api/ask`. Set the ASK server key
+before using chat locally or on web hosting, and set the public site origin used
+by external AI links. A simple starting point is:
+
+```bash
+cp .env.example .env.local
+```
+
+Then fill in the real values:
+
+```bash
+KASPA_NEWS_ASK_API_KEY=your_kaspa_news_partner_key
+NEXT_PUBLIC_PUBLIC_SITE_ORIGIN=https://kaspa.org
+```
+
+`KASPA_NEWS_ASK_API_KEY` is a private server-side key for
+`https://kaspa.news/api/ask`. Do not expose it through browser JavaScript,
+`NEXT_PUBLIC_*` variables, or static frontend bundles.
+
+`NEXT_PUBLIC_PUBLIC_SITE_ORIGIN` should point at a public site URL whose
+`/llms.txt` file external AI tools can actually fetch.
+
+`NEXT_DEV_ALLOWED_ORIGINS` remains available if you need to allow extra custom
+development origins beyond the defaults used by `npm run dev:lan`.
+
+The `/api/ask` route follows the current Kaspa.news partner API contract. It
+posts server-side to `https://kaspa.news/api/ask` with `op: "query"`,
+`question`, `stream: false`, and `mode: "knowledge"`, then returns the
+non-streaming `answer` JSON to the browser. The upstream answer can include raw
+HTML anchor tags in its source list; `src/app/api/ask/answer.ts` normalizes
+http/https anchors into Markdown links before the client renders the response.
+The route uses the Node runtime plus `node:https` for the upstream request
+because Node/Next `fetch` adds browser-style fetch metadata that Kaspa.news
+currently rejects on the private partner-key endpoint.
+
+## Quality Checks
+
+Run the repo checks locally before shipping changes:
+
+```bash
+npm run verify
+```
+
+Tracked Git hooks now provide a lighter local safety net:
+
+- `pre-commit` runs `lint-staged` on staged files
+- `pre-push` runs `npm run verify`
+
+If you want to mirror CI more closely before a larger push, run:
+
+```bash
+npm run verify:full
+```
+
+The smoke suite uses Playwright. Install Chromium once on a machine, then run:
+
+```bash
+npx playwright install chromium
+npm run test:e2e
+```
+
+Helpful Playwright commands:
+
+```bash
+npm run test:e2e:headed
+npm run test:e2e:ui
+```
+
+## CI
+
+GitHub Actions lives at `.github/workflows/ci.yml` and runs:
+
+- `npm run lint`
+- `npm run format:check`
+- `npm run types:check`
+- `npm run build`
+- `npm run test:e2e`
+
+The Playwright job uploads `playwright-report/` and `test-results/` as artifacts when the smoke suite fails.
+
+## Project Notes
+
+- Shared site metadata lives in the route layouts under `src/app/`.
+- The home page DAG experience is implemented from `src/dag-viz/` and mounted through the app components.
+- The AI launcher sends questions through `src/app/api/ask/route.ts`, so the browser never sees the private Kaspa.news ASK key.
+- ASK source-link formatting is normalized server-side in `src/app/api/ask/answer.ts`; do not enable raw HTML rendering in the chat UI to handle upstream links.
+- Keep the ASK route on the Node runtime; using server-side `fetch` for the private Kaspa.news endpoint can be rejected as browser-style traffic.
+
+## Content Checklist
+
+When editing content, verify:
+
+- homepage hero copy still fits small mobile widths
+- theme toggle and mobile nav still work
+- home CTAs still land on the correct pages and anchors
+- `/lore`, `/hodl`, and `/build` still render their primary H1 cleanly

@@ -1,0 +1,191 @@
+{
+  "source": "https://kaspa.figma.site/",
+  "section": "Where to get KAS",
+  "extractedAt": "2026-04-09T00:10:17.124Z",
+  "exchanges": [
+    {
+      "name": "kraken",
+      "displayName": "Kraken",
+      "href": "https://www.kraken.com/learn/buy-kaspa-kas",
+      "file": "/exchanges/kraken.svg",
+      "background": "#7132F5",
+      "width": 286.297,
+      "height": 45.719,
+      "sourceAssets": [
+        "https://kaspa.figma.site/_assets/v11/6adad4e58ac3090c30e7a380a19abe1983cfc61d.svg"
+      ]
+    },
+    {
+      "name": "kucoin",
+      "displayName": "KuCoin",
+      "href": "https://www.kucoin.com/how-to-buy/kaspa",
+      "file": "/exchanges/kucoin.svg",
+      "background": "#00B47D",
+      "width": 271.469,
+      "height": 63.719,
+      "sourceAssets": [
+        "https://kaspa.figma.site/_assets/v11/1c32efe0dad5f44044e9aeaabea9c18888f40452.svg"
+      ]
+    },
+    {
+      "name": "mexc",
+      "displayName": "MEXC",
+      "href": "https://www.mexc.com/how-to-buy/KAS",
+      "file": "/exchanges/mexc.svg",
+      "background": "#0043FF",
+      "width": 271.359,
+      "height": 39.219,
+      "sourceAssets": [
+        "https://kaspa.figma.site/_assets/v11/b45e59f7bfc35a91c476a81f7526d9b5b52c361b.svg"
+      ]
+    },
+    {
+      "name": "coinex",
+      "displayName": "CoinEx",
+      "href": "https://www.coinex.com/s/buy-kaspa",
+      "file": "/exchanges/coinex.svg",
+      "background": "linear-gradient(to right, #22E6B8, #11D4C3, #00C1CE)",
+      "width": 286.688,
+      "height": 72.094,
+      "sourceAssets": [
+        "https://kaspa.figma.site/_assets/v11/a5b533026dc781874aa8ff1c0a534fd354e1952f.svg"
+      ]
+    },
+    {
+      "name": "bybit",
+      "displayName": "Bybit",
+      "href": "https://www.bybit.com/en/how-to-buy/kaspa/",
+      "file": "/exchanges/bybit.svg",
+      "background": "#000",
+      "width": 176.406,
+      "height": 58.813,
+      "sourceAssets": [
+        "https://kaspa.figma.site/_assets/v11/1e02c31c928f7c79ec3449cdd32bb981ea5697c1.svg",
+        "https://kaspa.figma.site/_assets/v11/73ff9d4b331e576c8d91ac9861b277f2b8288d1c.svg",
+        "https://kaspa.figma.site/_assets/v11/b2ea7a778e2bf01381ff0b76081952b141d306a3.svg",
+        "https://kaspa.figma.site/_assets/v11/2f52746d10d7b964dff51c7c1f1d533963b20a97.svg",
+        "https://kaspa.figma.site/_assets/v11/4c49347d9a634e27c66d8d959582a51febf4d7d9.svg"
+      ]
+    },
+    {
+      "name": "gate",
+      "displayName": "Gate",
+      "href": "https://www.gate.io/how-to-buy/kaspa",
+      "file": "/exchanges/gate.svg",
+      "background": "#fff",
+      "width": 236.781,
+      "height": 53.969,
+      "sourceAssets": [
+        "https://kaspa.figma.site/_assets/v11/57e083b0aea01803f40e958cef63a6408d2d980d.svg",
+        "https://kaspa.figma.site/_assets/v11/6807c3fcffd98abcebd6a6e4721e63daf987c8e7.svg",
+        "https://kaspa.figma.site/_assets/v11/04d6b3374e63c089925f502db1a370cb4442a4ef.svg"
+      ]
+    },
+    {
+      "name": "bingx",
+      "displayName": "BingX",
+      "href": "https://bingx.com/en-us/how-to-buy/kaspa/",
+      "file": "/exchanges/bingx.svg",
+      "background": "#000",
+      "width": 91.563,
+      "height": 29.094,
+      "sourceAssets": [
+        "https://kaspa.figma.site/_assets/v11/75a0927d067da04b1964edca05b9e7b4e4761b0d.svg"
+      ]
+    },
+    {
+      "name": "bitget",
+      "displayName": "Bitget",
+      "href": "https://www.bitget.com/how-to-buy/kaspa",
+      "file": "/exchanges/bitget.svg",
+      "background": "#00F0FF",
+      "width": 89.969,
+      "height": 26.875,
+      "sourceAssets": [
+        "https://kaspa.figma.site/_assets/v11/ae84df29b9caba7424477b5cfc0e211ee15634c4.svg"
+      ]
+    },
+    {
+      "name": "weex",
+      "displayName": "WEEX",
+      "href": "https://www.weex.com/pl/futures/KAS-USDT",
+      "file": "/exchanges/weex.svg",
+      "background": "#D8AE15",
+      "width": 118.922,
+      "height": 24.813,
+      "sourceAssets": [
+        "https://kaspa.figma.site/_assets/v11/a48a98cf7ce3abaf14e9dfd650ea8400f0289e7c.svg"
+      ]
+    },
+    {
+      "name": "bitmart",
+      "displayName": "BitMart",
+      "href": "https://www.bitmart.com/trade/KAS_USDT",
+      "file": "/exchanges/bitmart.svg",
+      "background": "#000",
+      "width": 100.391,
+      "height": 24.797,
+      "sourceAssets": [
+        "https://kaspa.figma.site/_assets/v11/d8964775a4cad2c5c6f7f33965fa20fdbbc2e32e.svg"
+      ]
+    },
+    {
+      "name": "ourbit",
+      "displayName": "OurBit",
+      "href": "https://www.ourbit.com/exchange/KAS_USDT?_from=market",
+      "file": "/exchanges/ourbit.svg",
+      "background": "#fff",
+      "width": 99.266,
+      "height": 24.813,
+      "sourceAssets": [
+        "https://kaspa.figma.site/_assets/v11/f2855c78b6c66d8f7892e823ec6244ccf7a34961.svg"
+      ]
+    },
+    {
+      "name": "bydfi",
+      "displayName": "BYDFi",
+      "href": "https://www.bydfi.com/en/spot/kas_usdt",
+      "file": "/exchanges/bydfi.svg",
+      "background": "#000",
+      "width": 241.141,
+      "height": 58.813,
+      "sourceAssets": [
+        "https://kaspa.figma.site/_assets/v11/c83077aab83b6cb710b6eefbbf2b59bc76d5ab45.svg",
+        "https://kaspa.figma.site/_assets/v11/ef6b65388ccbe6458466b7019d34ee48261d7a50.svg",
+        "https://kaspa.figma.site/_assets/v11/67164cb927cb89f39d71564673ba92a0c9963aa1.svg",
+        "https://kaspa.figma.site/_assets/v11/a084d44477e0a4a54daeac06feaca99aba9fe49a.svg",
+        "https://kaspa.figma.site/_assets/v11/05a4eaa11deafa1b3c8cefddc9acb5d2dbd6dd82.svg",
+        "https://kaspa.figma.site/_assets/v11/bb60ee2e124928c4bb42343b299cc78907e9aeb0.svg",
+        "https://kaspa.figma.site/_assets/v11/96d2edfe09cc68ff60080e12014375553f4b791f.svg",
+        "https://kaspa.figma.site/_assets/v11/6cb5dc17a132071d5b4bcc77b706695653a107eb.svg",
+        "https://kaspa.figma.site/_assets/v11/3cb1dc0938cf459b0aba5a0dbb643c07f505a488.svg",
+        "https://kaspa.figma.site/_assets/v11/abb4b93e3043731862b097556f4113518d8a2aa0.svg",
+        "https://kaspa.figma.site/_assets/v11/1fbbfd47d9100d6179730567a5c4400ba520965e.svg"
+      ]
+    },
+    {
+      "name": "lbank",
+      "displayName": "LBank",
+      "href": "https://www.lbank.info/trade/kas_usdt",
+      "file": "/exchanges/lbank.svg",
+      "background": "#000",
+      "width": 203.938,
+      "height": 40.781,
+      "sourceAssets": [
+        "https://kaspa.figma.site/_assets/v11/b1a5ae44511df9829decaab765a09d67fa592d37.svg"
+      ]
+    },
+    {
+      "name": "coinw",
+      "displayName": "CoinW",
+      "href": "https://www.coinw.com/spot/kasusdt",
+      "file": "/exchanges/coinw.svg",
+      "background": "#5227FF",
+      "width": 253.797,
+      "height": 63.438,
+      "sourceAssets": [
+        "https://kaspa.figma.site/_assets/v11/401f4a16d85c0a1aee121e89437f65c0838bb6c2.svg"
+      ]
+    }
+  ]
+}

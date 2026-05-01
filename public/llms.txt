@@ -1,0 +1,31 @@
+# Kaspa
+
+> Real-time Decentralization
+> bitcoin's proof-of-work without the wait.
+
+## Real-time Decentralization
+
+- [Real-time Decentralization](https://kaspa.org/)
+- bitcoin's proof-of-work without the wait.
+
+## LORE
+
+- [LORE](https://kaspa.org/lore)
+- Kaspa is a live proof-of-work blockDAG running at 10 blocks per second.
+
+## HODL
+
+- [HODL](https://kaspa.org/hodl)
+- Buy KAS and move it into a wallet you control.
+
+## BUIDL
+
+- [BUIDL](https://kaspa.org/build)
+- WASM SDK, native Rust libraries, and node infrastructure for building on Kaspa.
+
+## DAGVIZ
+
+- [DAGVIZ](https://kgi.kaspad.net/)
+- [Explorer](https://explorer.kaspa.org/)
+- [GitHub](https://github.com/kaspanet/rusty-kaspa/)
+- [X](https://x.com/search?q=kaspa)

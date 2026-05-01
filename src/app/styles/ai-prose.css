@@ -1,0 +1,162 @@
+/* ─── AI chat prose ─── */
+
+.ai-prose {
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.ai-prose > :first-child {
+  margin-top: 0;
+}
+
+.ai-prose > :last-child {
+  margin-bottom: 0;
+}
+
+.ai-prose p {
+  margin: 0.65em 0;
+}
+
+.ai-prose strong {
+  font-weight: 600;
+}
+
+.ai-prose em {
+  font-style: italic;
+}
+
+.ai-prose code {
+  font-size: 0.88em;
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+  background: var(--border-subtle);
+}
+
+.ai-prose pre {
+  margin: 0.75em 0;
+  padding: 0.75em 1em;
+  border-radius: 6px;
+  background: var(--border-subtle);
+  overflow-x: auto;
+  font-size: 0.88em;
+  line-height: 1.5;
+}
+
+.ai-prose pre code {
+  padding: 0;
+  background: none;
+}
+
+.ai-prose ul,
+.ai-prose ol {
+  margin: 0.65em 0;
+  padding-left: 1.5em;
+}
+
+.ai-prose li {
+  margin: 0.35em 0;
+}
+
+.ai-prose li::marker {
+  color: var(--text-muted);
+}
+
+.ai-prose li > p {
+  margin: 0.25em 0;
+}
+
+.ai-prose h1,
+.ai-prose h2,
+.ai-prose h3,
+.ai-prose h4,
+.ai-prose h5,
+.ai-prose h6 {
+  font-weight: 600;
+  margin: 1.2em 0 0.4em;
+}
+
+.ai-prose h1 {
+  font-size: 1.15em;
+}
+
+.ai-prose h2 {
+  font-size: 1.1em;
+}
+
+.ai-prose h3,
+.ai-prose h4,
+.ai-prose h5,
+.ai-prose h6 {
+  font-size: 1em;
+}
+
+.ai-prose a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  text-underline-offset: 2px;
+  transition: text-decoration-color 0.15s;
+}
+
+.ai-prose a:hover {
+  text-decoration-color: var(--accent);
+}
+
+.ai-prose hr {
+  border: none;
+  border-top: 1px solid var(--border-subtle);
+  margin: 1em 0;
+}
+
+.ai-prose blockquote {
+  border-left: 2px solid var(--border-subtle);
+  padding-left: 0.8em;
+  margin: 0.65em 0;
+  color: var(--text-secondary);
+}
+
+.ai-sources {
+  margin-top: 0.9rem;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 0.75rem;
+}
+
+.ai-sources summary {
+  display: inline-flex;
+  cursor: pointer;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--text-secondary);
+  font-size: 0.92em;
+  font-weight: 600;
+  list-style: none;
+  transition: color 0.15s;
+}
+
+.ai-sources summary::-webkit-details-marker {
+  display: none;
+}
+
+.ai-sources summary::after {
+  content: "";
+  width: 0;
+  height: 0;
+  border-left: 0.28rem solid transparent;
+  border-right: 0.28rem solid transparent;
+  border-top: 0.4rem solid currentColor;
+  opacity: 0.7;
+  transform: translateY(1px);
+  transition: transform 0.15s;
+}
+
+.ai-sources summary:hover {
+  color: var(--text-primary);
+}
+
+.ai-sources[open] summary::after {
+  transform: rotate(180deg) translateY(-1px);
+}
+
+.ai-sources-content {
+  margin-top: 0.6rem;
+}

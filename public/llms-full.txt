@@ -1,0 +1,583 @@
+# Kaspa
+
+> Real-time Decentralization
+> bitcoin's proof-of-work without the wait.
+
+## Real-time Decentralization
+
+bitcoin's proof-of-work without the wait.
+
+Get started
+
+Get a wallet
+
+Buy Kaspa
+
+don't trust, verify.
+
+Every coin in Kaspa's history traces cryptographically back to an empty genesis.
+
+No premine. No hidden allocation. Fair launch.
+
+The genesis proof follows the chain of pruning-point block hashes backward to the original genesis and verifies its UTXO commitment matches an empty set. Bitcoin block hashes embedded in the genesis coinbase serve as timestamps, ruling out hidden premining.
+
+Verify the proof
+
+Run the proof
+
+### Verify the proof
+
+Historical · Current · Continuous
+
+Live supply vs. emission schedule
+
+Kaspa's circulating supply is recomputable from first principles. A live node reports the current total. The historical total at the Nov 22, 2021 checkpoint is committed to by the hardwired genesis via its UTXO set, and every coin issued after that checkpoint follows the deterministic emission schedule.
+
+Origin
+
+Where the supply begins
+
+Every coin traces back to a single block where the supply was zero. Its UTXO commitment is the mathematical fingerprint of an empty set, the same constant on any machine that computes it. Supply starts here, and every coin since is scheduled emission, not allocation.
+
+Inside that block's coinbase is a verse from Ezra 7:18, written in Aramaic. The Aramaic word for “silver” is כספא (kaspa).
+
+ומה די עליך ועל אחיך ייטב בשאר כספא ודהבה למעבד כרעות אלהכם תעבדון
+
+“And whatever seems good to you and your brothers to do with the rest of the silver and gold, do according to the will of your God.”
+
+Ezra 7:18, in the genesis coinbase
+
+The coinbase also carries the hash of Bitcoin block #708,639, proving the block was produced after that point in time, with no premine.
+
+Don't trust, verify
+
+Run it yourself
+
+Reproduce the proof from genesis to the current tip. The notebook walks the chain of pruning-point block hashes back to genesis, verifies the UTXO commitment against the empty-set fingerprint, and checks the anchoring Bitcoin block hashes. To read the historical supply at the Nov 22, 2021 checkpoint as a number, one extra derivation step sums the proof-committed UTXO set.
+
+The proof notebook
+
+Clone, run, inspect. The notebook verifies the genesis and checkpoint linkage but does not itself print the historical supply number.
+
+Open on GitHub
+
+Verify the checkpoint total
+
+Run the notebook to verify the hardwired genesis, checkpoint linkage, empty-set origin, and Bitcoin anchors.
+
+Open historical kaspad v0.11.5-2 and note that the block processor loads and verifies the embedded checkpoint utxos.gz against the hardwired genesis UTXO commitment.
+
+Parse utxos.gz using the format in serialization.go and sum every UTXO amount.
+That sum is the historical supply at checkpoint DAA
+
+1,312,860
+
+(Nov 22, 2021):
+
+984,222,544.04487171 KAS
+
+From this point forward, issuance is deterministic. Adding the scheduled issuance since the checkpoint gives the expected supply at any DAA, which should match what a live node reports.
+
+## LORE
+
+Kaspa is a live proof-of-work blockDAG running at 10 blocks per second.
+
+The shift
+
+It takes a different route from older proof-of-work chains. Parallel blocks are not discarded. They are ordered. Many of the limits associated with proof of work came from older chain architecture, not from proof of work itself. PHANTOM / GHOSTDAG paper
+
+Brief history
+
+Kaspa grew out of blockDAG research at the Hebrew University of Jerusalem and later Harvard. The research line dates back to the GHOST protocol section of the Ethereum white paper, surfaced early through the Bitcoin research circuit, and continued through SPECTRE and PHANTOM into the protocols running Kaspa today. Scaling Bitcoin 2015 · CoinDesk, 2017
+
+Mainnet launched in November 2021 as a fair-launched proof-of-work network. No premine, insider allocation, or pre-sales. Every coin in circulation has been mined in the open from genesis onward. That fair launch gave Kaspa a broad and loyal community. That remains one of its strongest achievements and one of its core strengths. Launch plan · Genesis proof
+
+North star
+
+Real-time decentralization is Kaspa's north star.
+
+Real-time is a non-compromise. Impatience is Kaspa's primitive instinct - a tantrum against wait times, rejecting limits the adults just accept. And we demand this not only for speed but for the hardcore Satoshi properties as well - censorship resistance, permissionless settlement, competitive mining - all achieved in real time, not eventually. This is not achievable in real time without proof of work. PoW uniqueness
+
+Kaspa achieving RTD means the protocol samples the honest majority of the mining network in every consensus round. This allows transactions that confirm safely after an hour in Bitcoin to confirm in seconds on Kaspa; or it guarantees that Kaspa achieves censorship resistance within seconds - what takes an hour in Bitcoin. This matters not only for settlement speed but for every context where real-time sequencing is critical - market resolutions, liquidation cascades, anywhere a single consensus leader ordering transactions at its own discretion grants them too much power.
+
+Real-time sampling of the honest majority can also be utilized to achieve a trustless real-time data and event feed governed by the mining network. RTD post
+
+RTD has also a defensive side. Partial synchrony (with the upcoming DAGKnight) protocols uniquely implement the dual property of being fast when the network is healthy and slow-yet-secure when it is not. Kaspa sells speed to normies and wargrade money to cypherpunks.
+
+Shipped and next
+
+The original Golang node was rewritten from scratch in Rust. The rewrite was backed by a 100M KAS community grant and turned into a real open-source effort around rusty-kaspa, with a broad contributor base. Rusty Kaspa GitHub
+
+That rewrite is what made Crescendo possible. Kaspa could not move to 10 blocks per second on mainnet without it. Crescendo is where the thesis became live. Crescendo reference · Release notes
+
+Toccata hardfork
+
+The next hardfork is Toccata, introducing covenant-based base-layer programmability. Covenants are recursive spending rules that restrict who and how coins can be spent, opening the way to vaults, smart wallets, native assets, and ZK-assisted constructions.
+
+In Bitcoin, OP_CAT is the old opcode Satoshi disabled - proposed again, still debated, still not included. Toccata is closer to OP_CAT++, with a broader covenant surface and Silverscript as a dedicated compiler for writing covenants in Kaspa. A mature implementation is already up and running on TN12. KIP-0010 · TN12
+
+DAGKnight hardfork
+
+DAGKnight is the consensus protocol upgrade that follows Toccata. It is a major leap for proof of work and for permissionless consensus: the only 49% BFT partially synchronous protocol (in the oblivious setup). It is a step toward netsplit-resilient proof of work. Block times are targeted for the 40-25 millisecond range. DAGKnight paper
+
+2027 hardfork
+
+10 millisecond block time - 100 blocks per second - would likely require DAG algorithmic adjustments to how miners reference DAG tips, alongside further node performance optimizations. Targeted for a 2027 hardfork.
+
+On the consensus side, DAGKnight already provides safety under netsplits: transactions confirmed before a split remain final. But it does not provide progress during a split - transactions cannot actually be confirmed until the split is over. The 2027 work aims to add practical progress through a combination of on-chain payment channels and hashrate-adaptive finality windows. This would make Kaspa wargrade hard money, with local payment flows surviving broken internet conditions.
+
+Kaspa did not come out of the usual hype cycle. It came out of veteran research, fair launch, open-source execution, and years of pushing where most of crypto stopped pushing.
+
+A live blockDAG. 10 BPS on mainnet. Real-time decentralization as the north star. Toccata next. DAGKnight after that.
+
+If this reads like it's early, that's because it is.
+
+## BUIDL
+
+Rusty Kaspa v1.1.0
+
+View release
+
+Build on Kaspa
+
+WASM SDK, native Rust libraries, and node infrastructure for building on Kaspa.
+
+Open docs
+
+View on GitHub
+
+Fastest way in
+
+Start building
+
+Use Kaspa AI for direction, then jump into the route that matches what you need.
+
+Ask Kaspa AI
+
+Get pointed to the right SDK, API, or node path.
+
+Jump straight to
+
+Read chain data
+
+Pick your stack
+
+Run a node
+
+Try live
+
+Run the Rusty Kaspa browser examples
+
+The examples below are served from the Rusty Kaspa v1.1.0 browser SDK release, so you can see the SDK behave without leaving the page.
+
+Get server info
+
+Connect through the public resolver and fetch basic node information directly from the browser.
+
+Get block DAG info
+
+Read high-level DAG state from a live Kaspa node using the upstream browser RPC bindings.
+
+Watch new blocks
+
+Subscribe to block-added events and watch blocks arrive in real time from the browser.
+
+Watch DAA changes
+
+Subscribe to DAA score updates and watch the stream change in real time.
+
+Track a UTXO context
+
+Use the core browser bindings to monitor an address and receive live UTXO events.
+
+Open standalone
+
+View source
+
+Runs against the Public Node Network, a decentralized pool of community-operated nodes fronted by the Kaspa Resolver. May take a few seconds to initialize, and is not recommended for large-scale production use.
+
+Paths
+
+Choose your path
+
+Start with the SDK or infrastructure path that matches the system you're building.
+
+App SDK
+
+Build with the WASM SDK
+
+Use the upstream browser and Node.js bindings for wallet flows, transactions, and RPC access.
+
+WASM SDK docs
+
+Upstream examples
+
+Native Rust
+
+Build with native Rust
+
+Use the Rust crates inside Rusty Kaspa for backend services, systems integrations, wallet internals, and node-adjacent workloads.
+
+Rusty Kaspa repo
+
+Node
+
+Run a node
+
+Use Rusty Kaspa for full access, UTXO indexing, and production infrastructure.
+
+Latest release
+
+Rusty Kaspa repo
+
+Community API
+
+For quick reads or constrained environments, a community-hosted API is available. Best-effort, no SLA.
+
+REST API docs
+
+Node
+
+Run a node
+
+Spin up Rusty Kaspa locally with Docker. For a persistent setup, check Docker Hub or build from source.
+
+Docker quickstart
+
+Run the latest Rusty Kaspa image
+
+Exposes gRPC on port 16110 so you can talk to the node from your dev machine. Ephemeral container — no persistent storage or inbound P2P.
+
+docker run -d --name kaspad -p 16110:16110 kaspanet/rusty-kaspad:latest
+
+Docker Hub
+
+Compile from source
+
+Tooling
+
+Current toolchain
+
+The stable surfaces builders can rely on today, with emerging work called out separately.
+
+Native stack
+
+Rusty Kaspa
+
+Rust crates, wallet internals, full node, RPC, indexing, and direct network access.
+
+Native Rust
+
+Node & infra
+
+Open repo
+
+Libraries & SDKs
+
+WASM SDK
+
+Upstream browser and Node bindings for applications, wallets, and transaction flows.
+
+Browser + Node
+
+Open docs
+
+Beta
+
+Python SDK
+
+Nearly complete. Usable today if Python is part of your stack.
+
+Open repo
+
+Community projects
+
+Ecosystem tools and infra
+
+Open-source projects from the broader Kaspa ecosystem that complement the upstream SDK and node stack.
+
+Indexer
+
+Simply Kaspa Indexer
+
+Standalone indexing for Kaspa block and transaction data.
+
+Open
+
+Infra
+
+DNS Seeder
+
+Bootstrapping infrastructure for the Kaspa peer-to-peer network.
+
+Open
+
+Hosting
+
+kHost
+
+Tooling for running and contributing node capacity to the wider ecosystem.
+
+Open
+
+Library
+
+kaspa-js
+
+Community-maintained JavaScript tooling around the Kaspa stack.
+
+Open
+
+Access
+
+Network access
+
+Docs, query surfaces, node references, and test flows grouped by what builders actually need.
+
+Docs
+
+Start with the guides, technical references, and open proposals.
+
+Open docs
+
+KIPs
+
+Query and access
+
+Query the network through public tools and the lightweight community-hosted API. The community API is best-effort with no SLA.
+
+Community API docs
+
+Explorer
+
+DAG visualizer
+
+Node and RPC
+
+Run full infrastructure or go deeper into the node stack.
+
+Rusty Kaspa
+
+Latest release
+
+Deep technical docs
+
+Testnet
+
+Use public testing resources before shipping to mainnet.
+
+Testnet faucet
+
+Developments
+
+Follow the work in public
+
+Track the main discussion channel, then follow SDK, protocol, and experimental programmability work as it develops.
+
+Channel
+
+Core R&D Telegram
+
+The main public stream for current Kaspa research and development discussions. Discord is still used, but most core discussion now happens here.
+
+Hard fork
+
+Toccata: covenants & zk
+
+Hard fork bundling extended script opcodes (KIP-17), covenant IDs (KIP-20), zk opcodes with a verifier precompile subsystem (KIP-16), and sequencing commitments (KIP-21). Currently live on TN12 ahead of mainnet activation.
+
+Programmability
+
+Silverscript
+
+High-level scripting language that compiles to native Kaspa Script. Testing on TN12 ahead of the Toccata hard fork that lands covenants and zk opcodes on mainnet.
+
+Programmability
+
+vProgs
+
+Early research on verifiable programs: on-chain sequencing with off-chain execution settled via zk proofs. Builds on the script primitives landing in Toccata.
+
+SDK
+
+Python SDK
+
+In beta and nearly complete. Python tooling is progressing in the open and expanding the developer surface.
+
+Protocol
+
+KIPs
+
+Track proposals that can change how applications and infrastructure integrate with the network.
+
+Help
+
+Keep moving
+
+Start with the docs or Kaspa AI. For deeper help, try GitHub, Discord, or the R&D Telegram.
+
+Open docs
+
+Open AI
+
+How do I build and sign a transaction?
+
+What should I use for browser development?
+
+What's the difference between the API and a full node?
+
+How do I run Rusty Kaspa with UTXO indexing?
+
+Code
+
+GitHub
+
+Chat
+
+Discord
+
+Latest development
+
+Public channel
+
+Telegram R&D
+
+## HODL
+
+HODL
+
+Buy KAS and move it into a wallet you control.
+
+1. Get a wallet
+
+Set up a wallet to hold your KAS.
+
+2. Buy KAS
+
+Find KAS on major exchanges.
+
+3. Move to wallet
+
+Send KAS from the exchange to your wallet.
+
+Help
+
+AI assistant for any questions.
+
+Get a wallet
+
+To hold KAS yourself, you'll need a wallet. This is where you receive, store, and send your KAS.
+
+Kaspium
+
+A mobile wallet for Kaspa. Send, receive, and hold your KAS from your phone.
+
+App Store
+
+Google Play
+
+You control it
+
+Your wallet, your recovery phrase. No one else has access.
+
+QR payments
+
+Receive or send from your phone in a few taps.
+
+Biometric unlock
+
+Open the app quickly without giving up security.
+
+Address book
+
+Save addresses you use often.
+
+Important: You'll receive a recovery phrase during setup. Write it down and keep it offline. If you lose your phone, it's the only way to get your wallet back. Never share it with anyone.
+
+Buy KAS
+
+KAS is listed on many exchanges. Acquire it on a platform supported in your region, then transfer it to your private wallet.
+
+Kraken
+
+KuCoin
+
+MEXC
+
+CoinEx
+
+Bybit
+
+Gate
+
+BingX
+
+Bitget
+
+WEEX
+
+BitMart
+
+OurBit
+
+BYDFi
+
+LBank
+
+CoinW
+
+And 50+ more
+
+Take custody of your KAS
+
+Secure your assets by transferring them from the exchange to your private wallet.
+
+Receive
+
+kaspa:qrge...3a2w
+
+Step 01
+
+Get your receive address
+
+Open your Kaspium app, tap 'Receive', and copy your unique address.
+
+Step 02
+
+Send a test transaction
+
+Withdraw a tiny fraction of KAS from the exchange to verify the route is correct.
+
+Step 03
+
+Transfer the balance
+
+Once the test transaction arrives safely in your wallet, withdraw the remaining balance.
+
+Exchange wait times: Native Kaspa transfers are practically instant, but exchanges apply their own internal delays. It is completely normal to wait 30–60 minutes for an exchange to release your funds to the network.
+
+Security Check: Always verify the first and last few characters of your address before confirming.
+
+Need help?
+
+Ask Kaspa AI
+
+Ask about setting up a wallet, buying KAS, sending it to your wallet, or backing up your recovery phrase.
+
+Open AI
+
+How do I set up a wallet?
+
+How do I buy KAS?
+
+How do I send KAS to my wallet?
+
+How do I back up my wallet?
+
+Operated by KasMedia.com
+
+Explorer
+
+GitHub
+
+X

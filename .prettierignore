@@ -1,0 +1,9 @@
+.next
+node_modules
+package-lock.json
+public/replay
+public/vendor
+playwright-report
+test-results
+blob-report
+tsconfig.tsbuildinfo

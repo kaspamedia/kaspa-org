@@ -1,0 +1,74 @@
+/* ─── HODL to KODL Flicker ─── */
+
+@keyframes flicker-out {
+  0% {
+    opacity: 1;
+  }
+  1% {
+    opacity: 0;
+  }
+  2% {
+    opacity: 1;
+  }
+  2.5% {
+    opacity: 0;
+  }
+  3.5% {
+    opacity: 1;
+  }
+  4%,
+  9% {
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  11% {
+    opacity: 0;
+  }
+  12%,
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes flicker-in {
+  0% {
+    opacity: 0;
+  }
+  1% {
+    opacity: 1;
+  }
+  2% {
+    opacity: 0;
+  }
+  2.5% {
+    opacity: 1;
+  }
+  3.5% {
+    opacity: 0;
+  }
+  4%,
+  9% {
+    opacity: 1;
+  }
+  10% {
+    opacity: 0;
+  }
+  11% {
+    opacity: 1;
+  }
+  12%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.animate-flicker-out {
+  display: inline-block;
+  animation: flicker-out 10s infinite;
+}
+
+.animate-flicker-in {
+  animation: flicker-in 10s infinite;
+}

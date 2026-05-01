@@ -1,0 +1,91 @@
+<!doctype html>
+<html>
+  <head>
+    <script type="module">
+      import * as kaspa from "/vendor/kaspa-wasm/1.1.0/web/kaspa-rpc/kaspa.js";
+      const { Resolver, RpcClient } = kaspa;
+      const WORKER_MESSAGE_SOURCE = "kaspa-worker";
+      const CONNECT_MESSAGE_TYPE = "kaspa-worker:connect";
+
+      let parentOrigin = window.location.origin;
+      let rpcClient = null;
+      let isConnecting = false;
+
+      function postToParent(message) {
+        window.parent.postMessage(
+          { source: WORKER_MESSAGE_SOURCE, ...message },
+          parentOrigin,
+        );
+      }
+
+      async function publishNodeData(rpc) {
+        const supply = await rpc.getCoinSupply();
+        const dagInfo = await rpc.getBlockDagInfo();
+
+        postToParent({
+          type: "data",
+          supply: supply.circulatingSompi.toString(),
+          daaScore: dagInfo.virtualDaaScore.toString(),
+          blockCount: dagInfo.blockCount.toString(),
+        });
+      }
+
+      window.addEventListener("message", async (event) => {
+        if (
+          event.source !== window.parent ||
+          event.data?.type !== CONNECT_MESSAGE_TYPE ||
+          isConnecting ||
+          rpcClient
+        ) {
+          return;
+        }
+
+        parentOrigin = event.origin || window.location.origin;
+        isConnecting = true;
+
+        try {
+          await kaspa.default({
+            module_or_path:
+              "/vendor/kaspa-wasm/1.1.0/web/kaspa-rpc/kaspa_bg.wasm",
+          });
+          const rpc = new RpcClient({
+            resolver: new Resolver(),
+            networkId: "mainnet",
+          });
+          rpcClient = rpc;
+
+          rpc.addEventListener("connect", async () => {
+            postToParent({ type: "connected", url: rpc.url ?? null });
+
+            try {
+              await publishNodeData(rpc);
+              await rpc.subscribeVirtualDaaScoreChanged();
+            } catch (error) {
+              console.error("Kaspa Worker Data Fetch Error:", error);
+              postToParent({ type: "error", error: String(error) });
+            }
+          });
+
+          rpc.addEventListener("disconnect", () => {
+            postToParent({ type: "disconnected" });
+          });
+
+          rpc.addEventListener("virtual-daa-score-changed", async () => {
+            try {
+              await publishNodeData(rpc);
+            } catch (error) {
+              console.error("Kaspa Worker Update Error:", error);
+            }
+          });
+
+          await rpc.connect();
+        } catch (error) {
+          postToParent({ type: "error", error: String(error) });
+        } finally {
+          isConnecting = false;
+        }
+      });
+    </script>
+  </head>
+  <body></body>
+</html>
