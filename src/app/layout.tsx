@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import Providers from "./providers";
 import { siteUrl, structuredDataSchema } from "./seo";
@@ -68,6 +69,11 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Providers>{children}</Providers>
+        <Script
+          src="https://rybbit.kasmedia.com/api/script.js"
+          data-site-id="1"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );
