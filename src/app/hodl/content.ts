@@ -12,7 +12,9 @@ import {
 } from "./icons";
 export { exchanges } from "./exchanges";
 
-export const USE_ACCENT = "118, 167, 158";
+export const ACCENT = "var(--accent)";
+export const accentAlpha = (pct: number) =>
+  `color-mix(in srgb, var(--accent) ${pct * 100}%, transparent)`;
 export const KASPIUM_SCREENSHOT_SRC = "/hodl/kaspium-wallet.webp";
 export const APP_STORE_URL =
   "https://apps.apple.com/us/app/kaspium/id1671845538";

@@ -1,6 +1,6 @@
 "use client";
 
-import { USE_ACCENT } from "../content";
+import { ACCENT, accentAlpha } from "../content";
 import type { JourneyRailProps } from "./journeyRailTypes";
 import { useJourneyRailProgress } from "./useJourneyRailProgress";
 
@@ -27,7 +27,7 @@ export default function JourneyRail({
             className="absolute z-[1] w-[2px] rounded-full transition-opacity duration-300"
             style={{
               left: "64px",
-              background: `rgba(${USE_ACCENT}, 0.25)`,
+              background: accentAlpha(0.25),
               height: 0,
               opacity: 0,
             }}
@@ -46,7 +46,7 @@ export default function JourneyRail({
                   top: position ? `${position.center}px` : undefined,
                   left: "65px",
                   opacity: position ? 1 : 0,
-                  color: reached ? `rgb(${USE_ACCENT})` : INACTIVE_STEP_COLOR,
+                  color: reached ? ACCENT : INACTIVE_STEP_COLOR,
                   background: step.background,
                 }}
               >

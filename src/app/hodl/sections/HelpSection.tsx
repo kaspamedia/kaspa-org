@@ -20,7 +20,7 @@ export default function HelpSection({
       className="scroll-mt-32 px-6 pt-20 pb-28 md:scroll-mt-40 md:px-12 lg:px-20 lg:pt-32 lg:pb-36"
       style={{ background: "var(--surface)" }}
     >
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-7xl lg:pl-[72px]">
         <div className="border-subtle relative overflow-hidden rounded-[32px] border px-6 py-8 md:px-8 md:py-9">
           <GridSurface />
           <div className="relative lg:grid lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-8">

@@ -1,0 +1,130 @@
+import type { KaspaWallet } from "@/app/hodl/wallet-finder/types";
+
+/*
+Add a wallet by adding one object to walletRecords.
+See docs/wallet-submissions.md for the full submission template.
+
+Required:
+- put the icon under public/hodl/wallets/<wallet-id>/icon.<ext>
+- list every supported OS in `platforms`
+- choose user as "beginner" or "experienced"
+- set wallet-level `features` and `check` to the values that apply to every
+  platform; use `platformOverrides` only when one platform genuinely differs
+- list every acquisition path in `actions`. An action without a `platforms`
+  field applies to every platform the wallet supports; use the field to scope
+  store listings (App Store, Google Play) or per-OS downloads.
+
+Maintainers validate rating accuracy before merge.
+*/
+const walletRecords: KaspaWallet[] = [
+  {
+    id: "kaspa-cli-wallet",
+    title: "CLI Wallet",
+    icon: "/hodl/wallets/kaspa-cli-wallet/icon.png",
+    user: "experienced",
+    summary:
+      "Command-line wallet tooling for users comfortable managing keys and transactions from a terminal.",
+    platforms: ["windows", "mac", "linux"],
+    features: ["multisig"],
+    check: {
+      control: "good",
+      validation: "acceptable",
+      transparency: "good",
+      fees: "good",
+    },
+    actions: [
+      {
+        action: "view_source",
+        link: "https://github.com/kaspanet/rusty-kaspa/tree/master/wallet",
+      },
+    ],
+  },
+  {
+    id: "kaspium",
+    title: "Kaspium",
+    icon: "/hodl/wallets/kaspium/icon.jpg",
+    user: "beginner",
+    summary:
+      "A self-custodial mobile wallet for sending, receiving, and holding KAS from a phone.",
+    platforms: ["ios", "android"],
+    features: [],
+    check: {
+      control: "good",
+      validation: "acceptable",
+      transparency: "good",
+      fees: "good",
+    },
+    actions: [
+      {
+        action: "app_store",
+        link: "https://apps.apple.com/us/app/kaspium/id1671845538",
+        platforms: ["ios"],
+      },
+      {
+        action: "google_play",
+        link: "https://play.google.com/store/apps/details?id=io.kaspium.kaspiumwallet",
+        platforms: ["android"],
+      },
+      {
+        action: "view_source",
+        link: "https://github.com/azbuky/kaspium_wallet",
+      },
+    ],
+  },
+  {
+    id: "kng-desktop",
+    title: "Kaspa NG",
+    icon: "/hodl/wallets/kng-desktop/icon.png",
+    user: "beginner",
+    summary:
+      "A modern Kaspa desktop wallet with a friendly default UI, optional full-node operation, and deep configuration for advanced use.",
+    platforms: ["windows", "mac", "linux"],
+    features: [],
+    check: {
+      control: "good",
+      validation: "good",
+      transparency: "good",
+      fees: "good",
+    },
+    actions: [
+      {
+        action: "download",
+        link: "https://github.com/aspectron/kaspa-ng/releases/",
+      },
+      {
+        action: "view_source",
+        link: "https://github.com/aspectron/kaspa-ng/",
+      },
+    ],
+  },
+  {
+    id: "kng-web",
+    title: "Kaspa NG Web",
+    icon: "/hodl/wallets/kng-web/icon.png",
+    user: "beginner",
+    summary:
+      "The browser-based version of Kaspa NG. Friendly by default, no installation needed, with optional advanced configuration.",
+    platforms: ["windows", "mac", "linux", "ios", "android"],
+    features: [],
+    check: {
+      control: "good",
+      validation: "acceptable",
+      transparency: "good",
+      fees: "good",
+    },
+    actions: [
+      {
+        action: "open",
+        link: "https://kaspa-ng.org/",
+      },
+      {
+        action: "view_source",
+        link: "https://github.com/aspectron/kaspa-ng/",
+      },
+    ],
+  },
+];
+
+export const kaspaWallets = [...walletRecords].sort((walletA, walletB) =>
+  walletA.title.localeCompare(walletB.title),
+);

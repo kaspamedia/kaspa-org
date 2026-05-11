@@ -1,7 +1,7 @@
 import Image from "next/image";
 import type { RefObject } from "react";
 
-import { KASPIUM_SCREENSHOT_SRC, USE_ACCENT } from "./content";
+import { accentAlpha, KASPIUM_SCREENSHOT_SRC } from "./content";
 
 export function StepConnector() {
   return <div className="h-16 md:h-20" aria-hidden="true" />;
@@ -23,7 +23,7 @@ export function JourneyStepHeader({
       <div className="flex items-center gap-4 lg:hidden">
         <span
           className="text-[48px] leading-none font-bold tracking-[-0.04em] md:text-[64px]"
-          style={{ color: `rgba(${USE_ACCENT}, 0.25)` }}
+          style={{ color: accentAlpha(0.25) }}
         >
           {step}
         </span>

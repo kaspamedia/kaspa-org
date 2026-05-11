@@ -14,7 +14,7 @@ export default function BuySection({
       id="buy"
       className="scroll-mt-32 px-6 py-20 md:scroll-mt-40 md:px-12 lg:px-20 lg:py-32"
     >
-      <div className="mx-auto max-w-6xl lg:pl-[72px]">
+      <div className="mx-auto max-w-7xl lg:pl-[96px]">
         <JourneyStepHeader
           step={2}
           title="Buy KAS"
