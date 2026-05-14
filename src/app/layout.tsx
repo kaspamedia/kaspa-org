@@ -73,6 +73,8 @@ export default function RootLayout({
           src="https://rybbit.kasmedia.com/api/script.js"
           data-site-id="1"
           strategy="afterInteractive"
+          integrity="sha384-H0pPS5ok8JJU1gmvnWE/8MDghtGFYeyfM5WjL8LYxEOh6lNozzFWp4AXrlPeUbJo"
+          crossOrigin="anonymous"
         />
       </body>
     </html>
