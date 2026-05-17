@@ -1,7 +1,7 @@
 import type { RefObject } from "react";
 
 import { GenesisQr } from "../GenesisQr";
-import { USE_ACCENT, transferSteps } from "../content";
+import { ACCENT, transferSteps } from "../content";
 import { SecurityIcon, TimeCircleIcon } from "../icons";
 import { JourneyStepHeader } from "../ui";
 
@@ -16,7 +16,7 @@ export default function TransferSection({
       className="scroll-mt-32 px-6 py-20 md:scroll-mt-40 md:px-12 lg:px-20 lg:py-32"
       style={{ background: "var(--surface)" }}
     >
-      <div className="mx-auto max-w-6xl lg:pl-[72px]">
+      <div className="mx-auto max-w-7xl lg:pl-[96px]">
         <JourneyStepHeader
           step={3}
           title="Take custody of your KAS"
@@ -24,7 +24,7 @@ export default function TransferSection({
           headingRef={headingRef}
         />
 
-        <div className="border-subtle relative mt-12 flex h-[180px] w-full items-center justify-between overflow-hidden rounded-[30px] border bg-gradient-to-r from-transparent via-[rgba(118,167,158,0.05)] to-transparent px-[8%] shadow-[inset_0_1px_10px_rgba(0,0,0,0.02)] sm:h-[220px] sm:px-[15%] md:h-[280px]">
+        <div className="border-subtle relative mt-12 flex h-[180px] w-full items-center justify-between overflow-hidden rounded-[30px] border bg-gradient-to-r from-transparent via-[color-mix(in_srgb,var(--accent)_5%,transparent)] to-transparent px-[8%] shadow-[inset_0_1px_10px_rgba(0,0,0,0.02)] sm:h-[220px] sm:px-[15%] md:h-[280px]">
           <div
             className="relative z-20 flex w-[96px] shrink-0 flex-col rounded-[14px] border border-black/5 bg-white p-2.5 opacity-90 shadow-xl backdrop-blur-md sm:w-[134px] sm:rounded-[18px] sm:p-3.5 dark:border-white/5 dark:bg-[#111113]"
             style={{
@@ -43,7 +43,7 @@ export default function TransferSection({
 
             <div
               className="mt-auto flex h-[18px] w-full shrink-0 items-center justify-center rounded-md sm:h-[24px]"
-              style={{ background: `rgb(${USE_ACCENT})` }}
+              style={{ background: ACCENT }}
             >
               <div className="h-1.5 w-1/2 rounded-full bg-white opacity-40 sm:h-2" />
             </div>
@@ -53,7 +53,7 @@ export default function TransferSection({
             <div
               className="h-[2px] flex-1 bg-repeat-x"
               style={{
-                backgroundImage: `linear-gradient(to right, rgb(${USE_ACCENT}) 50%, transparent 50%)`,
+                backgroundImage: `linear-gradient(to right, ${ACCENT} 50%, transparent 50%)`,
                 backgroundSize: "10px 2px",
               }}
             />
@@ -67,7 +67,7 @@ export default function TransferSection({
             >
               <path
                 d="M1 1L8 7L1 13"
-                stroke={`rgb(${USE_ACCENT})`}
+                stroke={ACCENT}
                 strokeWidth="2.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -88,7 +88,7 @@ export default function TransferSection({
               </span>
               <span
                 className="h-1.5 w-1.5 rounded-full opacity-60"
-                style={{ background: `rgb(${USE_ACCENT})` }}
+                style={{ background: ACCENT }}
               />
             </div>
 
@@ -109,16 +109,16 @@ export default function TransferSection({
             return (
               <div
                 key={item.title}
-                className="group rounded-[22px] border border-transparent bg-[#F7F7F7] px-5 py-5 transition-all duration-300 hover:-translate-y-[2px] hover:border-[rgba(118,167,158,0.5)] dark:border-[rgba(255,255,255,0.04)] dark:bg-[rgba(255,255,255,0.02)]"
+                className="group rounded-[22px] border border-transparent bg-[#F7F7F7] px-5 py-5 transition-all duration-300 hover:-translate-y-[2px] hover:border-[color-mix(in_srgb,var(--accent)_50%,transparent)] dark:border-[rgba(255,255,255,0.04)] dark:bg-[rgba(255,255,255,0.02)]"
               >
                 <div className="flex items-start gap-4">
-                  <div className="border-subtle mt-0.5 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-[18px] border bg-white shadow-[0_2px_8px_rgba(0,0,0,0.04)] transition-colors duration-300 group-hover:border-[rgba(118,167,158,0.4)] group-hover:text-[rgb(118,167,158)] dark:bg-[#1a1a1e]">
+                  <div className="border-subtle mt-0.5 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-[18px] border bg-white shadow-[0_2px_8px_rgba(0,0,0,0.04)] transition-colors duration-300 group-hover:border-[color-mix(in_srgb,var(--accent)_40%,transparent)] group-hover:text-[var(--accent)] dark:bg-[#1a1a1e]">
                     <Icon />
                   </div>
                   <div>
                     <span
                       className="mb-1.5 block text-[11px] font-bold tracking-[0.1em] uppercase opacity-80"
-                      style={{ color: `rgb(${USE_ACCENT})` }}
+                      style={{ color: ACCENT }}
                     >
                       Step {item.step}
                     </span>
@@ -139,7 +139,7 @@ export default function TransferSection({
           <div className="flex items-start gap-4 rounded-[24px] bg-black/[0.03] px-5 py-4 dark:bg-white/[0.03]">
             <div
               className="mt-[3px] flex w-5 shrink-0 justify-center"
-              style={{ color: `rgb(${USE_ACCENT})` }}
+              style={{ color: ACCENT }}
             >
               <TimeCircleIcon />
             </div>
@@ -157,7 +157,7 @@ export default function TransferSection({
           <div className="flex items-start gap-4 rounded-[24px] bg-black/[0.03] px-5 py-4 dark:bg-white/[0.03]">
             <div
               className="mt-[3px] flex w-5 shrink-0 justify-center"
-              style={{ color: `rgb(${USE_ACCENT})` }}
+              style={{ color: ACCENT }}
             >
               <SecurityIcon />
             </div>

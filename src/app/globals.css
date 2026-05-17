@@ -42,6 +42,10 @@
   --dag-pulse-opacity: 0;
   --dag-pulse-opacity-alt: 0;
 
+  /* Subtle filled backgrounds (icons, step circles, progress tracks) */
+  --chip-bg: rgba(0, 0, 0, 0.06);
+  --track-bg: rgba(0, 0, 0, 0.08);
+
   /* Selection */
   --selection-bg: rgba(139, 149, 168, 0.2);
 }
@@ -66,6 +70,10 @@
   --btn-ghost-border: rgba(255, 255, 255, 0.25);
   --btn-ghost-hover-border: rgba(255, 255, 255, 0.5);
   --btn-ghost-hover-bg: rgba(255, 255, 255, 0.05);
+
+  /* Subtle filled backgrounds (icons, step circles, progress tracks) */
+  --chip-bg: rgba(255, 255, 255, 0.1);
+  --track-bg: rgba(255, 255, 255, 0.13);
 
   /* DAG */
   --dag-filter: invert(1) brightness(1.5) grayscale(1);
