@@ -40,6 +40,38 @@ const walletRecords: KaspaWallet[] = [
     ],
   },
   {
+    id: "kasanova",
+    title: "Kasanova",
+    icon: "/hodl/wallets/kasanova/icon.png",
+    user: "beginner",
+    summary:
+      "Non-custodial Kaspa wallet with KRC20 tokens, KRC721 NFTs, encrypted Kasia messaging, and rewards.",
+    platforms: ["ios", "android", "mac"],
+    features: [],
+    check: {
+      control: "good",
+      validation: "caution",
+      transparency: "caution",
+      fees: "caution",
+    },
+    actions: [
+      {
+        action: "app_store",
+        link: "https://apps.apple.com/app/kasanova-wallet/id6748974415",
+        platforms: ["ios"],
+      },
+      {
+        action: "google_play",
+        link: "https://play.google.com/store/apps/details?id=io.kasanova.wallet",
+        platforms: ["android"],
+      },
+      {
+        action: "open",
+        link: "https://kasanova.app",
+      },
+    ],
+  },
+  {
     id: "kaspium",
     title: "Kaspium",
     icon: "/hodl/wallets/kaspium/icon.jpg",
