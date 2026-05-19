@@ -50,7 +50,7 @@ const walletRecords: KaspaWallet[] = [
     features: [],
     check: {
       control: "good",
-      validation: "acceptable",
+      validation: "caution",
       transparency: "acceptable",
       fees: "good",
     },
