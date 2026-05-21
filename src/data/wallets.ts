@@ -86,6 +86,11 @@ const walletRecords: KaspaWallet[] = [
       transparency: "caution",
       fees: "caution",
     },
+    platformOverrides: {
+      windows: { check: { transparency: "acceptable" } },
+      mac: { check: { transparency: "acceptable" } },
+      linux: { check: { transparency: "acceptable" } },
+    },
     actions: [
       { action: "open", link: "https://kastle.cc" },
       {
@@ -101,6 +106,11 @@ const walletRecords: KaspaWallet[] = [
       {
         action: "download",
         link: "https://chromewebstore.google.com/detail/kastle/oambclflhjfppdmkghokjmpppmaebego",
+      },
+      {
+        action: "view_source",
+        link: "https://github.com/forbole/kastle",
+        platforms: ["windows", "mac", "linux"],
       },
     ],
   },
