@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
+import { isKaspaAiEnabled } from "./aiFeature";
 import Nav from "./components/Nav";
 import Footer from "./components/Footer";
 import AiLauncherEntry from "./components/AiLauncherEntry";
@@ -119,7 +120,7 @@ export default function Home() {
       </main>
 
       <Footer />
-      <AiLauncherEntry />
+      {isKaspaAiEnabled ? <AiLauncherEntry /> : null}
     </div>
   );
 }
