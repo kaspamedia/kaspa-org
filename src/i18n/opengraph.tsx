@@ -11,8 +11,7 @@ import {
 
 export { openGraphContentType, openGraphSize };
 
-const HEADING_SIZE = 140;
-const SUB_SIZE = Math.round(HEADING_SIZE * (28 / 96)); // matches homepage ratio
+const SUB_SIZE = 41;
 const PADDING_LEFT = 72;
 const PADDING_TOP = 100;
 const fontDirectory = join(process.cwd(), "src", "app", "fonts");
@@ -23,8 +22,6 @@ export async function renderOpenGraphImage(locale: Locale) {
     readFile(join(fontDirectory, "Geist-Bold.ttf")),
     readFile(join(fontDirectory, "Geist-Regular.ttf")),
   ]);
-  const useLocalizedLayout = contract.layout === "localized";
-
   return new ImageResponse(
     <div
       style={{
@@ -48,13 +45,10 @@ export async function renderOpenGraphImage(locale: Locale) {
             key={line}
             style={{
               width: "100%",
-              fontSize: useLocalizedLayout ? 68 : HEADING_SIZE,
               fontFamily: "Geist",
               fontWeight: 700,
               color: "#1a1a1e",
-              lineHeight: useLocalizedLayout ? 1 : 0.9,
-              letterSpacing: useLocalizedLayout ? "-0.02em" : "-0.04em",
-              wordBreak: useLocalizedLayout ? "break-all" : "normal",
+              ...contract.headingStyle,
             }}
           >
             {line}
@@ -74,23 +68,11 @@ export async function renderOpenGraphImage(locale: Locale) {
           letterSpacing: "-0.01em",
           marginTop: 40,
           marginLeft: 5,
-          ...(useLocalizedLayout
-            ? { width: "100%", flexWrap: "wrap" as const }
-            : {}),
+          width: "100%",
+          flexWrap: "wrap",
         }}
       >
-        {useLocalizedLayout
-          ? contract.tagline
-          : contract.tagline.split(" ").map((word, index) => (
-              <span
-                key={`${word}-${index}`}
-                style={
-                  index === 0 ? undefined : { marginLeft: index === 2 ? 4 : 9 }
-                }
-              >
-                {word}
-              </span>
-            ))}
+        {contract.tagline}
       </div>
     </div>,
     {

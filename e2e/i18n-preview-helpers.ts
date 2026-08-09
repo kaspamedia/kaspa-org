@@ -263,6 +263,30 @@ export async function assertWordsStayOnSingleLine(
   expect(splitWords, `${state}; split words`).toEqual([]);
 }
 
+export async function assertHeadingUsesResponsiveWrapping(
+  heading: Locator,
+  state: string,
+) {
+  const wrapping = await heading.evaluate((element) => {
+    const styles = getComputedStyle(element);
+    return {
+      clientWidth: element.clientWidth,
+      overflowWrap: styles.overflowWrap,
+      scrollWidth: element.scrollWidth,
+      wordBreak: styles.wordBreak,
+    };
+  });
+
+  expect(wrapping, `${state}; wrapping policy`).toMatchObject({
+    overflowWrap: "anywhere",
+    wordBreak: "normal",
+  });
+  expect(
+    wrapping.scrollWidth,
+    `${state}; heading must fit its container`,
+  ).toBeLessThanOrEqual(wrapping.clientWidth + 1);
+}
+
 export async function assertEqualControlRow(controls: Locator, state: string) {
   await expect(controls, state).toHaveCount(2);
   const geometry = await controls.evaluateAll((elements) =>

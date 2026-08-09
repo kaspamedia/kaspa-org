@@ -29,6 +29,7 @@ import {
   isPathnamePublished,
 } from "../../src/i18n/publication.ts";
 import {
+  createOpenGraphHeadingStyle,
   createOpenGraphImageDescriptor,
   createOpenGraphRenderContract,
 } from "../../src/i18n/opengraph-contract.ts";
@@ -361,10 +362,12 @@ test(
       assert.ok(metadata.twitter);
     }
 
+    const spanishHeadingLines =
+      spanishMessages.home.openGraph.heading.split("\n");
     assert.deepEqual(createOpenGraphRenderContract(spanishLocale), {
-      headingLines: spanishMessages.home.openGraph.heading.split("\n"),
+      headingLines: spanishHeadingLines,
+      headingStyle: createOpenGraphHeadingStyle(spanishHeadingLines),
       tagline: spanishMessages.home.openGraph.tagline,
-      layout: "localized",
     });
     for (const routeId of routeIds) {
       assert.deepEqual(createOpenGraphImageDescriptor(routeId, spanishLocale), {
@@ -377,6 +380,49 @@ test(
     }
   },
 );
+
+test("Open Graph heading typography fits content without locale branches", () => {
+  const sharedWrapping = {
+    letterSpacing: "-0.02em",
+    lineHeight: 1,
+    overflowWrap: "anywhere",
+    wordBreak: "normal",
+  } as const;
+  const english = createOpenGraphHeadingStyle([
+    "Real-time",
+    "Decentralization",
+  ]);
+  const spanish = createOpenGraphHeadingStyle([
+    "Descentralización",
+    "en tiempo real",
+  ]);
+  const pseudo = createOpenGraphHeadingStyle([
+    "[!! Řëëååļ-ţïïḿëë",
+    "Ďëëçëëńţřååļïïžååţïïööń !!]",
+  ]);
+
+  assert.deepEqual(english, { fontSize: 131, ...sharedWrapping });
+  assert.deepEqual(
+    {
+      letterSpacing: spanish.letterSpacing,
+      lineHeight: spanish.lineHeight,
+      overflowWrap: spanish.overflowWrap,
+      wordBreak: spanish.wordBreak,
+    },
+    sharedWrapping,
+  );
+  assert.deepEqual(
+    {
+      letterSpacing: pseudo.letterSpacing,
+      lineHeight: pseudo.lineHeight,
+      overflowWrap: pseudo.overflowWrap,
+      wordBreak: pseudo.wordBreak,
+    },
+    sharedWrapping,
+  );
+  assert.ok(spanish.fontSize < english.fontSize);
+  assert.ok(pseudo.fontSize < spanish.fontSize);
+});
 
 test("published route contexts and English metadata share one authority", () => {
   const expected = {

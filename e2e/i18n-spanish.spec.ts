@@ -6,6 +6,7 @@ import { expect, test, type Page } from "@playwright/test";
 
 import {
   assertEqualControlRow,
+  assertHeadingUsesResponsiveWrapping,
   assertNoHorizontalOverflow,
   assertWordsStayOnSingleLine,
   installStandaloneExampleMocks,
@@ -400,7 +401,7 @@ test.describe("complete public Spanish production contract", () => {
     const metrics = await measureOpenGraphImage(page, "/es/opengraph-image");
     expect(metrics).toMatchObject({ width: 1200, height: 630 });
     expect(metrics.inkPixels).toBeGreaterThan(1_000);
-    expect(metrics.inkBandCount).toBeGreaterThanOrEqual(2);
+    expect(metrics.inkBandCount).toBe(3);
     expect(metrics.minX).toBeGreaterThanOrEqual(48);
     expect(metrics.maxX).toBeLessThanOrEqual(1152);
     expect(metrics.minY).toBeGreaterThanOrEqual(48);
@@ -764,6 +765,10 @@ test.describe("complete public Spanish production contract", () => {
         );
 
         if (route.path === "/es" && viewport.width < 768) {
+          await assertHeadingUsesResponsiveWrapping(
+            page.locator("main h1").first(),
+            `${viewport.width}px Spanish home hero`,
+          );
           await assertWordsStayOnSingleLine(
             page.locator("main h1").first(),
             `${viewport.width}px Spanish home hero`,

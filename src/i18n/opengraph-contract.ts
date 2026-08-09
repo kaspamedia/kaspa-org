@@ -5,12 +5,43 @@ import { getHomeMessages, getRouteMessages } from "./messages.ts";
 export const openGraphSize = { width: 1200, height: 630 } as const;
 export const openGraphContentType = "image/png" as const;
 
+const MAX_HEADING_FONT_SIZE = 140;
+const MIN_HEADING_FONT_SIZE = 68;
+// Keep a small width reserve for glyph and script differences that a character
+// count cannot predict. Longer lines scale smoothly instead of switching on locale.
+const REFERENCE_HEADING_LENGTH = 15;
+
+export function createOpenGraphHeadingStyle(headingLines: readonly string[]) {
+  const longestLineLength = Math.max(
+    1,
+    ...headingLines.map((line) => Array.from(line).length),
+  );
+  const fontSize = Math.max(
+    MIN_HEADING_FONT_SIZE,
+    Math.min(
+      MAX_HEADING_FONT_SIZE,
+      Math.floor(
+        (MAX_HEADING_FONT_SIZE * REFERENCE_HEADING_LENGTH) / longestLineLength,
+      ),
+    ),
+  );
+
+  return {
+    fontSize,
+    letterSpacing: "-0.02em",
+    lineHeight: 1,
+    overflowWrap: "anywhere",
+    wordBreak: "normal",
+  } as const;
+}
+
 export function createOpenGraphRenderContract(locale: Locale) {
   const copy = getHomeMessages(locale).openGraph;
+  const headingLines = copy.heading.split("\n");
   return {
-    headingLines: copy.heading.split("\n"),
+    headingLines,
+    headingStyle: createOpenGraphHeadingStyle(headingLines),
     tagline: copy.tagline,
-    layout: locale === defaultLocale ? "default" : "localized",
   } as const;
 }
 

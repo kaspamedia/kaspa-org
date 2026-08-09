@@ -57,9 +57,7 @@ export default async function HomePage({
           <MobileDagLive />
 
           <div className="relative z-10 mx-auto -mt-[20vh] w-full px-6 text-center sm:mt-0 sm:pt-8 md:px-12 md:pt-10 xl:mx-0 xl:max-w-[55vw] xl:px-20 xl:pt-20 xl:text-left">
-            <h1
-              className={`text-[clamp(1.75rem,8.75vw,2.5rem)] leading-[0.9] font-bold tracking-[-0.03em] text-balance sm:text-[56px] md:text-[80px] md:tracking-[-0.04em] lg:text-[96px] ${locale === "en-XA" ? "break-all" : "wrap-normal"}`}
-            >
+            <h1 className="text-[clamp(1.75rem,8.75vw,2.5rem)] leading-[0.9] font-bold tracking-[-0.03em] text-balance wrap-anywhere sm:text-[56px] md:text-[80px] md:tracking-[-0.04em] lg:text-[96px]">
               {heroLines.map((line, index) => (
                 <Fragment key={`${line}-${index}`}>
                   {index > 0 ? <br /> : null}

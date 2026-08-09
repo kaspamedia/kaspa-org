@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 
 import {
   assertEqualControlRow,
+  assertHeadingUsesResponsiveWrapping,
   assertWordsStayOnSingleLine,
   waitForStableLayout,
 } from "./i18n-preview-helpers";
@@ -40,6 +41,7 @@ test("home hero stays within a 320px mobile viewport", async ({
 
   await expect(heading).toBeVisible();
   await expect(subtitle).toBeVisible();
+  await assertHeadingUsesResponsiveWrapping(heading, "320px English home hero");
   await assertWordsStayOnSingleLine(heading, "320px English home hero");
 
   const dimensions = await page.evaluate(() => ({

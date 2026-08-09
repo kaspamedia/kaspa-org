@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 
 import { expect, test } from "@playwright/test";
 import {
+  assertHeadingUsesResponsiveWrapping,
   assertNoHorizontalOverflow,
   installStandaloneExampleMocks,
   standaloneBasePath,
@@ -117,7 +118,7 @@ test.describe("private full-site pseudo-locale contract", () => {
       createHash("sha256")
         .update(await pseudoOg.body())
         .digest("hex"),
-    ).toBe("ae84d2c2bf6be67acfcca4e2033249db8feffffc3a7790e3c3fa2f3e407d22a5");
+    ).toBe("05892402d073262b7a6d46ae4144b4c0974a0606f36349d11ff3345b72cd564e");
 
     const proofCatalog = await api.get("/api/i18n/home-proof/en-XA");
     expect(proofCatalog.status()).toBe(200);
@@ -387,6 +388,10 @@ test.describe("private full-site pseudo-locale contract", () => {
         }
 
         if (route.path === "/en-XA") {
+          await assertHeadingUsesResponsiveWrapping(
+            page.locator("main h1").first(),
+            `${viewport.width}px pseudo home hero`,
+          );
           if (viewport.width === 1440) {
             const bounds = await page.evaluate(async () => {
               const response = await fetch("/en-XA/opengraph-image");
