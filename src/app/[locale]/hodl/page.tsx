@@ -9,6 +9,7 @@ import {
   type LocalizedPageProps,
 } from "@/i18n/page-route";
 import { isAiAvailable } from "@/i18n/site-capabilities";
+import { getLocalizedWallets } from "@/i18n/wallets";
 
 const routeId = "hodl";
 const pageRoute = createLocalizedPageAdapter(routeId);
@@ -36,7 +37,10 @@ export default async function HodlRoute({ params }: LocalizedPageProps) {
         locale={locale}
         messages={getHodlClientMessages(locale)}
       >
-        <HodlPage aiAvailable={aiAvailable} />
+        <HodlPage
+          aiAvailable={aiAvailable}
+          wallets={getLocalizedWallets(locale)}
+        />
       </NextIntlClientProvider>
     </MarketingPageShell>
   );

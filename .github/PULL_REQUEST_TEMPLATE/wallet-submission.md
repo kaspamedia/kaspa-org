@@ -47,10 +47,24 @@ For hardware wallets that require companion apps, check both `Hardware` and ever
 
 ### Wallet summary
 
-Add the neutral English display summary under
-`walletFinder.wallets.<wallet-id>.summary` in `messages/en/hodl.json`.
+Add a short, neutral English `summary` to the same wallet object in
+`src/data/wallets.ts`.
+Maintainers will arrange translations for every language currently published
+on the site before the wallet is published.
 
 Summary:
+
+#### Optional translations
+
+If you are fluent in a language currently published on the site, you may
+provide a translation for review. This is entirely optional. Translations for
+languages not currently supported cannot be included through a wallet
+submission; adding a new language requires a separate, site-wide localization
+process.
+
+Language:
+
+Translation:
 
 ### Criteria ratings and evidence
 
@@ -99,7 +113,8 @@ List every way a user can install or open the wallet. Each acquisition path is o
 ### Confirmation
 
 - [ ] I added or updated only one wallet entry in `src/data/wallets.ts`
-- [ ] I added or updated its matching English summary in `messages/en/hodl.json`
+- [ ] The wallet entry includes its short, neutral English `summary`
+- [ ] If I included an optional translation above, it is for a language currently published on the site
 - [ ] `platforms` lists every supported OS
 - [ ] `features` and `check` describe the wallet's defaults; per-OS variation lives in `platformOverrides`
 - [ ] `actions` covers every acquisition path; platform-specific links use `platforms`

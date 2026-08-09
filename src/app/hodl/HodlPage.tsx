@@ -15,8 +15,15 @@ import StartSection from "./sections/StartSection";
 import TransferSection from "./sections/TransferSection";
 import WalletSection from "./sections/WalletSection";
 import { StepConnector } from "./ui";
+import type { KaspaWallet } from "./wallet-finder/types";
 
-export default function HodlPage({ aiAvailable }: { aiAvailable: boolean }) {
+export default function HodlPage({
+  aiAvailable,
+  wallets,
+}: {
+  aiAvailable: boolean;
+  wallets: KaspaWallet[];
+}) {
   const t = useTranslations("hodl");
   const walletHeadingRef = useRef<HTMLHeadingElement | null>(null);
   const buyHeadingRef = useRef<HTMLHeadingElement | null>(null);
@@ -116,7 +123,7 @@ export default function HodlPage({ aiAvailable }: { aiAvailable: boolean }) {
       <StepConnector />
 
       <JourneyRail steps={journeySteps}>
-        <WalletSection headingRef={walletHeadingRef} />
+        <WalletSection headingRef={walletHeadingRef} wallets={wallets} />
         <StepConnector />
         <BuySection headingRef={buyHeadingRef} />
         <StepConnector />

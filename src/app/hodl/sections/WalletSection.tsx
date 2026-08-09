@@ -7,11 +7,14 @@ import { ACCENT } from "../content";
 import { ShieldKeyIcon } from "../icons";
 import { JourneyStepHeader } from "../ui";
 import WalletFinder from "../wallet-finder/WalletFinder";
+import type { KaspaWallet } from "../wallet-finder/types";
 
 export default function WalletSection({
   headingRef,
+  wallets,
 }: {
   headingRef?: RefObject<HTMLHeadingElement | null>;
+  wallets: KaspaWallet[];
 }) {
   const t = useTranslations("hodl");
 
@@ -29,7 +32,7 @@ export default function WalletSection({
           headingRef={headingRef}
         />
 
-        <WalletFinder />
+        <WalletFinder wallets={wallets} />
 
         <div className="mt-6 flex items-start gap-3 rounded-[24px] bg-black/[0.03] px-5 py-4 dark:bg-white/[0.03]">
           <div className="mt-0.5 shrink-0" style={{ color: ACCENT }}>

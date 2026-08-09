@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
+import spanishWalletSummaries from "../../messages/es/wallets.json" with { type: "json" };
+import { validateSpanishCatalogContract } from "../../scripts/i18n/spanish-contract.mts";
 import {
   getRatingExplanationKey,
   ratingExplanations,
@@ -10,13 +12,55 @@ import {
   WALLET_CRITERIA_IDS,
 } from "../../src/app/hodl/wallet-finder/taxonomy.ts";
 import type { WalletCheckRating } from "../../src/app/hodl/wallet-finder/types.ts";
-import { kaspaWalletRecords } from "../../src/data/wallets.ts";
-import { englishMessages } from "../../src/i18n/messages.ts";
+import { kaspaWallets } from "../../src/data/wallets.ts";
+import { supportedLocaleCodes } from "../../src/i18n/locale-registry.ts";
+import { englishMessages, spanishMessages } from "../../src/i18n/messages.ts";
+import { getLocalizedWallets } from "../../src/i18n/wallets.ts";
 
-test("the English wallet catalog covers every wallet record exactly", () => {
+test("every supported locale returns the complete canonical wallet set", () => {
+  const canonicalIds = kaspaWallets.map((wallet) => wallet.id).sort();
+
+  for (const locale of supportedLocaleCodes) {
+    const localizedWallets = getLocalizedWallets(locale);
+    assert.deepEqual(
+      localizedWallets.map((wallet) => wallet.id).sort(),
+      canonicalIds,
+      locale,
+    );
+    assert.ok(
+      localizedWallets.every((wallet) => wallet.summary.trim().length > 0),
+      locale,
+    );
+  }
+});
+
+test("English records are canonical and pseudo summaries derive from them", () => {
+  assert.deepEqual(getLocalizedWallets("en"), kaspaWallets);
+
+  const pseudoWallets = getLocalizedWallets("en-XA");
+  for (const [index, wallet] of pseudoWallets.entries()) {
+    assert.notEqual(wallet.summary, kaspaWallets[index].summary);
+    assert.match(wallet.summary, /^\[!! /u);
+  }
+});
+
+test("route catalogs do not own wallet records", () => {
+  assert.equal("wallets" in englishMessages.hodl.walletFinder, false);
+  assert.equal("wallets" in spanishMessages.hodl.walletFinder, false);
+});
+
+test("Spanish wallet summaries satisfy the site translation contract", () => {
+  const englishWalletSummaries = Object.fromEntries(
+    kaspaWallets.map((wallet) => [wallet.id, wallet.summary]),
+  );
+
   assert.deepEqual(
-    Object.keys(englishMessages.hodl.walletFinder.wallets).sort(),
-    kaspaWalletRecords.map((wallet) => wallet.id).sort(),
+    validateSpanishCatalogContract(
+      "wallets",
+      englishWalletSummaries,
+      spanishWalletSummaries,
+    ),
+    [],
   );
 });
 

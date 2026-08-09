@@ -17,15 +17,25 @@ import {
 import { validateSpanishCatalogContract } from "./spanish-contract.mts";
 
 installI18nPublicationProfile();
-const [config, manifest, site, siteValidation, messages, proxyPolicy] =
-  await Promise.all([
-    import("../../src/i18n/config.ts"),
-    import("../../src/i18n/manifest.ts"),
-    import("../../src/i18n/site.ts"),
-    import("../../src/i18n/site-validation.ts"),
-    import("../../src/i18n/messages.ts"),
-    import("../../src/i18n/proxy-policy.ts"),
-  ]);
+const [
+  config,
+  manifest,
+  site,
+  siteValidation,
+  messages,
+  proxyPolicy,
+  walletData,
+  walletLocalization,
+] = await Promise.all([
+  import("../../src/i18n/config.ts"),
+  import("../../src/i18n/manifest.ts"),
+  import("../../src/i18n/site.ts"),
+  import("../../src/i18n/site-validation.ts"),
+  import("../../src/i18n/messages.ts"),
+  import("../../src/i18n/proxy-policy.ts"),
+  import("../../src/data/wallets.ts"),
+  import("../../src/i18n/wallets.ts"),
+]);
 const { isLocaleProductionReady, localeCodes } = config;
 const { RESERVED_NOT_FOUND_PATHNAME, routeIds, stablePathnames } = manifest;
 const { getRouteDefinition, listPublishedLocales, resolvePublishedRoute } =
@@ -34,6 +44,8 @@ const { assertPreviewLocaleComplete, assertProductionLocaleComplete } =
   siteValidation;
 const { englishMessages } = messages;
 const { shouldBypassLocaleRouting } = proxyPolicy;
+const { kaspaWallets } = walletData;
+const { getLocalizedWallets } = walletLocalization;
 
 const repositoryRoot = process.cwd();
 const errors: string[] = [];
@@ -74,6 +86,10 @@ for (const namespace of sourceNamespaces) {
   errors.push(...result.errors);
   if (result.catalog) sourceCatalogs.set(namespace, result.catalog);
 }
+
+const englishWalletSummaries = Object.fromEntries(
+  kaspaWallets.map((wallet) => [wallet.id, wallet.summary]),
+) satisfies MessageCatalog;
 
 const registeredNamespaces = Object.keys(englishMessages).sort();
 if (JSON.stringify(sourceNamespaces) !== JSON.stringify(registeredNamespaces)) {
@@ -144,7 +160,10 @@ for (const locale of catalogLocales) {
   for (const namespace of targetNamespaces) {
     const location = `messages/${locale}/${namespace}.json`;
     const catalogPath = join(repositoryRoot, location);
-    const sourceCatalog = sourceCatalogs.get(namespace);
+    const sourceCatalog =
+      namespace === "wallets"
+        ? englishWalletSummaries
+        : sourceCatalogs.get(namespace);
     if (!sourceCatalog) {
       fail(location, "target namespace has no English source catalog");
       continue;
@@ -168,6 +187,19 @@ for (const locale of catalogLocales) {
         }
       }
     }
+  }
+}
+
+for (const locale of localeCodes) {
+  try {
+    getLocalizedWallets(locale);
+  } catch (error) {
+    fail(
+      locale === defaultLocale
+        ? "src/data/wallets.ts"
+        : `messages/${locale}/wallets.json`,
+      error instanceof Error ? error.message : String(error),
+    );
   }
 }
 

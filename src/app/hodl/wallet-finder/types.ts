@@ -52,8 +52,6 @@ export type KaspaWallet = {
   actions: NonEmptyArray<WalletAction>;
 };
 
-export type KaspaWalletRecord = Omit<KaspaWallet, "summary">;
-
 export type WalletFilters = {
   os?: WalletOs;
   user?: WalletUserType;

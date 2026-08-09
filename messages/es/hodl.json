@@ -289,23 +289,6 @@
     "submission": {
       "question": "¿Falta alguna billetera?",
       "action": "Consulta cómo proponerla en GitHub"
-    },
-    "wallets": {
-      "kaspa-cli-wallet": {
-        "summary": "Herramientas de billetera para CLI dirigidas a usuarios que se sienten cómodos gestionando claves y transacciones desde una terminal."
-      },
-      "kaspacom-wallet": {
-        "summary": "Una billetera KaspaCom para navegador que permite crear, importar y utilizar billeteras Kaspa de autocustodia."
-      },
-      "kaspium": {
-        "summary": "Una billetera móvil de autocustodia para enviar, recibir y guardar KAS desde un teléfono."
-      },
-      "kng-desktop": {
-        "summary": "Una billetera de escritorio moderna de Kaspa con una interfaz predeterminada fácil de usar, funcionamiento opcional como nodo completo y configuración avanzada."
-      },
-      "kng-web": {
-        "summary": "La versión para navegador de Kaspa NG. Fácil de usar de forma predeterminada, sin instalación y con configuración avanzada opcional."
-      }
     }
   }
 }

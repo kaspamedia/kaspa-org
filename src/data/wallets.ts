@@ -1,9 +1,7 @@
-import type { KaspaWalletRecord } from "@/app/hodl/wallet-finder/types";
-import type { AppMessages } from "@/i18n/messages";
+import type { KaspaWallet } from "@/app/hodl/wallet-finder/types";
 
 /*
-Add a wallet by adding one object to walletRecords and its English summary to
-messages/en/hodl.json under walletFinder.wallets.<wallet-id>.summary.
+Add a wallet by adding one complete English object to walletRecords.
 See docs/wallet-submissions.md for the full submission template.
 
 Required:
@@ -18,21 +16,22 @@ Required:
 
 Maintainers validate rating accuracy before merge.
 */
-type WalletCatalogId = Extract<
-  keyof AppMessages["hodl"]["walletFinder"]["wallets"],
-  string
->;
+type WalletWithId<Id extends string> = Omit<KaspaWallet, "id"> & { id: Id };
 
-type CatalogBackedWalletRecord = Omit<KaspaWalletRecord, "id"> & {
-  id: WalletCatalogId;
-};
+function defineWallet<const Id extends string>(
+  wallet: WalletWithId<Id>,
+): WalletWithId<Id> {
+  return wallet;
+}
 
-const walletRecords: CatalogBackedWalletRecord[] = [
-  {
+const walletRecords = [
+  defineWallet({
     id: "kaspa-cli-wallet",
     title: "CLI Wallet",
     icon: "/hodl/wallets/kaspa-cli-wallet/icon.png",
     user: "experienced",
+    summary:
+      "Command-line wallet tooling for users comfortable managing keys and transactions from a terminal.",
     platforms: ["windows", "mac", "linux"],
     features: ["multisig"],
     check: {
@@ -47,12 +46,14 @@ const walletRecords: CatalogBackedWalletRecord[] = [
         link: "https://github.com/kaspanet/rusty-kaspa/tree/master/wallet",
       },
     ],
-  },
-  {
+  }),
+  defineWallet({
     id: "kaspacom-wallet",
     title: "KaspaCom Wallet",
     icon: "/hodl/wallets/kaspacom-wallet/icon.png",
     user: "beginner",
+    summary:
+      "A browser-based KaspaCom wallet for creating, importing, and using self-custodial Kaspa wallets.",
     platforms: ["windows", "mac", "linux", "ios", "android"],
     features: [],
     check: {
@@ -71,12 +72,14 @@ const walletRecords: CatalogBackedWalletRecord[] = [
         link: "https://github.com/KASPACOM/kaspacom-web-wallet",
       },
     ],
-  },
-  {
+  }),
+  defineWallet({
     id: "kaspium",
     title: "Kaspium",
     icon: "/hodl/wallets/kaspium/icon.jpg",
     user: "beginner",
+    summary:
+      "A self-custodial mobile wallet for sending, receiving, and holding KAS from a phone.",
     platforms: ["ios", "android"],
     features: [],
     check: {
@@ -101,12 +104,14 @@ const walletRecords: CatalogBackedWalletRecord[] = [
         link: "https://github.com/azbuky/kaspium_wallet",
       },
     ],
-  },
-  {
+  }),
+  defineWallet({
     id: "kng-desktop",
     title: "Kaspa NG",
     icon: "/hodl/wallets/kng-desktop/icon.png",
     user: "beginner",
+    summary:
+      "A modern Kaspa desktop wallet with a friendly default UI, optional full-node operation, and deep configuration for advanced use.",
     platforms: ["windows", "mac", "linux"],
     features: [],
     check: {
@@ -125,12 +130,14 @@ const walletRecords: CatalogBackedWalletRecord[] = [
         link: "https://github.com/aspectron/kaspa-ng/",
       },
     ],
-  },
-  {
+  }),
+  defineWallet({
     id: "kng-web",
     title: "Kaspa NG Web",
     icon: "/hodl/wallets/kng-web/icon.png",
     user: "beginner",
+    summary:
+      "The browser-based version of Kaspa NG. Friendly by default, no installation needed, with optional advanced configuration.",
     platforms: ["windows", "mac", "linux", "ios", "android"],
     features: [],
     check: {
@@ -149,9 +156,11 @@ const walletRecords: CatalogBackedWalletRecord[] = [
         link: "https://github.com/aspectron/kaspa-ng/",
       },
     ],
-  },
+  }),
 ];
 
-export const kaspaWalletRecords = [...walletRecords].sort((walletA, walletB) =>
-  walletA.title.localeCompare(walletB.title),
-);
+export type WalletId = (typeof walletRecords)[number]["id"];
+
+export const kaspaWallets: Array<KaspaWallet & { id: WalletId }> = [
+  ...walletRecords,
+].sort((walletA, walletB) => walletA.title.localeCompare(walletB.title));

@@ -15,8 +15,8 @@ import {
   toggleFeature,
 } from "./filterState";
 import { createWalletFinderModel } from "./filterWallets";
-import { kaspaWalletRecords } from "@/data/wallets";
 import type {
+  KaspaWallet,
   WalletCriterion,
   WalletFeature,
   WalletFilters,
@@ -37,25 +37,16 @@ type ActiveFilterChip = {
   onRemove: () => void;
 };
 
-export default function WalletFinder() {
+export default function WalletFinder({ wallets }: { wallets: KaspaWallet[] }) {
   const t = useTranslations("hodl");
   const [mode, setMode] = useState<WalletFinderMode>("guided");
   const [step, setStep] = useState(1);
   const [filters, setFilters] = useState<WalletFilters>(initialFilters);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
-  const localizedWallets = useMemo(
-    () =>
-      kaspaWalletRecords.map((wallet) => ({
-        ...wallet,
-        summary: t(`walletFinder.wallets.${wallet.id}.summary`),
-      })),
-    [t],
-  );
-
   const model = useMemo(
-    () => createWalletFinderModel(localizedWallets, filters),
-    [filters, localizedWallets],
+    () => createWalletFinderModel(wallets, filters),
+    [filters, wallets],
   );
 
   const setOs = (os: WalletOs | undefined) =>

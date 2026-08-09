@@ -1,7 +1,7 @@
 import { readFileSync, statSync } from "node:fs";
 import { extname, join } from "node:path";
 
-import { kaspaWalletRecords } from "../src/data/wallets.ts";
+import { kaspaWallets } from "../src/data/wallets.ts";
 import {
   ratingExplanations,
   walletCriteria,
@@ -14,6 +14,8 @@ import {
   WALLET_OS_IDS,
   WALLET_USER_TYPES,
 } from "../src/app/hodl/wallet-finder/taxonomy.ts";
+import { supportedLocaleCodes } from "../src/i18n/locale-registry.ts";
+import { getLocalizedWallets } from "../src/i18n/wallets.ts";
 
 const allowedOs = new Set<string>(WALLET_OS_IDS);
 const allowedUsers = new Set<string>(WALLET_USER_TYPES);
@@ -55,41 +57,6 @@ function hasValidUrl(value: string) {
 
 function hasUrl(value: string) {
   return /https?:\/\/|www\./i.test(value);
-}
-
-function getWalletCatalogEntries() {
-  const catalogPath = join(process.cwd(), "messages", "en", "hodl.json");
-  let catalog: unknown;
-
-  try {
-    catalog = JSON.parse(readFileSync(catalogPath, "utf8"));
-  } catch (error) {
-    fail(
-      "messages/en/hodl.json",
-      `must be readable JSON (${error instanceof Error ? error.message : String(error)})`,
-    );
-    return {};
-  }
-
-  const wallets = (
-    catalog as {
-      walletFinder?: { wallets?: unknown };
-    }
-  )?.walletFinder?.wallets;
-
-  if (
-    typeof wallets !== "object" ||
-    wallets === null ||
-    Array.isArray(wallets)
-  ) {
-    fail(
-      "messages/en/hodl.json.walletFinder.wallets",
-      "must be an object keyed by wallet id",
-    );
-    return {};
-  }
-
-  return wallets as Record<string, unknown>;
 }
 
 function validateWalletSummary(path: string, summary: unknown) {
@@ -295,10 +262,9 @@ function effectiveValidation(
 }
 
 const walletIds = new Set<string>();
-const walletCatalogEntries = getWalletCatalogEntries();
 
-kaspaWalletRecords.forEach((wallet, walletIndex) => {
-  const walletPath = `kaspaWalletRecords[${walletIndex}]`;
+kaspaWallets.forEach((wallet, walletIndex) => {
+  const walletPath = `kaspaWallets[${walletIndex}]`;
 
   if (!isNonEmptyString(wallet.id)) {
     fail(`${walletPath}.id`, "must be a non-empty string");
@@ -313,7 +279,7 @@ kaspaWalletRecords.forEach((wallet, walletIndex) => {
     walletIds.add(wallet.id);
   }
 
-  for (const field of ["title", "icon"] as const) {
+  for (const field of ["title", "icon", "summary"] as const) {
     if (!isNonEmptyString(wallet[field])) {
       fail(`${walletPath}.${field}`, "must be a non-empty string");
     }
@@ -323,22 +289,8 @@ kaspaWalletRecords.forEach((wallet, walletIndex) => {
     validateIcon(walletPath, wallet.id, wallet.icon);
   }
 
-  if (isNonEmptyString(wallet.id)) {
-    const catalogEntry = walletCatalogEntries[wallet.id];
-    const catalogPath = `messages/en/hodl.json.walletFinder.wallets.${wallet.id}`;
-
-    if (
-      typeof catalogEntry !== "object" ||
-      catalogEntry === null ||
-      Array.isArray(catalogEntry)
-    ) {
-      fail(catalogPath, "must be an object containing summary");
-    } else {
-      validateWalletSummary(
-        `${catalogPath}.summary`,
-        (catalogEntry as Record<string, unknown>).summary,
-      );
-    }
+  if (isNonEmptyString(wallet.summary)) {
+    validateWalletSummary(`${walletPath}.summary`, wallet.summary);
   }
 
   if (!allowedUsers.has(wallet.user)) {
@@ -517,11 +469,35 @@ kaspaWalletRecords.forEach((wallet, walletIndex) => {
   });
 });
 
-for (const catalogWalletId of Object.keys(walletCatalogEntries)) {
-  if (!walletIds.has(catalogWalletId)) {
+for (const locale of supportedLocaleCodes) {
+  try {
+    const localizedWallets = getLocalizedWallets(locale);
+    const localizedIds = localizedWallets.map((wallet) => wallet.id).sort();
+    if (
+      JSON.stringify(localizedIds) !== JSON.stringify([...walletIds].sort())
+    ) {
+      fail(
+        `wallet summaries:${locale}`,
+        "must exactly match the canonical wallet IDs",
+      );
+    }
+    for (const wallet of localizedWallets) {
+      if (!isNonEmptyString(wallet.summary)) {
+        fail(
+          `wallet summaries:${locale}.${wallet.id}`,
+          "must be a non-empty string",
+        );
+      } else if (/\r|\n/.test(wallet.summary)) {
+        fail(
+          `wallet summaries:${locale}.${wallet.id}`,
+          "must be a single line",
+        );
+      }
+    }
+  } catch (error) {
     fail(
-      `messages/en/hodl.json.walletFinder.wallets.${catalogWalletId}`,
-      "does not have a matching wallet record",
+      `wallet summaries:${locale}`,
+      error instanceof Error ? error.message : String(error),
     );
   }
 }
@@ -534,6 +510,4 @@ if (errors.length > 0) {
   process.exit(1);
 }
 
-console.log(
-  `Wallet data validation passed (${kaspaWalletRecords.length} wallets).`,
-);
+console.log(`Wallet data validation passed (${kaspaWallets.length} wallets).`);
