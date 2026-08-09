@@ -86,3 +86,38 @@ jobs:
             playwright-report/
             test-results/
           if-no-files-found: ignore
+
+  ai-e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      NEXT_PUBLIC_KASPA_AI_ENABLED: "true"
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run AI-enabled desktop and mobile suite
+        run: npm run test:e2e:ai
+
+      - name: Upload AI Playwright artifacts
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report-ai
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
