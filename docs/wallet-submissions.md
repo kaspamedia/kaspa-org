@@ -14,7 +14,7 @@ add or update exactly one complete English wallet record in
 4. Run `npm ci` if dependencies are not installed, then run
    `npm run wallets:check`.
 5. Open a pull request using the
-   [wallet submission template](https://github.com/kaspanet/kaspa-org/compare/main...?quick_pull=1&template=wallet-submission.md).
+   [wallet submission template](https://github.com/kaspamedia/kaspa-org/compare/main...?quick_pull=1&template=wallet-submission.md).
 
 ## Acceptance Criteria
 

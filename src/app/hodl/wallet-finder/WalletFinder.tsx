@@ -29,7 +29,7 @@ import WizardFlow, { type WizardPanelProps } from "./WizardFlow";
 type WalletFinderMode = "guided" | "table";
 
 const WALLET_SUBMISSION_GUIDE_URL =
-  "https://github.com/kaspanet/kaspa-org/blob/main/docs/wallet-submissions.md";
+  "https://github.com/kaspamedia/kaspa-org/blob/main/docs/wallet-submissions.md";
 
 type ActiveFilterChip = {
   key: string;
