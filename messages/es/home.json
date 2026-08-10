@@ -14,7 +14,7 @@
     "getStarted": "Comenzar",
     "getWallet": "Obtener una billetera",
     "buyKaspa": "Comprar Kaspa",
-    "dagAnnotation": "prueba de trabajo en tiempo real"
+    "dagAnnotation": "pow en tiempo real"
   },
   "verify": {
     "heading": "no confíes, verifica.",
