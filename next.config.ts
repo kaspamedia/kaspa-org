@@ -90,6 +90,10 @@ export default async function createNextConfig(): Promise<NextConfig> {
         }
       : {}),
     allowedDevOrigins,
+    // Use the request's original production-server origin for proxy rewrites.
+    // Otherwise Next can emit default-locale rewrites against localhost even
+    // when `next start` is bound to another host, turning them into redirects.
+    skipProxyUrlNormalize: true,
     experimental: {
       globalNotFound: true,
     },

@@ -290,22 +290,130 @@ function substituteMessage(
 
 type MessageTransform = "identity" | "pseudo";
 
+function transformMessage(
+  message: string,
+  transform: MessageTransform,
+): string {
+  return transform === "pseudo" ? pseudoLocalizeMessage(message) : message;
+}
+
 function localizedMessage(
   message: string,
   substitutions: Readonly<Record<string, string>>,
   transform: MessageTransform,
 ): string {
-  return substituteMessage(
-    transform === "pseudo" ? pseudoLocalizeMessage(message) : message,
-    substitutions,
+  return substituteMessage(transformMessage(message, transform), substitutions);
+}
+
+function javascriptStringLiteral(value: string): string {
+  return JSON.stringify(value)
+    .replaceAll("<", "\\u003c")
+    .replaceAll("\u2028", "\\u2028")
+    .replaceAll("\u2029", "\\u2029");
+}
+
+function escapeJavaScriptTemplateText(value: string): string {
+  return value
+    .replaceAll("\\", "\\\\")
+    .replaceAll("`", "\\`")
+    .replaceAll("${", "\\${")
+    .replaceAll("<", "\\u003c")
+    .replaceAll("\u2028", "\\u2028")
+    .replaceAll("\u2029", "\\u2029");
+}
+
+function escapeHtml(value: string): string {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
+function encodeTemplateMessage(
+  message: string,
+  substitutions: Readonly<Record<string, string>>,
+  transform: MessageTransform,
+  encodeLiteral: (value: string) => string,
+): string {
+  const transformed = transformMessage(message, transform);
+  const placeholders = Object.entries(substitutions).map(
+    ([name, value]) => [`{${name}}`, value] as const,
   );
+  const used = new Set<string>();
+  let cursor = 0;
+  let result = "";
+
+  while (cursor < transformed.length) {
+    let next: (typeof placeholders)[number] | undefined;
+    let nextIndex = -1;
+    for (const placeholder of placeholders) {
+      const index = transformed.indexOf(placeholder[0], cursor);
+      if (index !== -1 && (nextIndex === -1 || index < nextIndex)) {
+        next = placeholder;
+        nextIndex = index;
+      }
+    }
+    if (!next) break;
+
+    result += encodeLiteral(transformed.slice(cursor, nextIndex));
+    result += next[1];
+    used.add(next[0]);
+    cursor = nextIndex + next[0].length;
+  }
+
+  result += encodeLiteral(transformed.slice(cursor));
+  for (const [placeholder] of placeholders) {
+    if (!used.has(placeholder)) {
+      throw new Error(`Missing pseudo-message placeholder ${placeholder}`);
+    }
+  }
+  return result;
+}
+
+function localizedHtmlTemplateText(
+  message: string,
+  substitutions: Readonly<Record<string, string>>,
+  transform: MessageTransform,
+): string {
+  return encodeTemplateMessage(message, substitutions, transform, (value) =>
+    escapeJavaScriptTemplateText(escapeHtml(value)),
+  );
+}
+
+function localizedHtmlLiteral(
+  message: string,
+  transform: MessageTransform,
+  substitutions: Readonly<Record<string, string>> = {},
+): string {
+  return javascriptStringLiteral(
+    escapeHtml(localizedMessage(message, substitutions, transform)),
+  );
+}
+
+function localizedHtmlTemplate(
+  message: string,
+  substitutions: Readonly<Record<string, string>>,
+  transform: MessageTransform,
+): string {
+  return `\`${localizedHtmlTemplateText(message, substitutions, transform)}\``;
 }
 
 function sourceLiteral(
   message: string,
   substitutions: Readonly<Record<string, string>> = {},
 ): string {
-  return JSON.stringify(substituteMessage(message, substitutions));
+  return javascriptStringLiteral(substituteMessage(message, substitutions));
+}
+
+function sourceHtmlLiteral(
+  message: string,
+  substitutions: Readonly<Record<string, string>> = {},
+): string {
+  return javascriptStringLiteral(
+    escapeHtml(substituteMessage(message, substitutions)),
+  );
 }
 
 function localizedLiteral(
@@ -313,31 +421,32 @@ function localizedLiteral(
   transform: MessageTransform,
   substitutions: Readonly<Record<string, string>> = {},
 ): string {
-  return JSON.stringify(localizedMessage(message, substitutions, transform));
-}
-
-function localizedTemplate(
-  message: string,
-  substitutions: Readonly<Record<string, string>>,
-  transform: MessageTransform,
-): string {
-  return `\`${localizedMessage(message, substitutions, transform)}\``;
+  return javascriptStringLiteral(
+    localizedMessage(message, substitutions, transform),
+  );
 }
 
 function sourceTemplate(
   message: string,
   substitutions: Readonly<Record<string, string>> = {},
 ): string {
-  return `\`${substituteMessage(message, substitutions)}\``;
+  return `\`${encodeTemplateMessage(
+    message,
+    substitutions,
+    "identity",
+    escapeJavaScriptTemplateText,
+  )}\``;
 }
 
 function compilePluralBranch(
   elements: readonly MessageFormatElement[],
   numberFormatExpression: string,
   countExpression: string,
+  encodeLiteral: (value: string) => string,
 ): string {
   const parts = elements.map((element) => {
-    if (isLiteralElement(element)) return JSON.stringify(element.value);
+    if (isLiteralElement(element))
+      return javascriptStringLiteral(encodeLiteral(element.value));
     if (isPoundElement(element)) {
       return `${numberFormatExpression}.format(${countExpression})`;
     }
@@ -351,6 +460,7 @@ function compileCardinalPlural(
   countExpression: string,
   pluralRulesExpression: string,
   numberFormatExpression: string,
+  encodeLiteral: (value: string) => string = (value) => value,
 ): string {
   const ast = parse(message);
   const pluralIndex = ast.findIndex(isPluralElement);
@@ -379,11 +489,13 @@ function compileCardinalPlural(
     [...prefix, ...plural.options.one.value, ...suffix],
     numberFormatExpression,
     countExpression,
+    encodeLiteral,
   );
   const other = compilePluralBranch(
     [...prefix, ...plural.options.other.value, ...suffix],
     numberFormatExpression,
     countExpression,
+    encodeLiteral,
   );
   return `${pluralRulesExpression}.select(${countExpression}) === "one" ? ${one} : ${other}`;
 }
@@ -400,12 +512,16 @@ function buildHtmlReplacements(
   const common: readonly Replacement[] = [
     [
       sourceTemplate(sourceRuntime.connectingKaspaNetwork),
-      localizedTemplate(targetRuntime.connectingKaspaNetwork, {}, transform),
+      localizedHtmlTemplate(
+        targetRuntime.connectingKaspaNetwork,
+        {},
+        transform,
+      ),
     ],
   ];
   const selectedNetwork = (expression: string): Replacement => [
     sourceTemplate(sourceRuntime.selectedNetwork, { network: expression }),
-    localizedTemplate(
+    localizedHtmlTemplate(
       targetRuntime.selectedNetwork,
       { network: expression },
       transform,
@@ -417,7 +533,7 @@ function buildHtmlReplacements(
     api: "GetBlockDagInfo" | "GetServerInfo",
   ): Replacement => [
     sourceLiteral(sourceMessage, { api }),
-    localizedLiteral(targetMessage, transform, { api }),
+    localizedHtmlLiteral(targetMessage, transform, { api }),
   ];
 
   return {
@@ -426,7 +542,7 @@ function buildHtmlReplacements(
       selectedNetwork("${networkId}"),
       [
         sourceLiteral(sourceRuntime.connectedTo),
-        localizedLiteral(targetRuntime.connectedTo, transform),
+        localizedHtmlLiteral(targetRuntime.connectedTo, transform),
       ],
       apiMessage(
         sourceRuntime.apiRequest,
@@ -440,7 +556,7 @@ function buildHtmlReplacements(
       ),
       [
         sourceLiteral(sourceRuntime.disconnected),
-        localizedLiteral(targetRuntime.disconnected, transform),
+        localizedHtmlLiteral(targetRuntime.disconnected, transform),
       ],
     ],
     "get-block-dag-info": [
@@ -448,7 +564,7 @@ function buildHtmlReplacements(
       selectedNetwork("${networkId}"),
       [
         sourceLiteral(sourceRuntime.connectedTo),
-        localizedLiteral(targetRuntime.connectedTo, transform),
+        localizedHtmlLiteral(targetRuntime.connectedTo, transform),
       ],
       apiMessage(
         sourceRuntime.apiRequest,
@@ -462,7 +578,7 @@ function buildHtmlReplacements(
       ),
       [
         sourceLiteral(sourceRuntime.disconnected),
-        localizedLiteral(targetRuntime.disconnected, transform),
+        localizedHtmlLiteral(targetRuntime.disconnected, transform),
       ],
     ],
     "subscribe-block-added": [
@@ -470,23 +586,23 @@ function buildHtmlReplacements(
       selectedNetwork('${networkId.class("network")}'),
       [
         sourceLiteral(sourceRuntime.connectedTo),
-        localizedLiteral(targetRuntime.connectedTo, transform),
+        localizedHtmlLiteral(targetRuntime.connectedTo, transform),
       ],
       [
         sourceLiteral(sourceRuntime.subscribingBlockAdded),
-        localizedLiteral(targetRuntime.subscribingBlockAdded, transform),
+        localizedHtmlLiteral(targetRuntime.subscribingBlockAdded, transform),
       ],
       [
         sourceLiteral(sourceRuntime.disconnectedFrom),
-        localizedLiteral(targetRuntime.disconnectedFrom, transform),
+        localizedHtmlLiteral(targetRuntime.disconnectedFrom, transform),
       ],
       [
         `${sourceLiteral(sourceRuntime.disconnect)},event`,
-        `${localizedLiteral(targetRuntime.disconnect, transform)},event`,
+        `${localizedHtmlLiteral(targetRuntime.disconnect, transform)},event`,
       ],
       [
         sourceLiteral(sourceRuntime.connectingPublicNode),
-        localizedLiteral(targetRuntime.connectingPublicNode, transform),
+        localizedHtmlLiteral(targetRuntime.connectingPublicNode, transform),
       ],
     ],
     "subscribe-daa-changed": [
@@ -496,7 +612,7 @@ function buildHtmlReplacements(
         sourceLiteral(sourceRuntime.registeringProtocolNotifications, {
           protocol: "DAA",
         }),
-        localizedLiteral(
+        localizedHtmlLiteral(
           targetRuntime.registeringProtocolNotifications,
           transform,
           { protocol: "DAA" },
@@ -504,27 +620,31 @@ function buildHtmlReplacements(
       ],
       [
         sourceLiteral(sourceRuntime.connectedTo),
-        localizedLiteral(targetRuntime.connectedTo, transform),
+        localizedHtmlLiteral(targetRuntime.connectedTo, transform),
       ],
       [
         sourceLiteral(sourceRuntime.subscribingProtocolScore, {
           protocol: "DAA",
         }),
-        localizedLiteral(targetRuntime.subscribingProtocolScore, transform, {
-          protocol: "DAA",
-        }),
+        localizedHtmlLiteral(
+          targetRuntime.subscribingProtocolScore,
+          transform,
+          {
+            protocol: "DAA",
+          },
+        ),
       ],
       [
         sourceLiteral(sourceRuntime.disconnectedFrom),
-        localizedLiteral(targetRuntime.disconnectedFrom, transform),
+        localizedHtmlLiteral(targetRuntime.disconnectedFrom, transform),
       ],
       [
         `${sourceLiteral(sourceRuntime.disconnect)},event`,
-        `${localizedLiteral(targetRuntime.disconnect, transform)},event`,
+        `${localizedHtmlLiteral(targetRuntime.disconnect, transform)},event`,
       ],
       [
         sourceLiteral(sourceRuntime.connectingPublicNode),
-        localizedLiteral(targetRuntime.connectingPublicNode, transform),
+        localizedHtmlLiteral(targetRuntime.connectingPublicNode, transform),
       ],
     ],
     "utxo-context": [
@@ -532,7 +652,7 @@ function buildHtmlReplacements(
       selectedNetwork('${network.class("network")}'),
       [
         sourceLiteral(sourceRuntime.connectedTo),
-        localizedLiteral(targetRuntime.connectedTo, transform),
+        localizedHtmlLiteral(targetRuntime.connectedTo, transform),
       ],
       [
         compileCardinalPlural(
@@ -540,6 +660,7 @@ function buildHtmlReplacements(
           "events",
           "eventPluralRules",
           "eventNumberFormat",
+          escapeHtml,
         ),
         compileCardinalPlural(
           transform === "pseudo"
@@ -548,63 +669,68 @@ function buildHtmlReplacements(
           "events",
           "eventPluralRules",
           "eventNumberFormat",
+          escapeHtml,
         ),
       ],
       [
-        `log(${sourceLiteral(sourceRuntime.event)}, event);`,
-        `log(${localizedLiteral(targetRuntime.event, transform)}, event);`,
+        `log(${sourceHtmlLiteral(sourceRuntime.event)}, event);`,
+        `log(${localizedHtmlLiteral(targetRuntime.event, transform)}, event);`,
       ],
       [
-        sourceLiteral(sourceUtxo.noticeManyUtxos, { term: "UTXOs" }),
-        localizedLiteral(targetUtxo.noticeManyUtxos, transform, {
+        sourceHtmlLiteral(sourceUtxo.noticeManyUtxos, { term: "UTXOs" }),
+        localizedHtmlLiteral(targetUtxo.noticeManyUtxos, transform, {
           term: "UTXOs",
         }),
       ],
       [
-        sourceLiteral(sourceUtxo.noticeManualTesting, {
+        sourceHtmlLiteral(sourceUtxo.noticeManualTesting, {
           api: "UtxoProcessor",
           term: "UTXOs",
         }),
-        localizedLiteral(targetUtxo.noticeManualTesting, transform, {
+        localizedHtmlLiteral(targetUtxo.noticeManualTesting, transform, {
           api: "UtxoProcessor",
           term: "UTXOs",
         }),
       ],
       [
         `placeholder=" ${substituteMessage(sourceUtxo.addressPlaceholder, { network: "${network}" })}"`,
-        `placeholder="${localizedMessage(targetUtxo.addressPlaceholder, { network: "${network}" }, transform)}"`,
+        `placeholder="${localizedHtmlTemplateText(
+          targetUtxo.addressPlaceholder,
+          { network: "${network}" },
+          transform,
+        )}"`,
       ],
       [
         sourceUtxo.monitorAddress,
-        localizedMessage(targetUtxo.monitorAddress, {}, transform),
+        localizedHtmlTemplateText(targetUtxo.monitorAddress, {}, transform),
       ],
       [
         `>${sourceUtxo.restart}<`,
-        `>${localizedMessage(targetUtxo.restart, {}, transform)}<`,
+        `>${localizedHtmlTemplateText(targetUtxo.restart, {}, transform)}<`,
       ],
       [
         sourceLiteral(sourceUtxo.trackingAddress),
-        localizedLiteral(targetUtxo.trackingAddress, transform),
+        localizedHtmlLiteral(targetUtxo.trackingAddress, transform),
       ],
       [
         sourceLiteral(sourceUtxo.error),
-        localizedLiteral(targetUtxo.error, transform),
+        localizedHtmlLiteral(targetUtxo.error, transform),
       ],
       [
         sourceLiteral(sourceUtxo.restarting),
-        localizedLiteral(targetUtxo.restarting, transform),
+        localizedHtmlLiteral(targetUtxo.restarting, transform),
       ],
       [
         sourceLiteral(sourceUtxo.stoppingProcessor),
-        localizedLiteral(targetUtxo.stoppingProcessor, transform),
+        localizedHtmlLiteral(targetUtxo.stoppingProcessor, transform),
       ],
       [
         sourceLiteral(sourceUtxo.startingProcessor),
-        localizedLiteral(targetUtxo.startingProcessor, transform),
+        localizedHtmlLiteral(targetUtxo.startingProcessor, transform),
       ],
       [
         sourceLiteral(sourceUtxo.processorStarted),
-        localizedLiteral(targetUtxo.processorStarted, transform),
+        localizedHtmlLiteral(targetUtxo.processorStarted, transform),
       ],
     ],
   };
@@ -622,7 +748,15 @@ function buildUtilsReplacements(
   return [
     [
       `<- ${sourceControls.back}</a> | ${sourceControls.network}:`,
-      `<- ${localizedMessage(targetControls.back, {}, transform)}</a> | ${localizedMessage(targetControls.network, {}, transform)}:`,
+      `<- ${localizedHtmlTemplateText(
+        targetControls.back,
+        {},
+        transform,
+      )}</a> | ${localizedHtmlTemplateText(
+        targetControls.network,
+        {},
+        transform,
+      )}:`,
     ],
     ['href="/build#try-live"', `href="${localizedBuildPath}#try-live"`],
     ["'/build'", `'${localizedBuildPath}'`, 2],
@@ -633,16 +767,28 @@ function buildUtilsReplacements(
     ],
     [
       `>${sourceControls.disconnect}</a>`,
-      `>${localizedMessage(targetControls.disconnect, {}, transform)}</a>`,
+      `>${localizedHtmlTemplateText(
+        targetControls.disconnect,
+        {},
+        transform,
+      )}</a>`,
       2,
     ],
     [
       `>${sourceControls.reconnect}</a>`,
-      `>${localizedMessage(targetControls.reconnect, {}, transform)}</a>`,
+      `>${localizedHtmlTemplateText(
+        targetControls.reconnect,
+        {},
+        transform,
+      )}</a>`,
     ],
     [
       sourceTemplate(` ${sourceControls.connecting}`),
-      `\` ${localizedMessage(targetControls.connecting, {}, transform)}\``,
+      `\` ${localizedHtmlTemplateText(
+        targetControls.connecting,
+        {},
+        transform,
+      )}\``,
     ],
   ];
 }
@@ -965,6 +1111,7 @@ async function prepareVendoredBuildExamples(repositoryRoot: string) {
     "events",
     "eventPluralRules",
     "eventNumberFormat",
+    escapeHtml,
   );
   utxo = replacePatternExactlyOnce(
     utxo,
@@ -974,7 +1121,7 @@ async function prepareVendoredBuildExamples(repositoryRoot: string) {
                 const eventNumberFormat = new Intl.NumberFormat(document.documentElement.lang);
                 monitor.processor.addEventListener((event) => {
                     document.getElementById("actions").innerHTML = ${receivedEvents};
-                    log(${sourceLiteral(messages.runtime.event)}, event);
+                    log(${sourceHtmlLiteral(messages.runtime.event)}, event);
                     events += 1;
                 });`,
     "utxo-context.html",
@@ -983,9 +1130,9 @@ async function prepareVendoredBuildExamples(repositoryRoot: string) {
     utxo,
     /                log\(""\);\n[\s\S]*?\n(?=                let el = document\.createElement\("div"\);)/gu,
     `                log("");
-                log(${sourceLiteral(messages.utxo.noticeManyUtxos, { term: "UTXOs" })});
+                log(${sourceHtmlLiteral(messages.utxo.noticeManyUtxos, { term: "UTXOs" })});
                 log("");
-                log(${sourceLiteral(messages.utxo.noticeManualTesting, {
+                log(${sourceHtmlLiteral(messages.utxo.noticeManualTesting, {
                   api: "UtxoProcessor",
                   term: "UTXOs",
                 })});

@@ -11,6 +11,7 @@ import {
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import test from "node:test";
+import { runInNewContext } from "node:vm";
 
 import { createBuildExampleArtifactWorkflow } from "../../scripts/i18n/build-example-artifacts.mts";
 import { resolveBuildExampleReturnPath } from "../../scripts/i18n/build-example-return-path.mjs";
@@ -56,6 +57,62 @@ async function createWorkflowFixture(): Promise<string> {
     ),
   ]);
   return root;
+}
+
+async function restoreUpstreamVendorInputs(root: string): Promise<void> {
+  const directory = join(root, examplesRelativeDirectory);
+  await Promise.all(
+    exampleNames.map(async (name) => {
+      const path = join(directory, `${name}.html`);
+      const source = await readFile(path, "utf8");
+      assert.match(source, /<html lang="en" dir="ltr">/u);
+      await writeFile(
+        path,
+        source.replace('<html lang="en" dir="ltr">', "<html>"),
+        "utf8",
+      );
+    }),
+  );
+
+  const utxoPath = join(directory, "utxo-context.html");
+  let utxo = await readFile(utxoPath, "utf8");
+  const preparedEvents =
+    /                let events = 0;\n                const eventPluralRules[\s\S]*?\n                \}\);/u;
+  assert.match(utxo, preparedEvents);
+  utxo = utxo.replace(
+    preparedEvents,
+    `                let events = 0;
+                monitor.processor.addEventListener((event) => {
+                    document.getElementById("actions").innerHTML = \`| Received \${events} event(s)\`;
+                    log("event:", event);
+                    events += 1;
+                });`,
+  );
+  await writeFile(utxoPath, utxo, "utf8");
+
+  const utilsPath = join(directory, "resources/utils.js");
+  let utils = await readFile(utilsPath, "utf8");
+  const preparedImport =
+    "import { resolveBuildExampleReturnPath } from './return-path.mjs';\n\n";
+  const preparedHeader =
+    '<a id="back-link" href="/build#try-live"><- Back</a> | Network: <span id="menu"></span><span id="actions"></span><br>';
+  const upstreamHeader =
+    '<a href="index.html"><- Back</a> | Network: <span id="menu"></span><span id="actions"></span><br>&nbsp;<br>';
+  assert.equal(utils.split(preparedImport).length - 1, 1);
+  assert.equal(utils.split(preparedHeader).length - 1, 1);
+  utils = utils
+    .replace(preparedImport, "")
+    .replace(preparedHeader, upstreamHeader);
+  const preparedSetup =
+    /function setupBackLink\(\) \{[\s\S]*?document\.addEventListener\('DOMContentLoaded', \(\) => \{\n    setupBackLink\(\);\n    createMenu\(\);\n\}\);/u;
+  assert.match(utils, preparedSetup);
+  utils = utils.replace(
+    preparedSetup,
+    `document.addEventListener('DOMContentLoaded', () => {
+    createMenu();
+});`,
+  );
+  await writeFile(utilsPath, utils, "utf8");
 }
 
 test("artifact manifest follows the central Build-example contract", () => {
@@ -263,6 +320,199 @@ test("Spanish Build artifacts are deterministic, complete, and catalog-backed", 
   assert.match(controls, /mainnet/u);
   assert.match(controls, /testnet-10/u);
   assert.match(controls, /testnet-11/u);
+});
+
+test("catalog interpolation text cannot execute in generated JavaScript", async (t) => {
+  const root = await createWorkflowFixture();
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const catalogPath = join(root, "messages/es/build.json");
+  const catalog = JSON.parse(await readFile(catalogPath, "utf8")) as {
+    artifacts: { runtime: { selectedNetwork: string } };
+  };
+  catalog.artifacts.runtime.selectedNetwork =
+    "Red ${globalThis.catalogTextExecuted = true}: {network}";
+  await writeFile(catalogPath, `${JSON.stringify(catalog, null, 2)}\n`, "utf8");
+
+  const generated =
+    await createBuildExampleArtifactWorkflow(root).compile("production");
+  const line = generated["get-server-info.es.html"]
+    .split("\n")
+    .find((candidate) => candidate.includes("catalogTextExecuted"));
+  assert.ok(line);
+  const call = line.trim();
+  assert.match(call, /^log\([\s\S]*\);$/u);
+  const context: Record<string, unknown> = { networkId: "mainnet" };
+  const result = runInNewContext(call.slice(4, -2), context) as string;
+
+  assert.equal(context.catalogTextExecuted, undefined);
+  assert.equal(result, "Red ${globalThis.catalogTextExecuted = true}: mainnet");
+});
+
+test("catalog backticks remain text in generated JavaScript", async (t) => {
+  const root = await createWorkflowFixture();
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const catalogPath = join(root, "messages/es/build.json");
+  const catalog = JSON.parse(await readFile(catalogPath, "utf8")) as {
+    artifacts: { runtime: { selectedNetwork: string } };
+  };
+  catalog.artifacts.runtime.selectedNetwork = "Red `principal`: {network}";
+  await writeFile(catalogPath, `${JSON.stringify(catalog, null, 2)}\n`, "utf8");
+
+  const generated =
+    await createBuildExampleArtifactWorkflow(root).compile("production");
+  const line = generated["get-server-info.es.html"]
+    .split("\n")
+    .find((candidate) => candidate.includes("principal"));
+  assert.ok(line);
+  const call = line.trim();
+  assert.match(call, /^log\([\s\S]*\);$/u);
+
+  assert.equal(
+    runInNewContext(call.slice(4, -2), { networkId: "mainnet" }),
+    "Red `principal`: mainnet",
+  );
+});
+
+test("catalog quotes and tags cannot inject generated HTML", async (t) => {
+  const root = await createWorkflowFixture();
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const catalogPath = join(root, "messages/es/build.json");
+  const catalog = JSON.parse(await readFile(catalogPath, "utf8")) as {
+    artifacts: {
+      controls: { back: string };
+      utxo: { addressPlaceholder: string; monitorAddress: string };
+    };
+  };
+  catalog.artifacts.utxo.addressPlaceholder =
+    'Dirección {network}" autofocus onfocus="catalogAttributeExecuted()"><img src=x onerror="catalogElementExecuted()">';
+  catalog.artifacts.utxo.monitorAddress =
+    'Vigilar</div><img src=x onerror="catalogElementExecuted()"><div>';
+  catalog.artifacts.controls.back =
+    'Volver</a><img src=x onerror="catalogElementExecuted()"><a>';
+  await writeFile(catalogPath, `${JSON.stringify(catalog, null, 2)}\n`, "utf8");
+
+  const generated =
+    await createBuildExampleArtifactWorkflow(root).compile("production");
+  const html = generated["utxo-context.es.html"];
+  assert.match(
+    html,
+    /placeholder="Dirección \$\{network\}&quot; autofocus onfocus=&quot;catalogAttributeExecuted\(\)&quot;&gt;&lt;img src=x onerror=&quot;catalogElementExecuted\(\)&quot;&gt;"/u,
+  );
+  assert.match(
+    html,
+    />Vigilar&lt;\/div&gt;&lt;img src=x onerror=&quot;catalogElementExecuted\(\)&quot;&gt;&lt;div&gt;</u,
+  );
+  assert.doesNotMatch(html, /<img src=x/u);
+
+  const controls = generated["resources/utils.es.js"];
+  assert.match(
+    controls,
+    /Volver&lt;\/a&gt;&lt;img src=x onerror=&quot;catalogElementExecuted\(\)&quot;&gt;&lt;a&gt;<\/a>/u,
+  );
+  assert.doesNotMatch(controls, /<img src=x/u);
+});
+
+test("catalog text stays inert when generated JavaScript writes innerHTML", async (t) => {
+  const root = await createWorkflowFixture();
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const catalogPath = join(root, "messages/es/build.json");
+  const catalog = JSON.parse(await readFile(catalogPath, "utf8")) as {
+    artifacts: {
+      runtime: { connectingKaspaNetwork: string };
+      utxo: { receivedEvents: string };
+    };
+  };
+  catalog.artifacts.runtime.connectingKaspaNetwork =
+    "'<img src=x onerror=globalThis.catalogLogExecuted=true>'";
+  catalog.artifacts.utxo.receivedEvents =
+    "| {count, plural, one {'<img src=x onerror=globalThis.catalogPluralExecuted=true>' # evento} other {'<img src=x onerror=globalThis.catalogPluralExecuted=true>' # eventos}}";
+  await writeFile(catalogPath, `${JSON.stringify(catalog, null, 2)}\n`, "utf8");
+
+  const generated =
+    await createBuildExampleArtifactWorkflow(root).compile("production");
+  const html = generated["utxo-context.es.html"];
+  const logCall = html
+    .split("\n")
+    .find((candidate) => candidate.includes("catalogLogExecuted"));
+  const pluralAssignment = html
+    .split("\n")
+    .find((candidate) => candidate.includes("catalogPluralExecuted"));
+  assert.ok(logCall);
+  assert.ok(pluralAssignment);
+
+  const logOutput = { innerHTML: "" };
+  runInNewContext(logCall.trim(), {
+    log: (...args: unknown[]) => {
+      logOutput.innerHTML = `${args.join(" ")}<br>`;
+    },
+  });
+  assert.doesNotMatch(logOutput.innerHTML, /<img/u);
+  assert.match(logOutput.innerHTML, /&lt;img/u);
+
+  const actions = { innerHTML: "" };
+  runInNewContext(pluralAssignment.trim(), {
+    document: { getElementById: () => actions },
+    eventNumberFormat: { format: (value: number) => String(value) },
+    eventPluralRules: { select: () => "other" },
+    events: 2,
+  });
+  assert.doesNotMatch(actions.innerHTML, /<img/u);
+  assert.match(actions.innerHTML, /&lt;img/u);
+});
+
+test("English catalog text stays inert when preparing vendored innerHTML", async (t) => {
+  const root = await createWorkflowFixture();
+  t.after(() => rm(root, { recursive: true, force: true }));
+  await restoreUpstreamVendorInputs(root);
+  const catalogPath = join(root, "messages/en/build.json");
+  const catalog = JSON.parse(await readFile(catalogPath, "utf8")) as {
+    artifacts: {
+      runtime: { event: string };
+      utxo: { receivedEvents: string };
+    };
+  };
+  catalog.artifacts.runtime.event =
+    "'<img src=x onerror=globalThis.catalogEnglishLogExecuted=true>'";
+  catalog.artifacts.utxo.receivedEvents =
+    "| {count, plural, one {'<img src=x onerror=globalThis.catalogEnglishPluralExecuted=true>' # event} other {'<img src=x onerror=globalThis.catalogEnglishPluralExecuted=true>' # events}}";
+  await writeFile(catalogPath, `${JSON.stringify(catalog, null, 2)}\n`, "utf8");
+
+  await assert.rejects(
+    createBuildExampleArtifactWorkflow(root).prepareVendor("production"),
+    /utxo-context\.html changed; review its human-readable string inventory/u,
+  );
+  const html = await readFile(
+    join(root, examplesRelativeDirectory, "utxo-context.html"),
+    "utf8",
+  );
+  const logCall = html
+    .split("\n")
+    .find((candidate) => candidate.includes("catalogEnglishLogExecuted"));
+  const pluralAssignment = html
+    .split("\n")
+    .find((candidate) => candidate.includes("catalogEnglishPluralExecuted"));
+  assert.ok(logCall);
+  assert.ok(pluralAssignment);
+
+  const logOutput = { innerHTML: "" };
+  runInNewContext(logCall.trim(), {
+    event: {},
+    log: (...args: unknown[]) => {
+      logOutput.innerHTML = `${args.join(" ")}<br>`;
+    },
+  });
+  assert.doesNotMatch(logOutput.innerHTML, /<img/u);
+  assert.match(logOutput.innerHTML, /&lt;img/u);
+
+  const actions = { innerHTML: "" };
+  runInNewContext(pluralAssignment.trim(), {
+    document: { getElementById: () => actions },
+    eventNumberFormat: { format: (value: number) => String(value) },
+    eventPluralRules: { select: () => "other" },
+    events: 2,
+  });
+  assert.doesNotMatch(actions.innerHTML, /<img/u);
+  assert.match(actions.innerHTML, /&lt;img/u);
 });
 
 test("workflow check rejects artifacts generated from a stale Spanish catalog", async (t) => {

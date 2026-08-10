@@ -4,6 +4,7 @@ import { createServer } from "node:net";
 
 const START_TIMEOUT_MS = 30_000;
 const STOP_TIMEOUT_MS = 5_000;
+const LOOPBACK_HOSTNAME = "127.0.0.1";
 const require = createRequire(import.meta.url);
 const nextCliPath = require.resolve("next/dist/bin/next");
 
@@ -30,7 +31,7 @@ async function reservePort(): Promise<number> {
   const server = createServer();
   await new Promise<void>((resolve, reject) => {
     server.once("error", reject);
-    server.listen(0, "localhost", resolve);
+    server.listen(0, LOOPBACK_HOSTNAME, resolve);
   });
 
   const address = server.address();
@@ -127,7 +128,14 @@ export async function startProductionServer(
   const port = await reservePort();
   const child = spawn(
     process.execPath,
-    [nextCliPath, "start", "--hostname", "localhost", "--port", String(port)],
+    [
+      nextCliPath,
+      "start",
+      "--hostname",
+      LOOPBACK_HOSTNAME,
+      "--port",
+      String(port),
+    ],
     {
       cwd,
       detached: process.platform !== "win32",
@@ -165,7 +173,7 @@ export async function startProductionServer(
 
   let stopPromise: Promise<void> | null = null;
   return {
-    baseUrl: `http://localhost:${port}`,
+    baseUrl: `http://${LOOPBACK_HOSTNAME}:${port}`,
     readLogs,
     stop() {
       stopPromise ??= stopServer(child, childExited);

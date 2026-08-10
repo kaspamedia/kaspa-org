@@ -19,6 +19,7 @@ async function main() {
   const server = await startProductionServer(process.cwd());
 
   try {
+    assert.equal(new URL(server.baseUrl).hostname, "127.0.0.1");
     let routeCount = 0;
     const request = async (
       pathname: string,
