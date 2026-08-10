@@ -62,12 +62,12 @@ export function assertPreviewLocaleComplete(locale: Locale): void {
       );
     }
     if (isRouteDiscoverable(routeId, locale)) {
-      throw new Error(`${routeId}:${locale} must remain private`);
+      throw new Error(`${routeId}:${locale} must remain non-public`);
     }
     assertRouteContentComplete(routeId, locale);
     if (getAiLocaleDecision(routeId, locale) !== false) {
       throw new Error(
-        `${routeId}:${locale} must explicitly disable AI while it is private`,
+        `${routeId}:${locale} must explicitly disable AI while it is non-public`,
       );
     }
   }

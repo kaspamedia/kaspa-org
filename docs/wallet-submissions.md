@@ -14,7 +14,7 @@ add or update exactly one complete English wallet record in
 4. Run `npm ci` if dependencies are not installed, then run
    `npm run wallets:check`.
 5. Open a pull request using the
-   [wallet submission template](https://github.com/kaspamedia/kaspa-org/compare/main...?quick_pull=1&template=wallet-submission.md).
+   [wallet submission template](https://github.com/kaspanet/kaspa-org/compare/main...?quick_pull=1&template=wallet-submission.md).
 
 ## Acceptance Criteria
 
@@ -72,7 +72,8 @@ If a submitter is fluent in a language currently published on the site, they
 may optionally provide a translation in the pull request for review. Optional
 translations are reviewed before publication. Translations for languages not
 currently supported cannot be added through a wallet submission; adding a new
-language requires a separate, site-wide localization process.
+language starts with the
+[site-wide language request process](translations.md).
 
 A new wallet pull request may initially report a missing translation through
 the localization checks. This is a maintainer publication step and does not

@@ -63,7 +63,7 @@ test("wallet finder links to the wallet submission guide", async ({ page }) => {
   await expect(submissionLink).toBeVisible();
   await expect(submissionLink).toHaveAttribute(
     "href",
-    "https://github.com/kaspamedia/kaspa-org/blob/main/docs/wallet-submissions.md",
+    "https://github.com/kaspanet/kaspa-org/blob/main/docs/wallet-submissions.md",
   );
   await expect(submissionLink).toHaveAttribute("target", "_blank");
   await expect(submissionLink).toHaveAttribute("rel", /noopener/);

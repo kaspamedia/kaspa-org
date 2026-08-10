@@ -294,7 +294,7 @@ test("route resolution accepts only enabled locale prefixes and fixed English sl
 });
 
 test(
-  "non-production builds add a private pseudo locale beside public Spanish",
+  "non-production builds add a test-only pseudo locale beside public Spanish",
   { skip: i18nBuildTarget === "production" },
   () => {
     assert.doesNotThrow(() => assertPreviewLocaleComplete(pseudoLocale));

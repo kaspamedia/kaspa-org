@@ -3,7 +3,8 @@ import { defineConfig, devices } from "@playwright/test";
 const isCI = !!process.env.CI;
 const useDevServer = process.env.PLAYWRIGHT_E2E_MODE === "dev";
 const pseudoOnly = process.env.PLAYWRIGHT_E2E_PSEUDO_ONLY === "1";
-const spanishOnly = process.env.PLAYWRIGHT_E2E_SPANISH_ONLY === "1";
+const productionLocalesOnly =
+  process.env.PLAYWRIGHT_E2E_PRODUCTION_LOCALES_ONLY === "1";
 const port = useDevServer ? 3000 : 3100;
 const baseURL = process.env.PLAYWRIGHT_BASE_URL ?? `http://127.0.0.1:${port}`;
 
@@ -40,7 +41,7 @@ export default defineConfig({
     },
   ],
   webServer:
-    process.env.PLAYWRIGHT_BASE_URL || pseudoOnly || spanishOnly
+    process.env.PLAYWRIGHT_BASE_URL || pseudoOnly || productionLocalesOnly
       ? undefined
       : {
           command: `npm run ${useDevServer ? "dev" : "start"} -- --hostname 127.0.0.1 --port ${port}`,

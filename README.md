@@ -112,13 +112,13 @@ npm run test:e2e:headed
 npm run test:e2e:ui
 ```
 
-Production publishes the complete Spanish site atomically while keeping the
-`en-XA` pseudo-site private. Run both full browser gates with:
+Production publishes the complete Spanish site atomically. The `en-XA`
+pseudo-locale is test-only and no-index. Run both full browser gates with:
 
 ```bash
 npm run i18n:pseudo:generate
 npm run test:e2e:i18n:pseudo
-npm run test:e2e:i18n:spanish
+npm run test:e2e:i18n:production-locales
 ```
 
 For a manual test build, use the preview target to include `en-XA`, then inspect
@@ -141,11 +141,21 @@ npm run -s i18n:artifacts -- --clean
 Browser-test fixtures generate the same files only inside their isolated
 disposable copies.
 
-Set `NEXT_PUBLIC_KASPA_I18N_BUILD_TARGET=preview` only in Vercel Preview. Leave
-it unset or set it to `production` in Vercel Production; the production build
-fails closed if the private pseudo-locale is enabled there. Locale launch state
-lives in `src/i18n/locale-registry.ts`: a real locale becomes public across
-every route only when its lifecycle changes to `production`.
+`NEXT_PUBLIC_KASPA_I18N_BUILD_TARGET` selects which locales exist in a build; it
+cannot change an already-built site. Set it to `preview` only in Vercel Preview.
+Leave it unset or set it to `production` in Vercel Production; the production
+build fails closed if the test-only pseudo-locale is enabled there. Locale
+launch state lives in `src/i18n/locale-registry.ts`: a real locale becomes
+public across every route only when its lifecycle changes to `production`.
+
+## Language Contributions
+
+To suggest a translation correction, volunteer as a translator or reviewer, or
+request a new site language, follow the
+[translation contribution process](docs/translations.md). Requesters provide
+plain-language information, the locale and language endonym when known, and
+their fluency or reviewer availability. Maintainers own repository placement
+and publish each approved locale atomically across the complete site.
 
 ## CI
 
@@ -159,10 +169,11 @@ GitHub Actions lives at `.github/workflows/ci.yml` and runs:
 - `npm run build`
 - `npm run test:e2e`
 - `npm run test:e2e:i18n:pseudo`
-- `npm run test:e2e:i18n:spanish`
+- `npm run test:e2e:i18n:production-locales`
+- `npm run test:e2e:ai`
 
-The Playwright job uploads `playwright-report/` and `test-results/` as artifacts
-when either browser suite fails.
+The Playwright jobs upload `playwright-report/` and `test-results/` as artifacts
+when a browser suite fails.
 
 ## Project Notes
 

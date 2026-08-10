@@ -189,7 +189,7 @@ test("artifact manifest is deeply immutable and cannot change cleanup policy", (
   assert.deepEqual(manifest.pathsByLocale.es, expectedSpanishPaths);
 });
 
-test("Build pseudo artifacts are deterministic, complete, and private", async () => {
+test("Build pseudo artifacts are deterministic, complete, and test-only", async () => {
   const first = await artifacts.compile("test");
   const second = await artifacts.compile("test");
 
@@ -580,10 +580,10 @@ test("workflow sync and check enforce each target artifact set", async (t) => {
 test("cleanup removes only the exact generated localized artifacts", async (t) => {
   const { root, directory } = await createArtifactFixture({
     "get-server-info.html": "English source",
-    "get-server-info.en-XA.html": "Private pseudo locale",
+    "get-server-info.en-XA.html": "Test-only pseudo locale",
     "get-server-info.es.html": "Spanish locale",
     "resources/utils.js": "English controls",
-    "resources/utils.en-XA.js": "Private localized controls",
+    "resources/utils.en-XA.js": "Test-only localized controls",
     "resources/utils.es.js": "Spanish localized controls",
   });
   t.after(() => rm(root, { recursive: true, force: true }));
@@ -599,11 +599,11 @@ test("cleanup removes only the exact generated localized artifacts", async (t) =
 
 test("cleanup refuses every other locale-suffixed artifact without deleting files", async (t) => {
   const { root, directory } = await createArtifactFixture({
-    "get-server-info.en-XA.html": "Private pseudo locale",
+    "get-server-info.en-XA.html": "Test-only pseudo locale",
     "get-server-info.en.html": "Duplicate source locale",
     "get-server-info.es.html": "Known localized sibling",
     "subscribe-block-added.pt-BR.html": "Regional localized sibling",
-    "resources/utils.en-XA.js": "Private localized controls",
+    "resources/utils.en-XA.js": "Test-only localized controls",
     "resources/utils.es.js": "Localized controls",
     "resources/utils.min.js": "Plausible minified vendor asset",
     "unexpected.es.html": "Unknown localized artifact",

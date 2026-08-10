@@ -49,7 +49,7 @@ function assertPrivatePseudoHtml(html: string, pathname: string) {
   );
 }
 
-test.describe("private full-site pseudo-locale contract", () => {
+test.describe("test-only full-site pseudo-locale contract", () => {
   const scenario = useBuiltLocaleScenario({
     enabled: process.env.PLAYWRIGHT_E2E_PSEUDO_ONLY === "1",
     enabledHint: "run with npm run test:e2e:i18n:pseudo",

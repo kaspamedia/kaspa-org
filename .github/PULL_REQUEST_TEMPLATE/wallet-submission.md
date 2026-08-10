@@ -59,8 +59,8 @@ Summary:
 If you are fluent in a language currently published on the site, you may
 provide a translation for review. This is entirely optional. Translations for
 languages not currently supported cannot be included through a wallet
-submission; adding a new language requires a separate, site-wide localization
-process.
+submission; adding a new language starts with the
+[site-wide language request process](https://github.com/kaspanet/kaspa-org/blob/main/docs/translations.md).
 
 Language:
 
