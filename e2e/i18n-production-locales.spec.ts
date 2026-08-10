@@ -170,6 +170,21 @@ const productionLocaleCases: readonly ProductionLocaleCase[] =
     };
   });
 
+const productionHeroCases = [
+  {
+    locale: defaultLocale,
+    path: "/",
+    preserveWhitespaceDelimitedWords: true,
+  },
+  ...productionLocaleCases.map(
+    ({ locale, homePath: path, preserveWhitespaceDelimitedWords }) => ({
+      locale,
+      path,
+      preserveWhitespaceDelimitedWords,
+    }),
+  ),
+] as const;
+
 function getVisibleLanguageSelector(page: Page) {
   return page.locator("[data-language-selector]:visible");
 }
@@ -429,6 +444,39 @@ test.describe("complete public production locale contract", () => {
       ]),
     );
     expect(sitemapText).not.toContain("hreflang");
+  });
+
+  test("keeps every production-locale hero readable at responsive boundaries", async ({
+    browser,
+  }) => {
+    const { baseUrl } = scenario.require();
+
+    for (const width of [768, 1280, 1440]) {
+      const context = await browser.newContext({
+        baseURL: baseUrl,
+        viewport: { width, height: 900 },
+      });
+      const page = await context.newPage();
+
+      for (const localeCase of productionHeroCases) {
+        await page.goto(localeCase.path, { waitUntil: "domcontentloaded" });
+        await waitForStableLayout(page);
+
+        const heading = page.locator("main h1").first();
+        await assertHeadingUsesResponsiveWrapping(
+          heading,
+          `${width}px ${localeCase.locale} home hero`,
+        );
+        if (localeCase.preserveWhitespaceDelimitedWords) {
+          await assertWordsStayOnSingleLine(
+            heading,
+            `${width}px ${localeCase.locale} home hero`,
+          );
+        }
+      }
+
+      await context.close();
+    }
   });
 
   test("honours route-specific AI availability in the default locale", async ({

@@ -278,7 +278,7 @@ export async function assertHeadingUsesResponsiveWrapping(
   });
 
   expect(wrapping, `${state}; wrapping policy`).toMatchObject({
-    overflowWrap: "anywhere",
+    overflowWrap: "break-word",
     wordBreak: "normal",
   });
   expect(
