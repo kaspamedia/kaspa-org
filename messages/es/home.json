@@ -43,7 +43,7 @@
     },
     "live": {
       "eyebrow": "Histórico · Actual · Continuo",
-      "title": "Suministro en vivo frente al calendario de emisión",
+      "title": "Suministro en tiempo real vs. calendario de emisión",
       "body": "El suministro circulante de Kaspa puede volver a calcularse a partir de principios fundamentales. Un nodo en vivo informa el total actual. El total histórico en el punto de control del 22 de noviembre de 2021 queda vinculado criptográficamente al génesis integrado mediante el compromiso de su conjunto UTXO, y cada moneda emitida después de ese punto de control sigue el calendario de emisión determinista."
     },
     "origin": {
@@ -72,7 +72,7 @@
     "supply": {
       "intro": {
         "eyebrow": "Verificación continua",
-        "title": "Suministro en vivo frente al calendario de emisión",
+        "title": "Suministro en tiempo real vs. calendario de emisión",
         "body": "Compara el suministro circulante de un nodo en vivo con el suministro esperado anclado al punto de control: el total del punto de control del 22 de noviembre de 2021 vinculado criptográficamente al génesis integrado mediante el compromiso de su conjunto UTXO, ampliado mediante el calendario de emisión determinista de Kaspa."
       },
       "emissionHistory": "Historial de emisión",
