@@ -311,6 +311,8 @@ function validateTransparency(
       !allowedTransparencySurfaceKinds.has(kind)
     ) {
       fail(`${surfacePath}.kind`, "must be firmware or application");
+    } else if (kind === "firmware" && !supportedPlatforms.has("hardware")) {
+      fail(`${surfacePath}.kind`, "firmware surfaces require hardware support");
     }
 
     const rating = surfaceRecord.rating;

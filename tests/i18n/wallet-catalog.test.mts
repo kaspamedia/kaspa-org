@@ -199,3 +199,75 @@ test("mixed transparency preserves surfaces and filters conservatively", () => {
     },
   ]);
 });
+
+test("unfiltered transparency includes platform overrides without surfaces", () => {
+  const wallet: KaspaWallet = {
+    id: "override-wallet",
+    title: "Override Wallet",
+    icon: "/hodl/wallets/override-wallet/icon.svg",
+    user: "beginner",
+    summary: "A platform-override wallet fixture.",
+    platforms: ["android", "ios"],
+    features: [],
+    check: {
+      control: "good",
+      validation: "acceptable",
+      transparency: "acceptable",
+      fees: "good",
+    },
+    platformOverrides: {
+      ios: { check: { transparency: "caution" } },
+    },
+    actions: [{ action: "open", link: "https://example.com" }],
+  };
+
+  assert.equal(
+    resolveWalletPresentation(wallet, undefined).ratings.transparency,
+    "mixed",
+  );
+});
+
+test("missing companion transparency falls back beside firmware", () => {
+  const wallet: KaspaWallet = {
+    id: "partial-surface-wallet",
+    title: "Partial Surface Wallet",
+    icon: "/hodl/wallets/partial-surface-wallet/icon.svg",
+    user: "beginner",
+    summary: "A partial-surface wallet fixture.",
+    platforms: ["hardware", "android", "ios"],
+    features: ["hardware_wallet"],
+    check: {
+      control: "good",
+      validation: "caution",
+      transparency: "caution",
+      fees: "good",
+    },
+    platformOverrides: {
+      hardware: { check: { validation: "not_applicable" } },
+    },
+    transparency: {
+      surfaces: [
+        { kind: "firmware", rating: "good" },
+        {
+          kind: "application",
+          rating: "good",
+          platforms: ["android"],
+        },
+      ],
+    },
+    actions: [{ action: "open", link: "https://example.com" }],
+  };
+
+  const iosPresentation = resolveWalletPresentation(wallet, "ios");
+  assert.equal(iosPresentation.ratings.transparency, "mixed");
+  assert.deepEqual(iosPresentation.transparency.surfaces, [
+    { kind: "firmware", rating: "good" },
+    { kind: "application", rating: "caution", platforms: ["ios"] },
+  ]);
+
+  const transparentOnly = createWalletFinderModel([wallet], {
+    important: ["transparency"],
+    features: [],
+  });
+  assert.deepEqual(transparentOnly.matches[0]?.platforms, ["android"]);
+});
