@@ -11,7 +11,14 @@ import {
   WALLET_CHECK_RATINGS,
   WALLET_CRITERIA_IDS,
 } from "../../src/app/hodl/wallet-finder/taxonomy.ts";
-import type { WalletCheckRating } from "../../src/app/hodl/wallet-finder/types.ts";
+import {
+  createWalletFinderModel,
+  resolveWalletPresentation,
+} from "../../src/app/hodl/wallet-finder/filterWallets.ts";
+import type {
+  KaspaWallet,
+  WalletCheckRating,
+} from "../../src/app/hodl/wallet-finder/types.ts";
 import { kaspaWallets } from "../../src/data/wallets.ts";
 import { supportedLocaleCodes } from "../../src/i18n/locale-registry.ts";
 import { englishMessages, spanishMessages } from "../../src/i18n/messages.ts";
@@ -86,4 +93,91 @@ test("every validator-approved rating resolves through the explanation map", () 
       }
     }
   }
+});
+
+test("mixed transparency preserves surfaces and filters conservatively", () => {
+  const wallet: KaspaWallet = {
+    id: "mixed-wallet",
+    title: "Mixed Wallet",
+    icon: "/hodl/wallets/mixed-wallet/icon.svg",
+    user: "beginner",
+    summary: "A mixed-transparency wallet fixture.",
+    platforms: ["hardware", "android", "ios"],
+    features: ["hardware_wallet"],
+    check: {
+      control: "good",
+      validation: "caution",
+      transparency: "acceptable",
+      fees: "good",
+    },
+    transparency: {
+      surfaces: [
+        { kind: "firmware", rating: "caution" },
+        {
+          kind: "application",
+          rating: "acceptable",
+          platforms: ["android"],
+        },
+        {
+          kind: "application",
+          rating: "acceptable",
+          platforms: ["ios"],
+        },
+      ],
+    },
+    actions: [{ action: "open", link: "https://example.com" }],
+  };
+
+  const unfiltered = createWalletFinderModel([wallet], {
+    important: [],
+    features: [],
+  }).matches[0];
+  assert.equal(unfiltered.primary, undefined);
+  assert.equal(
+    resolveWalletPresentation(wallet, unfiltered.primary).ratings.transparency,
+    "mixed",
+  );
+
+  const android = createWalletFinderModel([wallet], {
+    os: "android",
+    important: [],
+    features: [],
+  }).matches[0];
+  const androidPresentation = resolveWalletPresentation(
+    wallet,
+    android.primary,
+  );
+  assert.equal(androidPresentation.ratings.transparency, "mixed");
+  assert.deepEqual(
+    androidPresentation.transparency.surfaces.map((surface) => surface.kind),
+    ["firmware", "application"],
+  );
+
+  const transparentOnly = createWalletFinderModel([wallet], {
+    important: ["transparency"],
+    features: [],
+  });
+  assert.equal(transparentOnly.matches.length, 0);
+
+  const coverageGapWallet: KaspaWallet = {
+    ...wallet,
+    id: "coverage-gap-wallet",
+    platforms: ["android", "windows"],
+    check: { ...wallet.check, transparency: "caution" },
+    transparency: {
+      surfaces: [
+        {
+          kind: "application",
+          rating: "acceptable",
+          platforms: ["android"],
+        },
+      ],
+    },
+  };
+  const windowsTransparent = createWalletFinderModel([coverageGapWallet], {
+    os: "windows",
+    important: ["transparency"],
+    features: [],
+  });
+  assert.equal(windowsTransparent.matches.length, 0);
 });

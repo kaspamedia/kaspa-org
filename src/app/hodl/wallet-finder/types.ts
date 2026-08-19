@@ -1,6 +1,7 @@
 import type {
   WalletCheckRating,
   WalletCriterion,
+  WalletDisplayRating,
   WalletEntryAction,
   WalletFeature,
   WalletOs,
@@ -10,6 +11,7 @@ import type {
 export type {
   WalletCheckRating,
   WalletCriterion,
+  WalletDisplayRating,
   WalletEntryAction,
   WalletFeature,
   WalletOs,
@@ -19,6 +21,16 @@ export type {
 export type NonEmptyArray<T> = [T, ...T[]];
 
 export type WalletCheck = Record<WalletCriterion, WalletCheckRating>;
+
+export type WalletTransparencySurface = {
+  kind: "firmware" | "application";
+  rating: Exclude<WalletCheckRating, "not_applicable">;
+  platforms?: NonEmptyArray<WalletOs>;
+};
+
+export type WalletTransparency = {
+  surfaces: NonEmptyArray<WalletTransparencySurface>;
+};
 
 export type WalletPlatformOverride = {
   features?: WalletFeature[];
@@ -47,6 +59,7 @@ export type KaspaWallet = {
   platforms: NonEmptyArray<WalletOs>;
   features: WalletFeature[];
   check: WalletCheck;
+  transparency?: WalletTransparency;
   platformOverrides?: Partial<Record<WalletOs, WalletPlatformOverride>>;
 
   actions: NonEmptyArray<WalletAction>;

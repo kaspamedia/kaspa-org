@@ -11,15 +11,15 @@ import InfoTooltip from "./InfoTooltip";
 import { RatingLegend, RatingSymbol, RatingTooltip } from "./Rating";
 import {
   actionsForPlatform,
-  effectiveCheck,
   effectiveFeatures,
+  resolveWalletPresentation,
   type WalletMatch,
 } from "./filterWallets";
-import { WALLET_CHECK_RATINGS } from "./taxonomy";
+import { WALLET_DISPLAY_RATINGS } from "./taxonomy";
 import type { WalletEntryAction, WalletOs } from "./types";
 import { walletCriteria } from "./walletMetadata";
 
-const RATING_ORDER = WALLET_CHECK_RATINGS;
+const RATING_ORDER = WALLET_DISPLAY_RATINGS;
 
 function getActionStoreIconOs(action: WalletEntryAction): WalletOs | null {
   if (action === "app_store") return "ios";
@@ -40,7 +40,7 @@ function WalletRow({
 }) {
   const t = useTranslations("hodl");
   const { wallet, primary } = match;
-  const check = effectiveCheck(wallet, primary);
+  const presentation = resolveWalletPresentation(wallet, primary);
   const visibleActions = actionsForPlatform(wallet, filterOs);
   const totalColumns = walletCriteria.length + 1;
 
@@ -78,8 +78,13 @@ function WalletRow({
           <td key={criterion.id} className="min-w-[64px] px-2 py-4 text-center">
             <div className="flex justify-center">
               <RatingTooltip
-                rating={check[criterion.id]}
+                rating={presentation.ratings[criterion.id]}
                 criterion={criterion.id}
+                transparencySurfaces={
+                  criterion.id === "transparency"
+                    ? presentation.transparency.surfaces
+                    : undefined
+                }
               />
             </div>
           </td>
@@ -139,7 +144,7 @@ function WalletCard({
 }) {
   const t = useTranslations("hodl");
   const { wallet, platforms, primary } = match;
-  const check = effectiveCheck(wallet, primary);
+  const presentation = resolveWalletPresentation(wallet, primary);
   const uniqueFeatures = Array.from(
     new Set(platforms.flatMap((os) => effectiveFeatures(wallet, os))),
   ).slice(0, 4);
@@ -192,11 +197,16 @@ function WalletCard({
             className="flex items-center justify-between gap-3"
           >
             <RatingTooltip
-              rating={check[criterion.id]}
+              rating={presentation.ratings[criterion.id]}
               criterion={criterion.id}
+              transparencySurfaces={
+                criterion.id === "transparency"
+                  ? presentation.transparency.surfaces
+                  : undefined
+              }
               className="-mx-1.5 flex flex-1 items-center gap-2.5 rounded-[8px] px-1.5 py-1.5 transition-colors hover:bg-black/[0.03] dark:hover:bg-white/[0.04]"
             >
-              <RatingSymbol rating={check[criterion.id]} />
+              <RatingSymbol rating={presentation.ratings[criterion.id]} />
               <span className="text-secondary text-[13px] font-medium">
                 {t(`walletFinder.criteria.${criterion.id}.label`)}
               </span>
@@ -241,7 +251,7 @@ function MobileLegendBanner() {
   const t = useTranslations("hodl");
 
   return (
-    <div className="border-subtle mb-3 flex flex-nowrap items-center justify-between gap-x-2 rounded-[10px] border bg-black/[0.015] px-3 py-1.5 dark:bg-white/[0.02]">
+    <div className="border-subtle mb-3 flex flex-wrap items-center justify-between gap-2 rounded-[10px] border bg-black/[0.015] px-3 py-1.5 dark:bg-white/[0.02]">
       {RATING_ORDER.map((rating) => (
         <div key={rating} className="flex shrink-0 items-center gap-1.5">
           <RatingSymbol rating={rating} />

@@ -241,9 +241,12 @@
     "ratings": {
       "good": "Bien",
       "acceptable": "Aceptable",
+      "mixed": "Mixta",
       "caution": "Precaución",
       "not_applicable": "No aplicable",
       "notApplicableCompact": "N/A",
+      "transparencyBreakdown": "Partes necesarias",
+      "transparencyWhy": "¿Por qué?",
       "aria": "{criterion}: {rating}",
       "tooltipHeading": "{criterion}: {rating}",
       "explanations": {
@@ -258,8 +261,9 @@
           "not_applicable": "Es solo un dispositivo de hardware y no gestiona las transacciones por sí mismo."
         },
         "transparency": {
-          "good": "Es de código abierto y ofrece compilaciones reproducibles, por lo que el binario publicado se puede verificar comparándolo con el código fuente.",
-          "acceptable": "Es de código abierto, pero las compilaciones no son reproducibles, por lo que debes confiar en que el binario publicado coincida con el código fuente.",
+          "good": "El código es público y las verificaciones independientes permiten confirmar que el software publicado se creó a partir de él.",
+          "acceptable": "El código es público, pero no existe una forma fiable de verificar que el software publicado se creó a partir de él.",
+          "mixed": "Las partes necesarias de esta billetera tienen distintos niveles de transparencia.",
           "caution": "Es de código cerrado. El código no se puede auditar de forma independiente."
         },
         "fees": {
@@ -268,6 +272,10 @@
           "caution": "Las comisiones son obligatorias u ocultas y el usuario no puede controlarlas."
         }
       }
+    },
+    "transparencySurfaces": {
+      "firmware": "Firmware del dispositivo",
+      "application": "Aplicación para {platform}"
     },
     "results": {
       "summary": "<strong>{matches, number}</strong> de {total, plural, one {# billetera} other {# billeteras}}",
