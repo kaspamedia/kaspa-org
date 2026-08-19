@@ -180,4 +180,22 @@ test("mixed transparency preserves surfaces and filters conservatively", () => {
     features: [],
   });
   assert.equal(windowsTransparent.matches.length, 0);
+
+  const coverageGapPresentation = resolveWalletPresentation(
+    coverageGapWallet,
+    undefined,
+  );
+  assert.equal(coverageGapPresentation.ratings.transparency, "mixed");
+  assert.deepEqual(coverageGapPresentation.transparency.surfaces, [
+    {
+      kind: "application",
+      rating: "acceptable",
+      platforms: ["android"],
+    },
+    {
+      kind: "application",
+      rating: "caution",
+      platforms: ["windows"],
+    },
+  ]);
 });

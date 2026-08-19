@@ -323,6 +323,12 @@ function validateTransparency(
 
     let scope = "all";
     if (surfaceRecord.platforms !== undefined) {
+      if (kind === "firmware") {
+        fail(
+          `${surfacePath}.platforms`,
+          "must not be set for firmware surfaces",
+        );
+      }
       if (
         !Array.isArray(surfaceRecord.platforms) ||
         surfaceRecord.platforms.length === 0
@@ -337,6 +343,11 @@ function validateTransparency(
           const platformPath = `${surfacePath}.platforms[${platformIndex}]`;
           if (typeof platform !== "string" || !allowedOs.has(platform)) {
             fail(platformPath, `invalid OS "${platform}"`);
+          } else if (kind === "application" && platform === "hardware") {
+            fail(
+              platformPath,
+              "application surfaces must use a companion app OS",
+            );
           } else if (platformSeen.has(platform)) {
             fail(platformPath, `duplicate platform "${platform}"`);
           } else if (!supportedPlatforms.has(platform)) {

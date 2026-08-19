@@ -10,6 +10,8 @@ Required:
 - choose user as "beginner" or "experienced"
 - set wallet-level `features` and `check` to the values that apply to every
   platform; use `platformOverrides` only when one platform genuinely differs
+- use `transparency.surfaces` when required firmware and companion applications
+  have different transparency ratings; see docs/wallet-submissions.md
 - list every acquisition path in `actions`. An action without a `platforms`
   field applies to every platform the wallet supports; use the field to scope
   store listings (App Store, Google Play) or per-OS downloads.

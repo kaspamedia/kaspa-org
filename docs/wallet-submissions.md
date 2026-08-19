@@ -52,6 +52,8 @@ must use `transparency: "caution"`.
 - For hardware wallets that require companion apps, list both `hardware` and
   the supported companion app OSs. Use wallet-level ratings for the app-platform
   defaults, then add hardware-specific overrides where needed.
+- When required firmware and companion applications have different transparency
+  ratings, describe those parts with `transparency.surfaces` as documented below.
 - List every acquisition path in `actions`. Use `platforms` on an action only
   when the link is OS-specific (App Store, Google Play, OS-specific downloads).
 - Use official wallet links.
@@ -114,6 +116,7 @@ mean the submitter is expected to provide translations.
 | `platforms`         | yes      | Non-empty list of supported OSs from `windows`, `mac`, `linux`, `ios`, `android`, `hardware`.                    |
 | `features`          | yes      | Default features that apply to every platform. Use `[]` if none.                                                 |
 | `check`             | yes      | Default rating per criterion (`control`, `validation`, `transparency`, `fees`). Applies to every platform.       |
+| `transparency`      | no       | Required firmware and companion-application transparency ratings when those parts differ.                        |
 | `platformOverrides` | no       | Per-OS overrides for `features` and/or specific criteria in `check`. Use only when a platform genuinely differs. |
 | `actions`           | yes      | Non-empty list of acquisition paths. Each has `action`, `link`, optional `platforms` to scope to specific OSs.   |
 
@@ -131,6 +134,40 @@ screenshots.
 | `fees`         | User can set a custom transaction fee. | User can choose from preset fees.  | Fees are hidden or forced.             | Do not use.           |
 
 If you are unsure, choose the cautious rating and explain why.
+
+### Mixed transparency
+
+Use `transparency.surfaces` only when a wallet requires parts with different
+transparency ratings, such as closed-source device firmware and open-source
+companion applications:
+
+```ts
+check: {
+  control: "good",
+  validation: "caution",
+  transparency: "acceptable",
+  fees: "acceptable",
+},
+transparency: {
+  surfaces: [
+    { kind: "firmware", rating: "caution" },
+    {
+      kind: "application",
+      rating: "acceptable",
+      platforms: ["android", "ios"],
+    },
+  ],
+},
+```
+
+Firmware surfaces are unscoped. Application surfaces require one or more
+supported companion OSs and cannot use `hardware`. Each surface uses the
+transparency rubric above; `mixed` is presentation-only and cannot be stored.
+
+`check.transparency`, including any platform override, remains the fallback for
+a supported platform with no matching surface. Unfiltered results combine every
+supported platform's declared or fallback rating and display `mixed` whenever
+those effective ratings differ.
 
 ### Action types
 

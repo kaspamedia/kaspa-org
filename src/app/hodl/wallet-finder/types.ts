@@ -22,11 +22,23 @@ export type NonEmptyArray<T> = [T, ...T[]];
 
 export type WalletCheck = Record<WalletCriterion, WalletCheckRating>;
 
-export type WalletTransparencySurface = {
-  kind: "firmware" | "application";
-  rating: Exclude<WalletCheckRating, "not_applicable">;
-  platforms?: NonEmptyArray<WalletOs>;
-};
+export type WalletTransparencyRating = Exclude<
+  WalletCheckRating,
+  "not_applicable"
+>;
+export type WalletCompanionOs = Exclude<WalletOs, "hardware">;
+
+export type WalletTransparencySurface =
+  | {
+      kind: "firmware";
+      rating: WalletTransparencyRating;
+      platforms?: never;
+    }
+  | {
+      kind: "application";
+      rating: WalletTransparencyRating;
+      platforms: NonEmptyArray<WalletCompanionOs>;
+    };
 
 export type WalletTransparency = {
   surfaces: NonEmptyArray<WalletTransparencySurface>;

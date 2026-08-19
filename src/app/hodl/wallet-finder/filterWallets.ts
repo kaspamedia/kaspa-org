@@ -3,11 +3,13 @@ import type {
   WalletAction,
   WalletCheck,
   WalletCheckRating,
+  WalletCompanionOs,
   WalletCriterion,
   WalletDisplayRating,
   WalletFeature,
   WalletFilters,
   WalletOs,
+  WalletTransparencyRating,
   WalletTransparencySurface,
 } from "./types";
 
@@ -56,17 +58,68 @@ function transparencySurfacesForPlatform(
   );
 }
 
+function transparencyRatingsForPlatform(
+  wallet: KaspaWallet,
+  os: WalletOs,
+): WalletCheckRating[] {
+  const surfaces = transparencySurfacesForPlatform(wallet, os);
+  return surfaces.length > 0
+    ? surfaces.map((surface) => surface.rating)
+    : [effectiveCheck(wallet, os).transparency];
+}
+
+function fallbackTransparencySurfaces(
+  wallet: KaspaWallet,
+): WalletTransparencySurface[] {
+  const platformsByRating = new Map<
+    WalletTransparencyRating,
+    [WalletCompanionOs, ...WalletCompanionOs[]]
+  >();
+
+  for (const platform of wallet.platforms) {
+    if (
+      platform === "hardware" ||
+      transparencySurfacesForPlatform(wallet, platform).length > 0
+    ) {
+      continue;
+    }
+
+    const rating = effectiveCheck(wallet, platform).transparency;
+    if (rating === "not_applicable") continue;
+    const platforms = platformsByRating.get(rating);
+    if (platforms) platforms.push(platform);
+    else platformsByRating.set(rating, [platform]);
+  }
+
+  return Array.from(platformsByRating, ([rating, platforms]) => ({
+    kind: "application" as const,
+    rating,
+    platforms,
+  }));
+}
+
 export function resolveWalletPresentation(
   wallet: KaspaWallet,
   os: WalletOs | undefined,
 ): WalletPresentation {
   const check = effectiveCheck(wallet, os);
-  const surfaces = transparencySurfacesForPlatform(wallet, os);
-  const surfaceRatings = new Set(surfaces.map((surface) => surface.rating));
+  const declaredSurfaces = transparencySurfacesForPlatform(wallet, os);
+  const surfaces =
+    !os && wallet.transparency
+      ? [...declaredSurfaces, ...fallbackTransparencySurfaces(wallet)]
+      : declaredSurfaces;
+  const effectiveTransparencyRatings = wallet.transparency
+    ? os
+      ? transparencyRatingsForPlatform(wallet, os)
+      : wallet.platforms.flatMap((platform) =>
+          transparencyRatingsForPlatform(wallet, platform),
+        )
+    : [check.transparency];
+  const transparencyRatings = new Set(effectiveTransparencyRatings);
   const transparency =
-    surfaceRatings.size > 1
+    transparencyRatings.size > 1
       ? "mixed"
-      : (surfaces[0]?.rating ?? check.transparency);
+      : (effectiveTransparencyRatings[0] ?? check.transparency);
 
   return {
     ratings: { ...check, transparency },
