@@ -16,17 +16,12 @@ import {
 } from "../src/app/hodl/wallet-finder/taxonomy.ts";
 import { supportedLocaleCodes } from "../src/i18n/locale-registry.ts";
 import { getLocalizedWallets } from "../src/i18n/wallets.ts";
+import { validateTransparency } from "./wallet-transparency-validation.mts";
 
 const allowedOs = new Set<string>(WALLET_OS_IDS);
 const allowedUsers = new Set<string>(WALLET_USER_TYPES);
 const allowedActions = new Set<string>(WALLET_ACTION_IDS);
 const allowedRatings = new Set<string>(WALLET_CHECK_RATINGS);
-const allowedTransparencySurfaceKinds = new Set(["firmware", "application"]);
-const allowedTransparencySurfaceFields = new Set([
-  "kind",
-  "rating",
-  "platforms",
-]);
 const requiredCriteria = walletCriteria.map((criterion) => criterion.id);
 const allowedFeatures = new Set<string>(
   walletFeatures.map((feature) => feature.id),
@@ -260,122 +255,6 @@ function validateFeatures(path: string, features: unknown) {
   });
 }
 
-function validateTransparency(
-  path: string,
-  transparency: unknown,
-  supportedPlatforms: Set<string>,
-) {
-  if (
-    typeof transparency !== "object" ||
-    transparency === null ||
-    Array.isArray(transparency)
-  ) {
-    fail(path, "must be an object when provided");
-    return;
-  }
-
-  const record = transparency as Record<string, unknown>;
-  for (const key of Object.keys(record)) {
-    if (key !== "surfaces") {
-      fail(`${path}.${key}`, "is not a known transparency field");
-    }
-  }
-
-  if (!Array.isArray(record.surfaces) || record.surfaces.length === 0) {
-    fail(`${path}.surfaces`, "must contain at least one surface");
-    return;
-  }
-
-  const seen = new Set<string>();
-  record.surfaces.forEach((surface, index) => {
-    const surfacePath = `${path}.surfaces[${index}]`;
-    if (
-      typeof surface !== "object" ||
-      surface === null ||
-      Array.isArray(surface)
-    ) {
-      fail(surfacePath, "must be an object");
-      return;
-    }
-
-    const surfaceRecord = surface as Record<string, unknown>;
-    for (const key of Object.keys(surfaceRecord)) {
-      if (!allowedTransparencySurfaceFields.has(key)) {
-        fail(`${surfacePath}.${key}`, "is not a known surface field");
-      }
-    }
-
-    const kind = surfaceRecord.kind;
-    if (
-      typeof kind !== "string" ||
-      !allowedTransparencySurfaceKinds.has(kind)
-    ) {
-      fail(`${surfacePath}.kind`, "must be firmware or application");
-    } else if (kind === "firmware" && !supportedPlatforms.has("hardware")) {
-      fail(`${surfacePath}.kind`, "firmware surfaces require hardware support");
-    }
-
-    const rating = surfaceRecord.rating;
-    if (
-      typeof rating !== "string" ||
-      !ratingsByCriterion.get("transparency")?.has(rating)
-    ) {
-      fail(`${surfacePath}.rating`, "must be good, acceptable, or caution");
-    }
-
-    let scope = "all";
-    if (surfaceRecord.platforms !== undefined) {
-      if (kind === "firmware") {
-        fail(
-          `${surfacePath}.platforms`,
-          "must not be set for firmware surfaces",
-        );
-      }
-      if (
-        !Array.isArray(surfaceRecord.platforms) ||
-        surfaceRecord.platforms.length === 0
-      ) {
-        fail(`${surfacePath}.platforms`, "must be a non-empty array when set");
-      } else {
-        const platformSeen = new Set<string>();
-        for (const [
-          platformIndex,
-          platform,
-        ] of surfaceRecord.platforms.entries()) {
-          const platformPath = `${surfacePath}.platforms[${platformIndex}]`;
-          if (typeof platform !== "string" || !allowedOs.has(platform)) {
-            fail(platformPath, `invalid OS "${platform}"`);
-          } else if (kind === "application" && platform === "hardware") {
-            fail(
-              platformPath,
-              "application surfaces must use a companion app OS",
-            );
-          } else if (platformSeen.has(platform)) {
-            fail(platformPath, `duplicate platform "${platform}"`);
-          } else if (!supportedPlatforms.has(platform)) {
-            fail(
-              platformPath,
-              `platform "${platform}" is not supported by the wallet`,
-            );
-          } else {
-            platformSeen.add(platform);
-          }
-        }
-        scope = [...platformSeen].sort().join(",");
-      }
-    } else if (kind === "application") {
-      fail(`${surfacePath}.platforms`, "is required for application surfaces");
-    }
-
-    const fingerprint = `${kind}:${scope}`;
-    if (seen.has(fingerprint)) {
-      fail(surfacePath, `duplicates transparency surface "${fingerprint}"`);
-    } else {
-      seen.add(fingerprint);
-    }
-  });
-}
-
 function effectiveValidation(
   walletCheck: { validation?: string },
   override: { validation?: string } | undefined,
@@ -459,10 +338,12 @@ kaspaWallets.forEach((wallet, walletIndex) => {
   validateFeatures(`${walletPath}.features`, wallet.features);
   validateCheck(`${walletPath}.check`, wallet.check, { partial: false });
   if (wallet.transparency !== undefined) {
-    validateTransparency(
-      `${walletPath}.transparency`,
-      wallet.transparency,
-      supportedPlatforms,
+    errors.push(
+      ...validateTransparency(
+        `${walletPath}.transparency`,
+        wallet.transparency,
+        supportedPlatforms,
+      ),
     );
   }
 

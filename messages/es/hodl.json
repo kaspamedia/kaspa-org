@@ -242,6 +242,7 @@
       "good": "Bien",
       "acceptable": "Aceptable",
       "mixed": "Mixta",
+      "mixedExplanation": "Esta valoración varía entre las plataformas seleccionadas.",
       "caution": "Precaución",
       "not_applicable": "No aplicable",
       "notApplicableCompact": "N/A",

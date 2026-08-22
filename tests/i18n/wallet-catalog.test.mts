@@ -3,6 +3,7 @@ import test from "node:test";
 
 import spanishWalletSummaries from "../../messages/es/wallets.json" with { type: "json" };
 import { validateSpanishCatalogContract } from "../../scripts/i18n/spanish-contract.mts";
+import { validateTransparency } from "../../scripts/wallet-transparency-validation.mts";
 import {
   getRatingExplanationKey,
   ratingExplanations,
@@ -116,12 +117,7 @@ test("mixed transparency preserves surfaces and filters conservatively", () => {
         {
           kind: "application",
           rating: "acceptable",
-          platforms: ["android"],
-        },
-        {
-          kind: "application",
-          rating: "acceptable",
-          platforms: ["ios"],
+          platforms: ["android", "ios"],
         },
       ],
     },
@@ -132,9 +128,9 @@ test("mixed transparency preserves surfaces and filters conservatively", () => {
     important: [],
     features: [],
   }).matches[0];
-  assert.equal(unfiltered.primary, undefined);
   assert.equal(
-    resolveWalletPresentation(wallet, unfiltered.primary).ratings.transparency,
+    resolveWalletPresentation(wallet, unfiltered.platforms).ratings
+      .transparency,
     "mixed",
   );
 
@@ -145,13 +141,18 @@ test("mixed transparency preserves surfaces and filters conservatively", () => {
   }).matches[0];
   const androidPresentation = resolveWalletPresentation(
     wallet,
-    android.primary,
+    android.platforms,
   );
   assert.equal(androidPresentation.ratings.transparency, "mixed");
   assert.deepEqual(
     androidPresentation.transparency.surfaces.map((surface) => surface.kind),
     ["firmware", "application"],
   );
+  assert.deepEqual(androidPresentation.transparency.surfaces[1], {
+    kind: "application",
+    rating: "acceptable",
+    platforms: ["android"],
+  });
 
   const transparentOnly = createWalletFinderModel([wallet], {
     important: ["transparency"],
@@ -183,7 +184,7 @@ test("mixed transparency preserves surfaces and filters conservatively", () => {
 
   const coverageGapPresentation = resolveWalletPresentation(
     coverageGapWallet,
-    undefined,
+    coverageGapWallet.platforms,
   );
   assert.equal(coverageGapPresentation.ratings.transparency, "mixed");
   assert.deepEqual(coverageGapPresentation.transparency.surfaces, [
@@ -200,7 +201,7 @@ test("mixed transparency preserves surfaces and filters conservatively", () => {
   ]);
 });
 
-test("unfiltered transparency includes platform overrides without surfaces", () => {
+test("platform overrides remain mixed through non-platform filters", () => {
   const wallet: KaspaWallet = {
     id: "override-wallet",
     title: "Override Wallet",
@@ -208,7 +209,7 @@ test("unfiltered transparency includes platform overrides without surfaces", () 
     user: "beginner",
     summary: "A platform-override wallet fixture.",
     platforms: ["android", "ios"],
-    features: [],
+    features: ["two_fa"],
     check: {
       control: "good",
       validation: "acceptable",
@@ -216,15 +217,59 @@ test("unfiltered transparency includes platform overrides without surfaces", () 
       fees: "good",
     },
     platformOverrides: {
-      ios: { check: { transparency: "caution" } },
+      ios: { check: { transparency: "caution", fees: "caution" } },
     },
     actions: [{ action: "open", link: "https://example.com" }],
   };
 
   assert.equal(
-    resolveWalletPresentation(wallet, undefined).ratings.transparency,
+    resolveWalletPresentation(wallet, wallet.platforms).ratings.transparency,
     "mixed",
   );
+
+  const match = createWalletFinderModel([wallet], {
+    important: [],
+    features: ["two_fa"],
+  }).matches[0];
+
+  assert.deepEqual(match.platforms, ["android", "ios"]);
+  assert.equal(
+    resolveWalletPresentation(wallet, match.platforms).ratings.transparency,
+    "mixed",
+  );
+  assert.equal(
+    resolveWalletPresentation(wallet, match.platforms).ratings.fees,
+    "mixed",
+  );
+  assert.equal(
+    resolveWalletPresentation(wallet, ["ios"]).ratings.fees,
+    "caution",
+  );
+});
+
+test("wallet validation rejects overlapping application transparency scopes", () => {
+  const failures = validateTransparency(
+    "wallet.transparency",
+    {
+      surfaces: [
+        {
+          kind: "application",
+          rating: "acceptable",
+          platforms: ["android", "ios"],
+        },
+        {
+          kind: "application",
+          rating: "caution",
+          platforms: ["ios"],
+        },
+      ],
+    },
+    new Set(["android", "ios"]),
+  );
+
+  assert.deepEqual(failures, [
+    'wallet.transparency.surfaces[1].platforms[0]: platform "ios" is already covered by another application surface',
+  ]);
 });
 
 test("missing companion transparency falls back beside firmware", () => {
@@ -258,7 +303,7 @@ test("missing companion transparency falls back beside firmware", () => {
     actions: [{ action: "open", link: "https://example.com" }],
   };
 
-  const iosPresentation = resolveWalletPresentation(wallet, "ios");
+  const iosPresentation = resolveWalletPresentation(wallet, ["ios"]);
   assert.equal(iosPresentation.ratings.transparency, "mixed");
   assert.deepEqual(iosPresentation.transparency.surfaces, [
     { kind: "firmware", rating: "good" },

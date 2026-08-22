@@ -39,8 +39,8 @@ function WalletRow({
   onToggle: () => void;
 }) {
   const t = useTranslations("hodl");
-  const { wallet, primary } = match;
-  const presentation = resolveWalletPresentation(wallet, primary);
+  const { wallet, platforms } = match;
+  const presentation = resolveWalletPresentation(wallet, platforms);
   const visibleActions = actionsForPlatform(wallet, filterOs);
   const totalColumns = walletCriteria.length + 1;
 
@@ -143,8 +143,8 @@ function WalletCard({
   filterOs: WalletOs | undefined;
 }) {
   const t = useTranslations("hodl");
-  const { wallet, platforms, primary } = match;
-  const presentation = resolveWalletPresentation(wallet, primary);
+  const { wallet, platforms } = match;
+  const presentation = resolveWalletPresentation(wallet, platforms);
   const uniqueFeatures = Array.from(
     new Set(platforms.flatMap((os) => effectiveFeatures(wallet, os))),
   ).slice(0, 4);

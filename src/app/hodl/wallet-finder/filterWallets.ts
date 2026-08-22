@@ -18,13 +18,10 @@ const positiveRatings = new Set<WalletCheckRating>(["good", "acceptable"]);
 export type WalletMatch = {
   wallet: KaspaWallet;
   platforms: WalletOs[];
-  primary: WalletOs | undefined;
 };
 
 export type WalletPresentation = {
-  ratings: Omit<WalletCheck, "transparency"> & {
-    transparency: WalletDisplayRating;
-  };
+  ratings: Record<WalletCriterion, WalletDisplayRating>;
   transparency: {
     surfaces: WalletTransparencySurface[];
   };
@@ -50,6 +47,24 @@ type EffectiveTransparency = {
   surfaces: WalletTransparencySurface[];
   ratings: WalletCheckRating[];
 };
+
+function aggregateRating(
+  ratings: readonly WalletCheckRating[],
+  fallback: WalletCheckRating,
+): WalletDisplayRating {
+  return new Set(ratings).size > 1 ? "mixed" : (ratings[0] ?? fallback);
+}
+
+function aggregatePlatformRating(
+  wallet: KaspaWallet,
+  platforms: readonly WalletOs[],
+  criterion: WalletCriterion,
+): WalletDisplayRating {
+  return aggregateRating(
+    platforms.map((platform) => effectiveCheck(wallet, platform)[criterion]),
+    wallet.check[criterion],
+  );
+}
 
 function transparencyRating(
   rating: WalletCheckRating,
@@ -85,7 +100,7 @@ function fallbackApplicationSurfaces(
 
 function fallbackTransparencySurfaces(
   wallet: KaspaWallet,
-  platforms: WalletOs[],
+  platforms: readonly WalletOs[],
 ): WalletTransparencySurface[] {
   const surfaces: WalletTransparencySurface[] = [];
   if (platforms.includes("hardware")) {
@@ -146,51 +161,69 @@ function effectiveTransparencySurfaces(
 
 function resolveEffectiveTransparency(
   wallet: KaspaWallet,
-  os: WalletOs | undefined,
+  platforms: readonly WalletOs[],
 ): EffectiveTransparency {
   if (!wallet.transparency) {
-    const platforms = os ? [os] : [...wallet.platforms];
     const ratings = platforms.map(
       (platform) => effectiveCheck(wallet, platform).transparency,
     );
     const surfaces =
-      !os && new Set(ratings).size > 1
+      new Set(ratings).size > 1
         ? fallbackTransparencySurfaces(wallet, platforms)
         : [];
     return { surfaces, ratings };
   }
 
   const allSurfaces = effectiveTransparencySurfaces(wallet);
-  const surfaces =
-    !os || os === "hardware"
-      ? allSurfaces
-      : allSurfaces.filter(
-          (surface) =>
-            surface.kind === "firmware" || surface.platforms.includes(os),
+  const companionPlatforms = platforms.filter(
+    (platform): platform is WalletCompanionOs => platform !== "hardware",
+  );
+  const isHardwareOnly = platforms.length === 1 && platforms[0] === "hardware";
+  const surfaces = isHardwareOnly
+    ? allSurfaces
+    : allSurfaces.flatMap((surface): WalletTransparencySurface[] => {
+        if (surface.kind === "firmware") return [surface];
+        const [firstPlatform, ...remainingPlatforms] = surface.platforms.filter(
+          (platform) => companionPlatforms.includes(platform),
         );
+        return firstPlatform === undefined
+          ? []
+          : [
+              {
+                ...surface,
+                platforms: [firstPlatform, ...remainingPlatforms],
+              },
+            ];
+      });
   const ratings: WalletCheckRating[] = surfaces.map(
     (surface) => surface.rating,
   );
   if (ratings.length === 0) {
-    ratings.push(effectiveCheck(wallet, os).transparency);
+    ratings.push(
+      ...platforms.map(
+        (platform) => effectiveCheck(wallet, platform).transparency,
+      ),
+    );
   }
   return { surfaces, ratings };
 }
 
 export function resolveWalletPresentation(
   wallet: KaspaWallet,
-  os: WalletOs | undefined,
+  platforms: readonly WalletOs[],
 ): WalletPresentation {
-  const check = effectiveCheck(wallet, os);
-  const effectiveTransparency = resolveEffectiveTransparency(wallet, os);
-  const transparencyRatings = new Set(effectiveTransparency.ratings);
-  const transparency =
-    transparencyRatings.size > 1
-      ? "mixed"
-      : (effectiveTransparency.ratings[0] ?? check.transparency);
+  const effectiveTransparency = resolveEffectiveTransparency(wallet, platforms);
 
   return {
-    ratings: { ...check, transparency },
+    ratings: {
+      control: aggregatePlatformRating(wallet, platforms, "control"),
+      validation: aggregatePlatformRating(wallet, platforms, "validation"),
+      transparency: aggregateRating(
+        effectiveTransparency.ratings,
+        wallet.check.transparency,
+      ),
+      fees: aggregatePlatformRating(wallet, platforms, "fees"),
+    },
     transparency: { surfaces: effectiveTransparency.surfaces },
   };
 }
@@ -228,8 +261,8 @@ function platformSupportsCriteria(
   const check = effectiveCheck(wallet, os);
   return criteria.every((criterion) => {
     if (criterion === "transparency") {
-      return resolveEffectiveTransparency(wallet, os).ratings.every((rating) =>
-        positiveRatings.has(rating),
+      return resolveEffectiveTransparency(wallet, [os]).ratings.every(
+        (rating) => positiveRatings.has(rating),
       );
     }
     return positiveRatings.has(check[criterion]);
@@ -265,16 +298,7 @@ function getMatches(wallets: KaspaWallet[], filters: WalletFilters) {
 
       if (!platforms.length) return [];
 
-      const hasPlatformPreference = Boolean(
-        filters.os || filters.important.length || filters.features.length,
-      );
-      return [
-        {
-          wallet,
-          platforms,
-          primary: hasPlatformPreference ? platforms[0] : undefined,
-        },
-      ];
+      return [{ wallet, platforms }];
     })
     .sort((a, b) => a.wallet.title.localeCompare(b.wallet.title));
 }

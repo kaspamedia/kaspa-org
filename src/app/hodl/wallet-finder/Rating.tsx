@@ -90,12 +90,16 @@ export function RatingTooltip({
   const [tipRect, setTipRect] = useState<DOMRect | null>(null);
   const ref = useRef<HTMLSpanElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
+  const hasTransparencyBreakdown =
+    criterion === "transparency" && transparencySurfaces.length > 0;
 
   const explanationKey =
     rating === "mixed" ? undefined : getRatingExplanationKey(criterion, rating);
   const explanation =
-    rating === "mixed" && criterion === "transparency"
-      ? t("walletFinder.ratings.explanations.transparency.mixed")
+    rating === "mixed"
+      ? hasTransparencyBreakdown
+        ? t("walletFinder.ratings.explanations.transparency.mixed")
+        : t("walletFinder.ratings.mixedExplanation")
       : explanationKey
         ? t(explanationKey)
         : undefined;
@@ -125,8 +129,6 @@ export function RatingTooltip({
     style: "long",
     type: "conjunction",
   });
-  const hasTransparencyBreakdown =
-    criterion === "transparency" && transparencySurfaces.length > 0;
   const tooltipWidth = hasTransparencyBreakdown ? 300 : TOOLTIP_WIDTH;
 
   const open = () => {

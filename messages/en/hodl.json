@@ -242,6 +242,7 @@
       "good": "Good",
       "acceptable": "Acceptable",
       "mixed": "Mixed",
+      "mixedExplanation": "This rating varies across the selected platforms.",
       "caution": "Caution",
       "not_applicable": "Not applicable",
       "notApplicableCompact": "N/A",
