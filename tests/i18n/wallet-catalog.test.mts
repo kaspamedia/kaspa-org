@@ -145,10 +145,10 @@ test("mixed transparency preserves surfaces and filters conservatively", () => {
   );
   assert.equal(androidPresentation.ratings.transparency, "mixed");
   assert.deepEqual(
-    androidPresentation.transparency.surfaces.map((surface) => surface.kind),
+    androidPresentation.breakdowns.transparency.map((surface) => surface.kind),
     ["firmware", "application"],
   );
-  assert.deepEqual(androidPresentation.transparency.surfaces[1], {
+  assert.deepEqual(androidPresentation.breakdowns.transparency[1], {
     kind: "application",
     rating: "acceptable",
     platforms: ["android"],
@@ -187,7 +187,7 @@ test("mixed transparency preserves surfaces and filters conservatively", () => {
     coverageGapWallet.platforms,
   );
   assert.equal(coverageGapPresentation.ratings.transparency, "mixed");
-  assert.deepEqual(coverageGapPresentation.transparency.surfaces, [
+  assert.deepEqual(coverageGapPresentation.breakdowns.transparency, [
     {
       kind: "application",
       rating: "acceptable",
@@ -233,14 +233,13 @@ test("platform overrides remain mixed through non-platform filters", () => {
   }).matches[0];
 
   assert.deepEqual(match.platforms, ["android", "ios"]);
-  assert.equal(
-    resolveWalletPresentation(wallet, match.platforms).ratings.transparency,
-    "mixed",
-  );
-  assert.equal(
-    resolveWalletPresentation(wallet, match.platforms).ratings.fees,
-    "mixed",
-  );
+  const presentation = resolveWalletPresentation(wallet, match.platforms);
+  assert.equal(presentation.ratings.transparency, "mixed");
+  assert.equal(presentation.ratings.fees, "mixed");
+  assert.deepEqual(presentation.breakdowns.fees, [
+    { kind: "platform", platforms: ["android"], rating: "good" },
+    { kind: "platform", platforms: ["ios"], rating: "caution" },
+  ]);
   assert.equal(
     resolveWalletPresentation(wallet, ["ios"]).ratings.fees,
     "caution",
@@ -303,9 +302,35 @@ test("missing companion transparency falls back beside firmware", () => {
     actions: [{ action: "open", link: "https://example.com" }],
   };
 
+  const unfilteredPresentation = resolveWalletPresentation(
+    wallet,
+    wallet.platforms,
+  );
+  assert.equal(unfilteredPresentation.ratings.validation, "caution");
+  assert.deepEqual(unfilteredPresentation.breakdowns.validation, [
+    {
+      kind: "platform",
+      rating: "not_applicable",
+      platforms: ["hardware"],
+    },
+    {
+      kind: "platform",
+      rating: "caution",
+      platforms: ["android", "ios"],
+    },
+  ]);
+  assert.equal(
+    resolveWalletPresentation(wallet, ["hardware"]).ratings.validation,
+    "not_applicable",
+  );
+  assert.equal(
+    resolveWalletPresentation(wallet, ["android"]).ratings.validation,
+    "caution",
+  );
+
   const iosPresentation = resolveWalletPresentation(wallet, ["ios"]);
   assert.equal(iosPresentation.ratings.transparency, "mixed");
-  assert.deepEqual(iosPresentation.transparency.surfaces, [
+  assert.deepEqual(iosPresentation.breakdowns.transparency, [
     { kind: "firmware", rating: "good" },
     { kind: "application", rating: "caution", platforms: ["ios"] },
   ]);

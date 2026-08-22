@@ -80,11 +80,7 @@ function WalletRow({
               <RatingTooltip
                 rating={presentation.ratings[criterion.id]}
                 criterion={criterion.id}
-                transparencySurfaces={
-                  criterion.id === "transparency"
-                    ? presentation.transparency.surfaces
-                    : undefined
-                }
+                breakdown={presentation.breakdowns[criterion.id]}
               />
             </div>
           </td>
@@ -199,11 +195,7 @@ function WalletCard({
             <RatingTooltip
               rating={presentation.ratings[criterion.id]}
               criterion={criterion.id}
-              transparencySurfaces={
-                criterion.id === "transparency"
-                  ? presentation.transparency.surfaces
-                  : undefined
-              }
+              breakdown={presentation.breakdowns[criterion.id]}
               className="-mx-1.5 flex flex-1 items-center gap-2.5 rounded-[8px] px-1.5 py-1.5 transition-colors hover:bg-black/[0.03] dark:hover:bg-white/[0.04]"
             >
               <RatingSymbol rating={presentation.ratings[criterion.id]} />

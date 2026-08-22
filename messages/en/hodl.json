@@ -246,8 +246,8 @@
       "caution": "Caution",
       "not_applicable": "Not applicable",
       "notApplicableCompact": "N/A",
-      "transparencyBreakdown": "Required parts",
-      "transparencyWhy": "Why?",
+      "breakdown": "Breakdown",
+      "why": "Why?",
       "aria": "{criterion}: {rating}",
       "tooltipHeading": "{criterion}: {rating}",
       "explanations": {

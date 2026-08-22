@@ -44,6 +44,14 @@ export type WalletTransparency = {
   surfaces: NonEmptyArray<WalletTransparencySurface>;
 };
 
+export type WalletRatingBreakdownItem =
+  | WalletTransparencySurface
+  | {
+      kind: "platform";
+      rating: WalletCheckRating;
+      platforms: NonEmptyArray<WalletOs>;
+    };
+
 export type WalletPlatformOverride = {
   features?: WalletFeature[];
   check?: Partial<WalletCheck>;

@@ -9,7 +9,7 @@ import { WALLET_DISPLAY_RATINGS } from "./taxonomy";
 import type {
   WalletCriterion,
   WalletDisplayRating,
-  WalletTransparencySurface,
+  WalletRatingBreakdownItem,
 } from "./types";
 import { getRatingExplanationKey } from "./walletMetadata";
 
@@ -76,13 +76,13 @@ export function RatingTooltip({
   criterion,
   children,
   className,
-  transparencySurfaces = [],
+  breakdown = [],
 }: {
   rating: WalletDisplayRating;
   criterion: WalletCriterion;
   children?: ReactNode;
   className?: string;
-  transparencySurfaces?: WalletTransparencySurface[];
+  breakdown?: WalletRatingBreakdownItem[];
 }) {
   const t = useTranslations("hodl");
   const locale = useLocale();
@@ -90,14 +90,13 @@ export function RatingTooltip({
   const [tipRect, setTipRect] = useState<DOMRect | null>(null);
   const ref = useRef<HTMLSpanElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
-  const hasTransparencyBreakdown =
-    criterion === "transparency" && transparencySurfaces.length > 0;
+  const hasBreakdown = breakdown.length > 0;
 
   const explanationKey =
     rating === "mixed" ? undefined : getRatingExplanationKey(criterion, rating);
   const explanation =
     rating === "mixed"
-      ? hasTransparencyBreakdown
+      ? criterion === "transparency" && hasBreakdown
         ? t("walletFinder.ratings.explanations.transparency.mixed")
         : t("walletFinder.ratings.mixedExplanation")
       : explanationKey
@@ -106,30 +105,37 @@ export function RatingTooltip({
 
   const criterionLabel = t(`walletFinder.criteria.${criterion}.label`);
   const ratingLabel = t(`walletFinder.ratings.${rating}`);
-  const surfaceLabel = (surface: WalletTransparencySurface) => {
-    const platformLabel = surface.platforms
-      ?.map((platform) => t(`walletFinder.operatingSystems.${platform}`))
+  const breakdownLabel = (item: WalletRatingBreakdownItem) => {
+    if (item.kind === "firmware") {
+      return t("walletFinder.transparencySurfaces.firmware");
+    }
+
+    const platformLabel = item.platforms
+      .map((platform) => t(`walletFinder.operatingSystems.${platform}`))
       .join(" / ");
 
-    return surface.kind === "firmware"
-      ? t("walletFinder.transparencySurfaces.firmware")
-      : t("walletFinder.transparencySurfaces.application", {
+    return item.kind === "application"
+      ? t("walletFinder.transparencySurfaces.application", {
           platform: platformLabel ?? "",
-        });
+        })
+      : platformLabel;
   };
-  const transparencyReasons = Array.from(
-    transparencySurfaces.reduce((groups, surface) => {
-      const labels = groups.get(surface.rating) ?? [];
-      labels.push(surfaceLabel(surface));
-      groups.set(surface.rating, labels);
+  const breakdownReasons = Array.from(
+    breakdown.reduce((groups, item) => {
+      const labels = groups.get(item.rating) ?? [];
+      labels.push(breakdownLabel(item));
+      groups.set(item.rating, labels);
       return groups;
-    }, new Map<WalletTransparencySurface["rating"], string[]>()),
-  );
-  const surfaceList = new Intl.ListFormat(locale, {
+    }, new Map<WalletRatingBreakdownItem["rating"], string[]>()),
+  ).flatMap(([itemRating, labels]) => {
+    const key = getRatingExplanationKey(criterion, itemRating);
+    return key ? [{ itemRating, labels, explanation: t(key) }] : [];
+  });
+  const breakdownList = new Intl.ListFormat(locale, {
     style: "long",
     type: "conjunction",
   });
-  const tooltipWidth = hasTransparencyBreakdown ? 300 : TOOLTIP_WIDTH;
+  const tooltipWidth = hasBreakdown ? 300 : TOOLTIP_WIDTH;
 
   const open = () => {
     if (ref.current) {
@@ -255,7 +261,7 @@ export function RatingTooltip({
         createPortal(
           <div
             ref={tooltipRef}
-            className={`pointer-events-none fixed z-[9999] rounded-[10px] border border-[var(--border-subtle)] bg-[var(--bg)] p-3 text-[11px] leading-[1.5] text-[var(--text-secondary)] shadow-md ${hasTransparencyBreakdown ? "w-[300px]" : "w-60"}`}
+            className={`pointer-events-none fixed z-[9999] rounded-[10px] border border-[var(--border-subtle)] bg-[var(--bg)] p-3 text-[11px] leading-[1.5] text-[var(--text-secondary)] shadow-md ${hasBreakdown ? "w-[300px]" : "w-60"}`}
             style={{
               top: tipRect.bottom + 6,
               left: tooltipLeft,
@@ -271,44 +277,50 @@ export function RatingTooltip({
               })}
             </p>
             <p>{explanation}</p>
-            {hasTransparencyBreakdown && (
+            {hasBreakdown && (
               <div className="mt-2 border-t border-[var(--border-subtle)] pt-2">
                 <p className="mb-1.5 text-[10px] font-semibold tracking-[0.04em] text-[var(--text-muted)] uppercase">
-                  {t("walletFinder.ratings.transparencyBreakdown")}
+                  {t("walletFinder.ratings.breakdown")}
                 </p>
                 <ul className="space-y-1.5">
-                  {transparencySurfaces.map((surface) => {
+                  {breakdown.map((item) => {
                     return (
                       <li
-                        key={`${surface.kind}-${surface.platforms?.join("-") ?? "required"}`}
+                        key={`${item.kind}-${item.kind === "firmware" ? "required" : item.platforms.join("-")}`}
                         className="flex items-center justify-between gap-3"
                       >
-                        <span>{surfaceLabel(surface)}</span>
+                        <span>{breakdownLabel(item)}</span>
                         <span className="grid w-[88px] shrink-0 grid-cols-[16px_1fr] items-center gap-1.5 font-medium whitespace-nowrap">
-                          <RatingSymbol rating={surface.rating} />
-                          {t(`walletFinder.ratings.${surface.rating}`)}
+                          <RatingSymbol rating={item.rating} />
+                          {t(
+                            item.rating === "not_applicable"
+                              ? "walletFinder.ratings.notApplicableCompact"
+                              : `walletFinder.ratings.${item.rating}`,
+                          )}
                         </span>
                       </li>
                     );
                   })}
                 </ul>
-                <div className="mt-2 border-t border-[var(--border-subtle)] pt-2">
-                  <p className="mb-1.5 text-[10px] font-semibold tracking-[0.04em] text-[var(--text-muted)] uppercase">
-                    {t("walletFinder.ratings.transparencyWhy")}
-                  </p>
-                  <ul className="space-y-1.5">
-                    {transparencyReasons.map(([surfaceRating, labels]) => (
-                      <li key={surfaceRating}>
-                        <span className="font-medium text-[var(--text-primary)]">
-                          {surfaceList.format(labels)}:
-                        </span>{" "}
-                        {t(
-                          `walletFinder.ratings.explanations.transparency.${surfaceRating}`,
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                {breakdownReasons.length > 0 && (
+                  <div className="mt-2 border-t border-[var(--border-subtle)] pt-2">
+                    <p className="mb-1.5 text-[10px] font-semibold tracking-[0.04em] text-[var(--text-muted)] uppercase">
+                      {t("walletFinder.ratings.why")}
+                    </p>
+                    <ul className="space-y-1.5">
+                      {breakdownReasons.map(
+                        ({ itemRating, labels, explanation }) => (
+                          <li key={itemRating}>
+                            <span className="font-medium text-[var(--text-primary)]">
+                              {breakdownList.format(labels)}:
+                            </span>{" "}
+                            {explanation}
+                          </li>
+                        ),
+                      )}
+                    </ul>
+                  </div>
+                )}
               </div>
             )}
           </div>,

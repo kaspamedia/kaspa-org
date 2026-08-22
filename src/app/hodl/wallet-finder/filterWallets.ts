@@ -9,6 +9,7 @@ import type {
   WalletFeature,
   WalletFilters,
   WalletOs,
+  WalletRatingBreakdownItem,
   WalletTransparencyRating,
   WalletTransparencySurface,
 } from "./types";
@@ -22,9 +23,7 @@ export type WalletMatch = {
 
 export type WalletPresentation = {
   ratings: Record<WalletCriterion, WalletDisplayRating>;
-  transparency: {
-    surfaces: WalletTransparencySurface[];
-  };
+  breakdowns: Record<WalletCriterion, WalletRatingBreakdownItem[]>;
 };
 
 export type WalletFinderModel = {
@@ -52,7 +51,15 @@ function aggregateRating(
   ratings: readonly WalletCheckRating[],
   fallback: WalletCheckRating,
 ): WalletDisplayRating {
-  return new Set(ratings).size > 1 ? "mixed" : (ratings[0] ?? fallback);
+  const applicableRatings = ratings.filter(
+    (rating) => rating !== "not_applicable",
+  );
+
+  if (applicableRatings.length === 0) {
+    return ratings.length > 0 ? "not_applicable" : fallback;
+  }
+
+  return new Set(applicableRatings).size > 1 ? "mixed" : applicableRatings[0];
 }
 
 function aggregatePlatformRating(
@@ -64,6 +71,32 @@ function aggregatePlatformRating(
     platforms.map((platform) => effectiveCheck(wallet, platform)[criterion]),
     wallet.check[criterion],
   );
+}
+
+function platformBreakdown(
+  wallet: KaspaWallet,
+  platforms: readonly WalletOs[],
+  criterion: WalletCriterion,
+): WalletRatingBreakdownItem[] {
+  const platformsByRating = new Map<
+    WalletCheckRating,
+    [WalletOs, ...WalletOs[]]
+  >();
+
+  for (const platform of platforms) {
+    const rating = effectiveCheck(wallet, platform)[criterion];
+    const groupedPlatforms = platformsByRating.get(rating);
+    if (groupedPlatforms) groupedPlatforms.push(platform);
+    else platformsByRating.set(rating, [platform]);
+  }
+
+  if (platformsByRating.size < 2) return [];
+
+  return Array.from(platformsByRating, ([rating, groupedPlatforms]) => ({
+    kind: "platform" as const,
+    rating,
+    platforms: groupedPlatforms,
+  }));
 }
 
 function transparencyRating(
@@ -224,7 +257,12 @@ export function resolveWalletPresentation(
       ),
       fees: aggregatePlatformRating(wallet, platforms, "fees"),
     },
-    transparency: { surfaces: effectiveTransparency.surfaces },
+    breakdowns: {
+      control: platformBreakdown(wallet, platforms, "control"),
+      validation: platformBreakdown(wallet, platforms, "validation"),
+      transparency: effectiveTransparency.surfaces,
+      fees: platformBreakdown(wallet, platforms, "fees"),
+    },
   };
 }
 
