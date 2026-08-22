@@ -169,44 +169,27 @@ export function RatingTooltip({
   useLayoutEffect(() => {
     if (!visible || !tipRect || !tooltipRef.current) return;
 
-    const viewportPadding = 8;
+    const padding = 8;
     const gap = 6;
     const tooltipHeight = tooltipRef.current.getBoundingClientRect().height;
     const below = tipRect.bottom + gap;
     const above = tipRect.top - tooltipHeight - gap;
-    const centeredLeft = Math.max(
-      viewportPadding,
-      Math.min(
-        window.innerWidth - tooltipWidth - viewportPadding,
-        tipRect.left + tipRect.width / 2 - tooltipWidth / 2,
-      ),
-    );
-    let top = below;
-    let left = centeredLeft;
 
-    if (below + tooltipHeight > window.innerHeight - viewportPadding) {
-      if (above >= viewportPadding) {
-        top = above;
-      } else {
-        top = Math.max(
-          viewportPadding,
-          Math.min(
-            window.innerHeight - tooltipHeight - viewportPadding,
-            tipRect.top + tipRect.height / 2 - tooltipHeight / 2,
-          ),
-        );
-        left =
-          tipRect.left - tooltipWidth - gap >= viewportPadding
-            ? tipRect.left - tooltipWidth - gap
-            : tipRect.right + tooltipWidth + gap <=
-                window.innerWidth - viewportPadding
-              ? tipRect.right + gap
-              : centeredLeft;
-      }
+    if (below + tooltipHeight <= window.innerHeight - padding) return;
+    if (above >= padding) {
+      tooltipRef.current.style.top = `${above}px`;
+      return;
     }
 
-    tooltipRef.current.style.top = `${top}px`;
-    tooltipRef.current.style.left = `${left}px`;
+    tooltipRef.current.style.top = `${padding}px`;
+    tooltipRef.current.style.left = `${
+      tipRect.left - tooltipWidth - gap >= padding
+        ? tipRect.left - tooltipWidth - gap
+        : Math.min(
+            tipRect.right + gap,
+            window.innerWidth - tooltipWidth - padding,
+          )
+    }px`;
   }, [tipRect, tooltipWidth, visible]);
 
   const tooltipLeft = tipRect

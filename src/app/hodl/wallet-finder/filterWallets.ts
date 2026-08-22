@@ -10,7 +10,6 @@ import type {
   WalletFilters,
   WalletOs,
   WalletRatingBreakdownItem,
-  WalletTransparencyRating,
   WalletTransparencySurface,
 } from "./types";
 
@@ -73,14 +72,19 @@ function aggregatePlatformRating(
   );
 }
 
-function platformBreakdown(
+type RatingGroup<Platform extends WalletOs> = {
+  rating: WalletCheckRating;
+  platforms: [Platform, ...Platform[]];
+};
+
+function groupPlatformsByRating<Platform extends WalletOs>(
   wallet: KaspaWallet,
-  platforms: readonly WalletOs[],
+  platforms: readonly Platform[],
   criterion: WalletCriterion,
-): WalletRatingBreakdownItem[] {
+): RatingGroup<Platform>[] {
   const platformsByRating = new Map<
     WalletCheckRating,
-    [WalletOs, ...WalletOs[]]
+    [Platform, ...Platform[]]
   >();
 
   for (const platform of platforms) {
@@ -90,106 +94,21 @@ function platformBreakdown(
     else platformsByRating.set(rating, [platform]);
   }
 
-  if (platformsByRating.size < 2) return [];
-
   return Array.from(platformsByRating, ([rating, groupedPlatforms]) => ({
-    kind: "platform" as const,
     rating,
     platforms: groupedPlatforms,
   }));
 }
 
-function transparencyRating(
-  rating: WalletCheckRating,
-): WalletTransparencyRating | undefined {
-  return rating === "not_applicable" ? undefined : rating;
-}
-
-function fallbackApplicationSurfaces(
-  wallet: KaspaWallet,
-  platforms: WalletCompanionOs[],
-): WalletTransparencySurface[] {
-  const platformsByRating = new Map<
-    WalletTransparencyRating,
-    [WalletCompanionOs, ...WalletCompanionOs[]]
-  >();
-
-  for (const platform of platforms) {
-    const rating = transparencyRating(
-      effectiveCheck(wallet, platform).transparency,
-    );
-    if (!rating) continue;
-    const groupedPlatforms = platformsByRating.get(rating);
-    if (groupedPlatforms) groupedPlatforms.push(platform);
-    else platformsByRating.set(rating, [platform]);
-  }
-
-  return Array.from(platformsByRating, ([rating, groupedPlatforms]) => ({
-    kind: "application" as const,
-    rating,
-    platforms: groupedPlatforms,
-  }));
-}
-
-function fallbackTransparencySurfaces(
+function platformBreakdown(
   wallet: KaspaWallet,
   platforms: readonly WalletOs[],
-): WalletTransparencySurface[] {
-  const surfaces: WalletTransparencySurface[] = [];
-  if (platforms.includes("hardware")) {
-    const rating = transparencyRating(
-      effectiveCheck(wallet, "hardware").transparency,
-    );
-    if (rating) surfaces.push({ kind: "firmware", rating });
-  }
-
-  surfaces.push(
-    ...fallbackApplicationSurfaces(
-      wallet,
-      platforms.filter(
-        (platform): platform is WalletCompanionOs => platform !== "hardware",
-      ),
-    ),
-  );
-  return surfaces;
-}
-
-function effectiveTransparencySurfaces(
-  wallet: KaspaWallet,
-): WalletTransparencySurface[] {
-  const declaredSurfaces = wallet.transparency?.surfaces ?? [];
-  const firmwareSurfaces = declaredSurfaces.filter(
-    (surface) => surface.kind === "firmware",
-  );
-  const applicationSurfaces = declaredSurfaces.filter(
-    (
-      surface,
-    ): surface is Extract<WalletTransparencySurface, { kind: "application" }> =>
-      surface.kind === "application",
-  );
-  const surfaces: WalletTransparencySurface[] = [...firmwareSurfaces];
-
-  if (wallet.platforms.includes("hardware") && firmwareSurfaces.length === 0) {
-    const rating = transparencyRating(
-      effectiveCheck(wallet, "hardware").transparency,
-    );
-    if (rating) {
-      surfaces.push({ kind: "firmware", rating });
-    }
-  }
-
-  surfaces.push(...applicationSurfaces);
-  const uncoveredCompanionPlatforms = wallet.platforms.filter(
-    (platform): platform is WalletCompanionOs =>
-      platform !== "hardware" &&
-      !applicationSurfaces.some((surface) =>
-        surface.platforms?.includes(platform),
-      ),
-  );
-  surfaces.push(
-    ...fallbackApplicationSurfaces(wallet, uncoveredCompanionPlatforms),
-  );
-  return surfaces;
+  criterion: WalletCriterion,
+): WalletRatingBreakdownItem[] {
+  const groups = groupPlatformsByRating(wallet, platforms, criterion);
+  return groups.length < 2
+    ? []
+    : groups.map((group) => ({ kind: "platform", ...group }));
 }
 
 function resolveEffectiveTransparency(
@@ -200,14 +119,10 @@ function resolveEffectiveTransparency(
     const ratings = platforms.map(
       (platform) => effectiveCheck(wallet, platform).transparency,
     );
-    const surfaces =
-      new Set(ratings).size > 1
-        ? fallbackTransparencySurfaces(wallet, platforms)
-        : [];
-    return { surfaces, ratings };
+    return { surfaces: [], ratings };
   }
 
-  const allSurfaces = effectiveTransparencySurfaces(wallet);
+  const allSurfaces = wallet.transparency.surfaces;
   const companionPlatforms = platforms.filter(
     (platform): platform is WalletCompanionOs => platform !== "hardware",
   );
@@ -260,7 +175,10 @@ export function resolveWalletPresentation(
     breakdowns: {
       control: platformBreakdown(wallet, platforms, "control"),
       validation: platformBreakdown(wallet, platforms, "validation"),
-      transparency: effectiveTransparency.surfaces,
+      transparency:
+        effectiveTransparency.surfaces.length > 0
+          ? effectiveTransparency.surfaces
+          : platformBreakdown(wallet, platforms, "transparency"),
       fees: platformBreakdown(wallet, platforms, "fees"),
     },
   };

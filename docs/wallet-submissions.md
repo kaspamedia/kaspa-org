@@ -164,10 +164,9 @@ Firmware surfaces are unscoped. Application surfaces require one or more
 supported companion OSs and cannot use `hardware`. Each surface uses the
 transparency rubric above; `mixed` is presentation-only and cannot be stored.
 
-`check.transparency`, including any platform override, remains the fallback for
-a supported platform with no matching surface. Unfiltered results combine every
-supported platform's declared or fallback rating and display `mixed` whenever
-those effective ratings differ.
+When present, `transparency.surfaces` must cover the device firmware and every
+supported companion OS. Wallets without surface declarations continue to use
+`check.transparency` and any platform overrides.
 
 ### Action types
 

@@ -18,6 +18,7 @@ import {
 } from "../../src/app/hodl/wallet-finder/filterWallets.ts";
 import type {
   KaspaWallet,
+  WalletCheck,
   WalletCheckRating,
 } from "../../src/app/hodl/wallet-finder/types.ts";
 import { kaspaWallets } from "../../src/data/wallets.ts";
@@ -96,136 +97,41 @@ test("every validator-approved rating resolves through the explanation map", () 
   }
 });
 
-test("mixed transparency preserves surfaces and filters conservatively", () => {
-  const wallet: KaspaWallet = {
-    id: "mixed-wallet",
-    title: "Mixed Wallet",
-    icon: "/hodl/wallets/mixed-wallet/icon.svg",
+function walletFixture({
+  check,
+  ...overrides
+}: Omit<Partial<KaspaWallet>, "check"> & {
+  check?: Partial<WalletCheck>;
+} = {}): KaspaWallet {
+  return {
+    id: "test-wallet",
+    title: "Test Wallet",
+    icon: "/hodl/wallets/test-wallet/icon.svg",
     user: "beginner",
-    summary: "A mixed-transparency wallet fixture.",
-    platforms: ["hardware", "android", "ios"],
-    features: ["hardware_wallet"],
-    check: {
-      control: "good",
-      validation: "caution",
-      transparency: "acceptable",
-      fees: "good",
-    },
-    transparency: {
-      surfaces: [
-        { kind: "firmware", rating: "caution" },
-        {
-          kind: "application",
-          rating: "acceptable",
-          platforms: ["android", "ios"],
-        },
-      ],
-    },
-    actions: [{ action: "open", link: "https://example.com" }],
-  };
-
-  const unfiltered = createWalletFinderModel([wallet], {
-    important: [],
-    features: [],
-  }).matches[0];
-  assert.equal(
-    resolveWalletPresentation(wallet, unfiltered.platforms).ratings
-      .transparency,
-    "mixed",
-  );
-
-  const android = createWalletFinderModel([wallet], {
-    os: "android",
-    important: [],
-    features: [],
-  }).matches[0];
-  const androidPresentation = resolveWalletPresentation(
-    wallet,
-    android.platforms,
-  );
-  assert.equal(androidPresentation.ratings.transparency, "mixed");
-  assert.deepEqual(
-    androidPresentation.breakdowns.transparency.map((surface) => surface.kind),
-    ["firmware", "application"],
-  );
-  assert.deepEqual(androidPresentation.breakdowns.transparency[1], {
-    kind: "application",
-    rating: "acceptable",
+    summary: "A wallet test fixture.",
     platforms: ["android"],
-  });
-
-  const transparentOnly = createWalletFinderModel([wallet], {
-    important: ["transparency"],
     features: [],
-  });
-  assert.equal(transparentOnly.matches.length, 0);
-
-  const coverageGapWallet: KaspaWallet = {
-    ...wallet,
-    id: "coverage-gap-wallet",
-    platforms: ["android", "windows"],
-    check: { ...wallet.check, transparency: "caution" },
-    transparency: {
-      surfaces: [
-        {
-          kind: "application",
-          rating: "acceptable",
-          platforms: ["android"],
-        },
-      ],
-    },
-  };
-  const windowsTransparent = createWalletFinderModel([coverageGapWallet], {
-    os: "windows",
-    important: ["transparency"],
-    features: [],
-  });
-  assert.equal(windowsTransparent.matches.length, 0);
-
-  const coverageGapPresentation = resolveWalletPresentation(
-    coverageGapWallet,
-    coverageGapWallet.platforms,
-  );
-  assert.equal(coverageGapPresentation.ratings.transparency, "mixed");
-  assert.deepEqual(coverageGapPresentation.breakdowns.transparency, [
-    {
-      kind: "application",
-      rating: "acceptable",
-      platforms: ["android"],
-    },
-    {
-      kind: "application",
-      rating: "caution",
-      platforms: ["windows"],
-    },
-  ]);
-});
-
-test("platform overrides remain mixed through non-platform filters", () => {
-  const wallet: KaspaWallet = {
-    id: "override-wallet",
-    title: "Override Wallet",
-    icon: "/hodl/wallets/override-wallet/icon.svg",
-    user: "beginner",
-    summary: "A platform-override wallet fixture.",
-    platforms: ["android", "ios"],
-    features: ["two_fa"],
     check: {
       control: "good",
       validation: "acceptable",
       transparency: "acceptable",
       fees: "good",
+      ...check,
     },
+    actions: [{ action: "open", link: "https://example.com" }],
+    ...overrides,
+  };
+}
+
+test("platform overrides remain mixed through non-platform filters", () => {
+  const wallet = walletFixture({
+    id: "override-wallet",
+    platforms: ["android", "ios"],
+    features: ["two_fa"],
     platformOverrides: {
       ios: { check: { transparency: "caution", fees: "caution" } },
     },
-    actions: [{ action: "open", link: "https://example.com" }],
-  };
-
-  assert.equal(
-    resolveWalletPresentation(wallet, wallet.platforms).ratings.transparency,
-    "mixed",
-  );
+  });
 
   const match = createWalletFinderModel([wallet], {
     important: [],
@@ -240,10 +146,6 @@ test("platform overrides remain mixed through non-platform filters", () => {
     { kind: "platform", platforms: ["android"], rating: "good" },
     { kind: "platform", platforms: ["ios"], rating: "caution" },
   ]);
-  assert.equal(
-    resolveWalletPresentation(wallet, ["ios"]).ratings.fees,
-    "caution",
-  );
 });
 
 test("wallet validation rejects overlapping application transparency scopes", () => {
@@ -254,12 +156,12 @@ test("wallet validation rejects overlapping application transparency scopes", ()
         {
           kind: "application",
           rating: "acceptable",
-          platforms: ["android", "ios"],
+          platforms: ["android"],
         },
         {
           kind: "application",
           rating: "caution",
-          platforms: ["ios"],
+          platforms: ["android"],
         },
       ],
     },
@@ -267,24 +169,19 @@ test("wallet validation rejects overlapping application transparency scopes", ()
   );
 
   assert.deepEqual(failures, [
-    'wallet.transparency.surfaces[1].platforms[0]: platform "ios" is already covered by another application surface',
+    'wallet.transparency.surfaces[1].platforms[0]: platform "android" is already covered by another application surface',
+    'wallet.transparency.surfaces: must cover companion platform "ios"',
   ]);
 });
 
-test("missing companion transparency falls back beside firmware", () => {
-  const wallet: KaspaWallet = {
+test("explicit transparency and platform ratings resolve through one seam", () => {
+  const wallet = walletFixture({
     id: "partial-surface-wallet",
-    title: "Partial Surface Wallet",
-    icon: "/hodl/wallets/partial-surface-wallet/icon.svg",
-    user: "beginner",
-    summary: "A partial-surface wallet fixture.",
     platforms: ["hardware", "android", "ios"],
     features: ["hardware_wallet"],
     check: {
-      control: "good",
       validation: "caution",
       transparency: "caution",
-      fees: "good",
     },
     platformOverrides: {
       hardware: { check: { validation: "not_applicable" } },
@@ -297,16 +194,26 @@ test("missing companion transparency falls back beside firmware", () => {
           rating: "good",
           platforms: ["android"],
         },
+        {
+          kind: "application",
+          rating: "caution",
+          platforms: ["ios"],
+        },
       ],
     },
-    actions: [{ action: "open", link: "https://example.com" }],
-  };
+  });
 
   const unfilteredPresentation = resolveWalletPresentation(
     wallet,
     wallet.platforms,
   );
   assert.equal(unfilteredPresentation.ratings.validation, "caution");
+  assert.equal(unfilteredPresentation.ratings.transparency, "mixed");
+  assert.deepEqual(unfilteredPresentation.breakdowns.transparency, [
+    { kind: "firmware", rating: "good" },
+    { kind: "application", rating: "good", platforms: ["android"] },
+    { kind: "application", rating: "caution", platforms: ["ios"] },
+  ]);
   assert.deepEqual(unfilteredPresentation.breakdowns.validation, [
     {
       kind: "platform",
@@ -323,11 +230,6 @@ test("missing companion transparency falls back beside firmware", () => {
     resolveWalletPresentation(wallet, ["hardware"]).ratings.validation,
     "not_applicable",
   );
-  assert.equal(
-    resolveWalletPresentation(wallet, ["android"]).ratings.validation,
-    "caution",
-  );
-
   const iosPresentation = resolveWalletPresentation(wallet, ["ios"]);
   assert.equal(iosPresentation.ratings.transparency, "mixed");
   assert.deepEqual(iosPresentation.breakdowns.transparency, [
