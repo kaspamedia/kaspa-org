@@ -72,6 +72,8 @@ The wallet record carries a single `check` block that applies to every platform.
 
 For hardware wallets with companion apps, use the wallet-level `check` for the app-platform defaults, then add hardware-specific overrides. Use `platformOverrides.hardware.check.validation: "not_applicable"` for the hardware device itself. For validation, explain whether the companion app runs a Kaspa node, lets users choose a Kaspa node, or uses wallet-controlled nodes.
 
+When required firmware and companion applications have different transparency ratings, add `transparency.surfaces`. It must cover the firmware and every supported companion OS. Each surface uses `good`, `acceptable`, or `caution`; `mixed` is calculated for display and cannot be stored.
+
 | Criterion    | Proposed rating | Evidence |
 | ------------ | --------------- | -------- |
 | control      |                 |          |
@@ -80,6 +82,12 @@ For hardware wallets with companion apps, use the wallet-level `check` for the a
 | fees         |                 |          |
 
 If any platform overrides one of these criteria, list it here:
+
+If `transparency.surfaces` is needed, list every required surface and its evidence:
+
+| Surface (`firmware` or `application`) | Platforms (applications only) | Proposed rating | Evidence |
+| ------------------------------------- | ----------------------------- | --------------- | -------- |
+|                                       |                               |                 |          |
 
 ### Features
 
@@ -117,6 +125,7 @@ List every way a user can install or open the wallet. Each acquisition path is o
 - [ ] If I included an optional translation above, it is for a language currently published on the site
 - [ ] `platforms` lists every supported OS
 - [ ] `features` and `check` describe the wallet's defaults; per-OS variation lives in `platformOverrides`
+- [ ] If I added `transparency.surfaces`, it covers the firmware and every supported companion OS
 - [ ] `actions` covers every acquisition path; platform-specific links use `platforms`
 - [ ] Links point to official wallet pages
 - [ ] I provided official links and evidence that maintainers can verify

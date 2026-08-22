@@ -1,9 +1,11 @@
-import { ratingExplanations } from "../src/app/hodl/wallet-finder/walletMetadata.ts";
-import { WALLET_OS_IDS } from "../src/app/hodl/wallet-finder/taxonomy.ts";
+import {
+  WALLET_OS_IDS,
+  WALLET_RATINGS_BY_CRITERION,
+} from "../src/app/hodl/wallet-finder/taxonomy.ts";
 
 const allowedOs = new Set<string>(WALLET_OS_IDS);
 const allowedRatings = new Set<string>(
-  Object.keys(ratingExplanations.transparency),
+  WALLET_RATINGS_BY_CRITERION.transparency,
 );
 const allowedSurfaceFields = new Set(["kind", "rating", "platforms"]);
 

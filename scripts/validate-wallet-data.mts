@@ -3,15 +3,13 @@ import { extname, join } from "node:path";
 
 import { kaspaWallets } from "../src/data/wallets.ts";
 import {
-  ratingExplanations,
-  walletCriteria,
-  walletFeatures,
-} from "../src/app/hodl/wallet-finder/walletMetadata.ts";
-import {
   ACTION_IMPLIED_OS,
   WALLET_ACTION_IDS,
   WALLET_CHECK_RATINGS,
+  WALLET_CRITERIA_IDS,
+  WALLET_FEATURE_IDS,
   WALLET_OS_IDS,
+  WALLET_RATINGS_BY_CRITERION,
   WALLET_USER_TYPES,
 } from "../src/app/hodl/wallet-finder/taxonomy.ts";
 import { supportedLocaleCodes } from "../src/i18n/locale-registry.ts";
@@ -22,17 +20,9 @@ const allowedOs = new Set<string>(WALLET_OS_IDS);
 const allowedUsers = new Set<string>(WALLET_USER_TYPES);
 const allowedActions = new Set<string>(WALLET_ACTION_IDS);
 const allowedRatings = new Set<string>(WALLET_CHECK_RATINGS);
-const requiredCriteria = walletCriteria.map((criterion) => criterion.id);
-const allowedFeatures = new Set<string>(
-  walletFeatures.map((feature) => feature.id),
-);
+const requiredCriteria = WALLET_CRITERIA_IDS;
+const allowedFeatures = new Set<string>(WALLET_FEATURE_IDS);
 const actionImpliedOs: Partial<Record<string, string>> = ACTION_IMPLIED_OS;
-const ratingsByCriterion = new Map<string, Set<string>>(
-  walletCriteria.map((criterion) => [
-    criterion.id,
-    new Set(Object.keys(ratingExplanations[criterion.id])),
-  ]),
-);
 
 const errors: string[] = [];
 const walletIdPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -226,7 +216,11 @@ function validateCheck(
         `${path}.${criterion}`,
         "must be good, acceptable, caution, or not_applicable",
       );
-    } else if (!ratingsByCriterion.get(criterion)?.has(rating)) {
+    } else if (
+      !(WALLET_RATINGS_BY_CRITERION[criterion] as readonly string[]).includes(
+        rating,
+      )
+    ) {
       fail(`${path}.${criterion}`, `"${rating}" is not valid for ${criterion}`);
     }
   }
