@@ -9,12 +9,7 @@ import { ACCENT, accentAlpha } from "../content";
 import { getStoreIcon } from "./icons";
 import InfoTooltip from "./InfoTooltip";
 import { RatingLegend, RatingSymbol, RatingTooltip } from "./Rating";
-import {
-  actionsForPlatform,
-  effectiveFeatures,
-  resolveWalletPresentation,
-  type WalletMatch,
-} from "./filterWallets";
+import type { WalletMatch } from "./walletModel";
 import { WALLET_DISPLAY_RATINGS } from "./taxonomy";
 import type { WalletEntryAction, WalletOs } from "./types";
 import { walletCriteria } from "./walletMetadata";
@@ -29,19 +24,15 @@ function getActionStoreIconOs(action: WalletEntryAction): WalletOs | null {
 
 function WalletRow({
   match,
-  filterOs,
   isExpanded,
   onToggle,
 }: {
   match: WalletMatch;
-  filterOs: WalletOs | undefined;
   isExpanded: boolean;
   onToggle: () => void;
 }) {
   const t = useTranslations("hodl");
-  const { wallet, platforms } = match;
-  const presentation = resolveWalletPresentation(wallet, platforms);
-  const visibleActions = actionsForPlatform(wallet, filterOs);
+  const { wallet, presentation, actions: visibleActions } = match;
   const totalColumns = walletCriteria.length + 1;
 
   return (
@@ -131,20 +122,10 @@ function WalletRow({
   );
 }
 
-function WalletCard({
-  match,
-  filterOs,
-}: {
-  match: WalletMatch;
-  filterOs: WalletOs | undefined;
-}) {
+function WalletCard({ match }: { match: WalletMatch }) {
   const t = useTranslations("hodl");
-  const { wallet, platforms } = match;
-  const presentation = resolveWalletPresentation(wallet, platforms);
-  const uniqueFeatures = Array.from(
-    new Set(platforms.flatMap((os) => effectiveFeatures(wallet, os))),
-  ).slice(0, 4);
-  const visibleActions = actionsForPlatform(wallet, filterOs);
+  const { wallet, presentation, actions: visibleActions, features } = match;
+  const uniqueFeatures = features.slice(0, 4);
 
   return (
     <div className="border-subtle rounded-[20px] border p-4 sm:p-5">
@@ -278,14 +259,12 @@ export function DesktopResults({
   totalWallets,
   mode,
   onRestartWizard,
-  filterOs,
   hideHeader = false,
 }: {
   matches: WalletMatch[];
   totalWallets: number;
   mode: "intro" | "guided" | "table";
   onRestartWizard: () => void;
-  filterOs: WalletOs | undefined;
   hideHeader?: boolean;
 }) {
   const t = useTranslations("hodl");
@@ -357,7 +336,6 @@ export function DesktopResults({
                   <WalletRow
                     key={match.wallet.id}
                     match={match}
-                    filterOs={filterOs}
                     isExpanded={expandedId === match.wallet.id}
                     onToggle={() =>
                       setExpandedId((current) =>
@@ -376,13 +354,7 @@ export function DesktopResults({
   );
 }
 
-export function MobileResults({
-  matches,
-  filterOs,
-}: {
-  matches: WalletMatch[];
-  filterOs: WalletOs | undefined;
-}) {
+export function MobileResults({ matches }: { matches: WalletMatch[] }) {
   const t = useTranslations("hodl");
 
   if (matches.length === 0) {
@@ -403,7 +375,7 @@ export function MobileResults({
       <MobileLegendBanner />
       <div className="grid gap-4">
         {matches.map((match) => (
-          <WalletCard key={match.wallet.id} match={match} filterOs={filterOs} />
+          <WalletCard key={match.wallet.id} match={match} />
         ))}
       </div>
     </>

@@ -14,7 +14,7 @@ import {
 } from "../src/app/hodl/wallet-finder/taxonomy.ts";
 import { supportedLocaleCodes } from "../src/i18n/locale-registry.ts";
 import { getLocalizedWallets } from "../src/i18n/wallets.ts";
-import { validateTransparency } from "./wallet-transparency-validation.mts";
+import { validateWalletAvailability } from "./wallet-availability-validation.mts";
 
 const allowedOs = new Set<string>(WALLET_OS_IDS);
 const allowedUsers = new Set<string>(WALLET_USER_TYPES);
@@ -310,36 +310,13 @@ kaspaWallets.forEach((wallet, walletIndex) => {
     }
   }
 
-  const platformList: string[] = Array.isArray(wallet.platforms)
-    ? wallet.platforms
-    : [];
-  if (!Array.isArray(wallet.platforms) || wallet.platforms.length === 0) {
-    fail(`${walletPath}.platforms`, "must list at least one platform");
-  } else {
-    const seen = new Set<string>();
-    wallet.platforms.forEach((os, index) => {
-      if (!allowedOs.has(os)) {
-        fail(`${walletPath}.platforms[${index}]`, `invalid OS "${os}"`);
-      } else if (seen.has(os)) {
-        fail(`${walletPath}.platforms[${index}]`, `duplicate platform "${os}"`);
-      } else {
-        seen.add(os);
-      }
-    });
-  }
-  const supportedPlatforms = new Set(platformList);
+  const availability = validateWalletAvailability(walletPath, wallet);
+  errors.push(...availability.errors);
+  const supportedPlatforms = availability.platforms;
+  const platformList = [...supportedPlatforms];
 
   validateFeatures(`${walletPath}.features`, wallet.features);
   validateCheck(`${walletPath}.check`, wallet.check, { partial: false });
-  if (wallet.transparency !== undefined) {
-    errors.push(
-      ...validateTransparency(
-        `${walletPath}.transparency`,
-        wallet.transparency,
-        supportedPlatforms,
-      ),
-    );
-  }
 
   if (wallet.platformOverrides !== undefined) {
     if (
@@ -361,7 +338,7 @@ kaspaWallets.forEach((wallet, walletIndex) => {
         if (!supportedPlatforms.has(os)) {
           fail(
             overridePath,
-            `override targets "${os}" but it is not in platforms`,
+            `override targets "${os}" but it is not in the wallet availability`,
           );
         }
         if (typeof override !== "object" || override === null) {
@@ -372,18 +349,6 @@ kaspaWallets.forEach((wallet, walletIndex) => {
           validateFeatures(`${overridePath}.features`, override.features);
         }
         if (override.check !== undefined) {
-          if (
-            wallet.transparency !== undefined &&
-            typeof override.check === "object" &&
-            override.check !== null &&
-            (override.check as Record<string, unknown>).transparency !==
-              undefined
-          ) {
-            fail(
-              `${overridePath}.check.transparency`,
-              "must not be set when transparency.surfaces is present",
-            );
-          }
           validateCheck(`${overridePath}.check`, override.check, {
             partial: true,
           });
@@ -445,7 +410,7 @@ kaspaWallets.forEach((wallet, walletIndex) => {
           } else if (!supportedPlatforms.has(os)) {
             fail(
               `${actionPath}.platforms[${osIndex}]`,
-              `"${os}" is not in wallet.platforms`,
+              `"${os}" is not in the wallet's platforms or paths`,
             );
           } else {
             seen.add(os);

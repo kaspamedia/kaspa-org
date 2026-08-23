@@ -22,39 +22,18 @@ export type NonEmptyArray<T> = [T, ...T[]];
 
 export type WalletCheck = Record<WalletCriterion, WalletCheckRating>;
 
-export type WalletTransparencyRating = Exclude<
-  WalletCheckRating,
-  "not_applicable"
->;
-export type WalletCompanionOs = Exclude<WalletOs, "hardware">;
-
-export type WalletTransparencySurface =
-  | {
-      kind: "firmware";
-      rating: WalletTransparencyRating;
-      platforms?: never;
-    }
-  | {
-      kind: "application";
-      rating: WalletTransparencyRating;
-      platforms: NonEmptyArray<WalletCompanionOs>;
-    };
-
-export type WalletTransparency = {
-  surfaces: NonEmptyArray<WalletTransparencySurface>;
+export type WalletRatingBreakdownItem = {
+  rating: WalletCheckRating;
+  platforms: NonEmptyArray<WalletOs>;
 };
-
-export type WalletRatingBreakdownItem =
-  | WalletTransparencySurface
-  | {
-      kind: "platform";
-      rating: WalletCheckRating;
-      platforms: NonEmptyArray<WalletOs>;
-    };
 
 export type WalletPlatformOverride = {
   features?: WalletFeature[];
   check?: Partial<WalletCheck>;
+};
+
+export type WalletUsagePath = {
+  platforms: NonEmptyArray<WalletOs>;
 };
 
 export type WalletAction = {
@@ -68,7 +47,7 @@ export type WalletReview = {
   submission: string;
 };
 
-export type KaspaWallet = {
+type WalletDetails = {
   id: string;
   title: string;
   icon: string;
@@ -76,14 +55,23 @@ export type KaspaWallet = {
   summary: string;
   review?: WalletReview;
 
-  platforms: NonEmptyArray<WalletOs>;
   features: WalletFeature[];
   check: WalletCheck;
-  transparency?: WalletTransparency;
   platformOverrides?: Partial<Record<WalletOs, WalletPlatformOverride>>;
-
   actions: NonEmptyArray<WalletAction>;
 };
+
+type WalletAvailability =
+  | {
+      platforms: NonEmptyArray<WalletOs>;
+      paths?: never;
+    }
+  | {
+      platforms?: never;
+      paths: NonEmptyArray<WalletUsagePath>;
+    };
+
+export type KaspaWallet = WalletDetails & WalletAvailability;
 
 export type WalletFilters = {
   os?: WalletOs;

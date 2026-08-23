@@ -42,20 +42,16 @@ must use `check.transparency: "caution"`.
 ## Submission Rules
 
 - Add or update exactly one wallet record per pull request.
+- Use one record for one wallet product. Keep OS variants together; use separate
+  records for independently named products or models with their own setup and
+  security characteristics.
 - Use a stable lowercase, hyphen-separated `id`, for example `example-wallet`.
 - Add the wallet icon at `public/hodl/wallets/<wallet-id>/icon.<ext>`.
 - Set `icon` to `/hodl/wallets/<wallet-id>/icon.<ext>`.
-- List every supported OS in `platforms`.
-- Set wallet-level `features` and `check` defaults. Use the rating rubric below
-  and provide evidence in the pull request. Use `platformOverrides` only when
-  one platform genuinely differs. When `transparency.surfaces` is present, its
-  ratings replace `check.transparency` in the wallet finder.
-- For hardware wallets that require companion apps, list both `hardware` and
-  the supported companion app OSs. Use wallet-level ratings for the app-platform
-  defaults, then add hardware-specific overrides where needed.
-- When a hardware wallet's required firmware and companion applications have
-  different transparency ratings, describe those parts with
-  `transparency.surfaces` as documented below.
+- Use `platforms` for independently usable OSs or `paths` for components that
+  must be used together, never both.
+- Set wallet-level `features` and `check` defaults using the rubric below. Use
+  `platformOverrides` only for genuine platform differences.
 - List every acquisition path in `actions`. Use `platforms` on an action only
   when the link is OS-specific (App Store, Google Play, OS-specific downloads).
 - Use official wallet links.
@@ -108,19 +104,19 @@ mean the submitter is expected to provide translations.
 
 ## Schema
 
-| Field               | Required | Notes                                                                                                                 |
-| ------------------- | -------- | --------------------------------------------------------------------------------------------------------------------- |
-| `id`                | yes      | Stable kebab-case identifier. Must match the icon folder name.                                                        |
-| `title`             | yes      | Wallet name shown in the list. Wallets are displayed alphabetically by this value.                                    |
-| `icon`              | yes      | `/hodl/wallets/<id>/icon.<ext>`.                                                                                      |
-| `user`              | yes      | `beginner` (approachable) or `experienced` (technical familiarity assumed).                                           |
-| `summary`           | yes      | Short, neutral English description. Maintainers own translated versions.                                              |
-| `platforms`         | yes      | Non-empty list of supported OSs from `windows`, `mac`, `linux`, `ios`, `android`, `hardware`.                         |
-| `features`          | yes      | Default features that apply to every platform. Use `[]` if none.                                                      |
-| `check`             | yes      | Default rating per criterion (`control`, `validation`, `transparency`, `fees`). See the transparency exception below. |
-| `transparency`      | no       | Hardware firmware and companion-application transparency ratings when those required parts differ.                    |
-| `platformOverrides` | no       | Per-OS overrides for `features` and/or specific criteria in `check`. Use only when a platform genuinely differs.      |
-| `actions`           | yes      | Non-empty list of acquisition paths. Each has `action`, `link`, optional `platforms` to scope to specific OSs.        |
+| Field               | Required    | Notes                                                                                                            |
+| ------------------- | ----------- | ---------------------------------------------------------------------------------------------------------------- |
+| `id`                | yes         | Stable kebab-case identifier. Must match the icon folder name.                                                   |
+| `title`             | yes         | Wallet name shown in the list. Wallets are displayed alphabetically by this value.                               |
+| `icon`              | yes         | `/hodl/wallets/<id>/icon.<ext>`.                                                                                 |
+| `user`              | yes         | `beginner` (approachable) or `experienced` (technical familiarity assumed).                                      |
+| `summary`           | yes         | Short, neutral English description. Maintainers own translated versions.                                         |
+| `platforms`         | conditional | Non-empty list of independently usable OSs. Use this or `paths`, never both.                                     |
+| `paths`             | conditional | Non-empty list of platform combinations that must be used together. Use this or `platforms`, never both.         |
+| `features`          | yes         | Default features inherited by each platform. Use `[]` if none.                                                   |
+| `check`             | yes         | Default rating per criterion (`control`, `validation`, `transparency`, `fees`).                                  |
+| `platformOverrides` | no          | Per-OS overrides for `features` and/or specific criteria in `check`. Use only when a platform genuinely differs. |
+| `actions`           | yes         | Non-empty list of acquisition paths. Each has `action`, `link`, optional `platforms` to scope to specific OSs.   |
 
 ### Rating rubric
 
@@ -140,46 +136,11 @@ If you are unsure, choose the cautious rating and explain why.
 ### Calculated display ratings
 
 Wallet records store only the rubric values above. The wallet finder calculates
-`mixed` when the applicable ratings differ across the selected platforms or
-required surfaces. `not_applicable` ratings are excluded from that calculation,
-so hardware `not_applicable` plus companion-app `caution` displays as `caution`,
-not `mixed`.
-
-### Transparency surfaces
-
-Use `transparency.surfaces` only for a hardware wallet whose required firmware
-and companion applications have different transparency ratings, such as
-closed-source device firmware and open-source companion applications:
-
-```ts
-check: {
-  control: "good",
-  validation: "caution",
-  transparency: "acceptable",
-  fees: "acceptable",
-},
-transparency: {
-  surfaces: [
-    { kind: "firmware", rating: "caution" },
-    {
-      kind: "application",
-      rating: "acceptable",
-      platforms: ["android", "ios"],
-    },
-  ],
-},
-```
-
-Firmware surfaces are unscoped. Application surfaces require one or more
-supported companion OSs and cannot use `hardware`. Each surface uses the
-transparency rubric above; `mixed` is presentation-only and cannot be stored.
-
-When present, `transparency.surfaces` must contain exactly one firmware surface
-and cover every supported companion OS exactly once. These surfaces are
-authoritative in the wallet finder; keep the still-required
-`check.transparency` for schema compatibility, but do not set transparency in
-`platformOverrides`. Wallets without surface declarations continue to use
-`check.transparency` and any platform overrides.
+each rating across complete usable paths. An OS filter selects paths containing
+that OS; selecting `hardware` can include several companion paths. `mixed`
+appears when the applicable platform ratings differ across the selected paths.
+`not_applicable` ratings are excluded, so hardware `not_applicable`
+plus companion-app `caution` displays as `caution`, not `mixed`.
 
 ### Action types
 
@@ -216,25 +177,21 @@ platformOverrides: {
 The override merges into `check`. Unspecified criteria fall through to the
 wallet-level value.
 
-Do not set `platformOverrides.<os>.check.transparency` when
-`transparency.surfaces` is present. Surface ratings already express every
-required transparency difference, and the validator rejects competing
-transparency overrides.
-
 If a wallet's source repo or web URL is OS-specific, express it as multiple
 `actions` with their own `platforms` scope rather than putting the links on
 overrides.
 
 ### Hardware platforms
 
-If `platforms` includes `hardware`, the effective `validation` rating for the
+If a wallet supports `hardware`, the effective `validation` rating for the
 hardware platform must be `not_applicable`. Set `check.validation` to
 `not_applicable` for hardware-only wallets, or override on
 `platformOverrides.hardware.check.validation` for wallets with companion apps.
 
 For hardware wallets that require Android, iOS, Windows, macOS, or Linux
 companion apps, use the companion app's validation behavior as the wallet-level
-value. Then override only the hardware platform:
+value. Declare each combination that can actually be used, then override only
+the hardware platform:
 
 ```ts
 check: {
@@ -243,12 +200,26 @@ check: {
   transparency: "acceptable",
   fees: "acceptable",
 },
+paths: [
+  { platforms: ["hardware", "android"] },
+  { platforms: ["hardware", "ios"] },
+],
 platformOverrides: {
   hardware: {
-    check: { validation: "not_applicable" },
+    check: {
+      validation: "not_applicable",
+      transparency: "caution",
+    },
   },
 },
 ```
+
+For transparency, the `hardware` rating describes device firmware; Android,
+iOS, Windows, macOS, and Linux ratings describe the corresponding companion
+application. The tooltip labels those parts automatically.
+
+Each entry in `platforms` is independently usable. Each entry in `paths` is a
+combination whose components must be used together.
 
 If the companion app lets users choose a Kaspa node, `validation: "acceptable"`
 may fit. If it uses fixed wallet-controlled nodes, use `validation: "caution"`.

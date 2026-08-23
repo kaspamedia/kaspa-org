@@ -1,129 +1,161 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { validateTransparency } from "../../scripts/wallet-transparency-validation.mts";
-import {
-  createWalletFinderModel,
-  resolveWalletPresentation,
-} from "../../src/app/hodl/wallet-finder/filterWallets.ts";
+import { validateWalletAvailability } from "../../scripts/wallet-availability-validation.mts";
+import { createWalletFinderModel } from "../../src/app/hodl/wallet-finder/walletModel.ts";
 import type { KaspaWallet } from "../../src/app/hodl/wallet-finder/types.ts";
 
-function walletFixture({
-  check,
-  ...overrides
-}: Omit<Partial<KaspaWallet>, "check"> & {
-  check?: Partial<KaspaWallet["check"]>;
-}): KaspaWallet {
-  return {
-    id: "test-wallet",
-    title: "Test Wallet",
-    icon: "/hodl/wallets/test-wallet/icon.svg",
-    user: "beginner",
-    summary: "A wallet test fixture.",
-    platforms: ["android"],
-    features: [],
-    check: {
-      control: "good",
-      validation: "acceptable",
-      transparency: "acceptable",
-      fees: "good",
-      ...check,
-    },
-    actions: [{ action: "open", link: "https://example.com" }],
-    ...overrides,
-  };
-}
+const details: Pick<
+  KaspaWallet,
+  | "id"
+  | "title"
+  | "icon"
+  | "user"
+  | "summary"
+  | "features"
+  | "check"
+  | "actions"
+> = {
+  id: "test-wallet",
+  title: "Test Wallet",
+  icon: "/hodl/wallets/test-wallet/icon.svg",
+  user: "beginner",
+  summary: "A wallet test fixture.",
+  features: [],
+  check: {
+    control: "good",
+    validation: "acceptable",
+    transparency: "acceptable",
+    fees: "good",
+  },
+  actions: [{ action: "open", link: "https://example.com" }],
+};
 
-test("platform overrides remain mixed through non-platform filters", () => {
-  const wallet = walletFixture({
+test("platform differences remain visible through non-platform filters", () => {
+  const wallet: KaspaWallet = {
+    ...details,
     platforms: ["android", "ios"],
     features: ["two_fa"],
     platformOverrides: {
       ios: { check: { transparency: "caution", fees: "caution" } },
     },
-  });
+  };
 
   const match = createWalletFinderModel([wallet], {
     important: [],
     features: ["two_fa"],
   }).matches[0];
 
-  const presentation = resolveWalletPresentation(wallet, match.platforms);
-  assert.equal(presentation.ratings.transparency, "mixed");
-  assert.equal(presentation.ratings.fees, "mixed");
-  assert.deepEqual(presentation.breakdowns.fees, [
-    { kind: "platform", platforms: ["android"], rating: "good" },
-    { kind: "platform", platforms: ["ios"], rating: "caution" },
+  assert.equal(match.presentation.ratings.transparency, "mixed");
+  assert.equal(match.presentation.ratings.fees, "mixed");
+  assert.deepEqual(match.presentation.breakdowns.fees, [
+    { platforms: ["android"], rating: "good" },
+    { platforms: ["ios"], rating: "caution" },
   ]);
 });
 
-test("wallet validation enforces transparency surface scope", () => {
-  assert.deepEqual(
-    validateTransparency(
-      "wallet.transparency",
-      {
-        surfaces: [
-          {
-            kind: "application",
-            rating: "acceptable",
-            platforms: ["android", "ios"],
-          },
-        ],
-      },
-      new Set(["android", "ios"]),
-    ),
-    [
-      "wallet.transparency: requires hardware and at least one companion application platform",
+test("a hardware path returns every required platform and relevant action", () => {
+  const wallet: KaspaWallet = {
+    ...details,
+    paths: [
+      { platforms: ["hardware", "android"] },
+      { platforms: ["hardware", "ios"] },
     ],
-  );
-
-  assert.deepEqual(
-    validateTransparency(
-      "wallet.transparency",
-      {
-        surfaces: [
-          { kind: "firmware", rating: "good" },
-          { kind: "application", rating: "acceptable", platforms: ["android"] },
-          { kind: "application", rating: "caution", platforms: ["android"] },
-        ],
-      },
-      new Set(["hardware", "android", "ios"]),
-    ),
-    [
-      'wallet.transparency.surfaces[2].platforms[0]: platform "android" is already covered by another application surface',
-      'wallet.transparency.surfaces: must cover companion platform "ios"',
-    ],
-  );
-});
-
-test("explicit transparency and platform ratings resolve through one seam", () => {
-  const wallet = walletFixture({
-    platforms: ["hardware", "android", "ios"],
-    check: { validation: "caution" },
+    check: { ...details.check, validation: "good" },
     platformOverrides: {
-      hardware: { check: { validation: "not_applicable" } },
+      hardware: {
+        check: { validation: "not_applicable", transparency: "caution" },
+      },
     },
-    transparency: {
-      surfaces: [
-        { kind: "firmware", rating: "good" },
-        { kind: "application", rating: "good", platforms: ["android"] },
-        { kind: "application", rating: "caution", platforms: ["ios"] },
-      ],
-    },
-  });
+    actions: [
+      {
+        action: "google_play",
+        link: "https://example.com/android",
+        platforms: ["android"],
+      },
+      {
+        action: "app_store",
+        link: "https://example.com/ios",
+        platforms: ["ios"],
+      },
+    ],
+  };
 
-  const all = resolveWalletPresentation(wallet, wallet.platforms);
-  assert.equal(all.ratings.validation, "caution");
-  const iosPresentation = resolveWalletPresentation(wallet, ["ios"]);
-  assert.equal(iosPresentation.ratings.transparency, "mixed");
-  assert.deepEqual(iosPresentation.breakdowns.transparency, [
-    { kind: "firmware", rating: "good" },
-    { kind: "application", rating: "caution", platforms: ["ios"] },
+  const android = createWalletFinderModel([wallet], {
+    os: "android",
+    important: [],
+    features: [],
+  }).matches[0];
+  assert.deepEqual(android.platforms, ["hardware", "android"]);
+  assert.deepEqual(android.actions, [wallet.actions[0]]);
+  assert.equal(android.presentation.ratings.validation, "good");
+  assert.deepEqual(android.presentation.breakdowns.validation, [
+    { platforms: ["hardware"], rating: "not_applicable" },
+    { platforms: ["android"], rating: "good" },
   ]);
+  assert.equal(android.presentation.ratings.transparency, "mixed");
 
-  const transparentOnly = createWalletFinderModel([wallet], {
+  const hardware = createWalletFinderModel([wallet], {
+    os: "hardware",
+    important: ["validation"],
+    features: [],
+  }).matches[0];
+  assert.deepEqual(hardware.platforms, ["hardware", "android", "ios"]);
+  assert.deepEqual(hardware.actions, wallet.actions);
+});
+
+test("important criteria keep only complete paths that satisfy them", () => {
+  const wallet: KaspaWallet = {
+    ...details,
+    paths: [
+      { platforms: ["hardware", "android"] },
+      { platforms: ["hardware", "ios"] },
+    ],
+    check: { ...details.check, transparency: "good" },
+    platformOverrides: {
+      ios: { check: { transparency: "caution" } },
+    },
+  };
+
+  const match = createWalletFinderModel([wallet], {
     important: ["transparency"],
     features: [],
+  }).matches[0];
+
+  assert.deepEqual(match.paths, [{ platforms: ["hardware", "android"] }]);
+  assert.deepEqual(match.platforms, ["hardware", "android"]);
+  assert.equal(match.presentation.ratings.transparency, "good");
+});
+
+test("wallet availability accepts one simple list or one path matrix", () => {
+  const simple = validateWalletAvailability("wallet", {
+    platforms: ["android", "ios"],
   });
-  assert.deepEqual(transparentOnly.matches[0]?.platforms, ["android"]);
+  assert.deepEqual(simple.errors, []);
+  assert.deepEqual([...simple.platforms], ["android", "ios"]);
+
+  const advanced = validateWalletAvailability("wallet", {
+    paths: [
+      { platforms: ["hardware", "android"] },
+      { platforms: ["hardware", "ios"] },
+    ],
+  });
+  assert.deepEqual(advanced.errors, []);
+  assert.deepEqual([...advanced.platforms], ["hardware", "android", "ios"]);
+
+  assert.deepEqual(
+    validateWalletAvailability("wallet", {
+      platforms: ["hardware", "android"],
+    }).errors,
+    [
+      "wallet.platforms: hardware with companion platforms must use paths to declare working combinations",
+    ],
+  );
+  assert.deepEqual(
+    validateWalletAvailability("wallet", {
+      platforms: ["android"],
+      paths: [{ platforms: ["android"] }],
+    }).errors,
+    ["wallet: must define exactly one of platforms or paths"],
+  );
 });

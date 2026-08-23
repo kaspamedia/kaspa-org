@@ -106,21 +106,18 @@ export function RatingTooltip({
 
   const criterionLabel = t(`walletFinder.criteria.${criterion}.label`);
   const ratingLabel = t(`walletFinder.ratings.${rating}`);
-  const breakdownLabel = (item: WalletRatingBreakdownItem) => {
-    if (item.kind === "firmware") {
-      return t("walletFinder.transparencySurfaces.firmware");
-    }
-
-    const platformLabel = item.platforms
-      .map((platform) => t(`walletFinder.operatingSystems.${platform}`))
+  const breakdownLabel = (item: WalletRatingBreakdownItem) =>
+    item.platforms
+      .map((platform) => {
+        const platformLabel = t(`walletFinder.operatingSystems.${platform}`);
+        if (criterion !== "transparency") return platformLabel;
+        return platform === "hardware"
+          ? t("walletFinder.transparencySurfaces.firmware")
+          : t("walletFinder.transparencySurfaces.application", {
+              platform: platformLabel,
+            });
+      })
       .join(" / ");
-
-    return item.kind === "application"
-      ? t("walletFinder.transparencySurfaces.application", {
-          platform: platformLabel ?? "",
-        })
-      : platformLabel;
-  };
   const breakdownReasons = Array.from(
     breakdown.reduce((groups, item) => {
       const labels = groups.get(item.rating) ?? [];
@@ -304,7 +301,7 @@ export function RatingTooltip({
                   {breakdown.map((item) => {
                     return (
                       <li
-                        key={`${item.kind}-${item.kind === "firmware" ? "required" : item.platforms.join("-")}`}
+                        key={item.platforms.join("-")}
                         className="flex items-center justify-between gap-3"
                       >
                         <span>{breakdownLabel(item)}</span>
