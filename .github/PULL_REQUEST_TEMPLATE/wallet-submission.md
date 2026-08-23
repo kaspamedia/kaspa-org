@@ -68,11 +68,13 @@ Translation:
 
 ### Criteria ratings and evidence
 
-The wallet record carries a single `check` block that applies to every platform. Use the rating rubric in `docs/wallet-submissions.md`, and include evidence for each rating. Use `platformOverrides.<os>.check` only when one platform genuinely differs (rare).
+The wallet record carries a single `check` block of default ratings. Use the rating rubric in `docs/wallet-submissions.md`, and include evidence for each rating. Use `platformOverrides.<os>.check` only when one platform genuinely differs (rare). When `transparency.surfaces` is present, its ratings replace `check.transparency` in the wallet finder.
 
 For hardware wallets with companion apps, use the wallet-level `check` for the app-platform defaults, then add hardware-specific overrides. Use `platformOverrides.hardware.check.validation: "not_applicable"` for the hardware device itself. For validation, explain whether the companion app runs a Kaspa node, lets users choose a Kaspa node, or uses wallet-controlled nodes.
 
-When required firmware and companion applications have different transparency ratings, add `transparency.surfaces`. It must cover the firmware and every supported companion OS. Each surface uses `good`, `acceptable`, or `caution`; `mixed` is calculated for display and cannot be stored.
+For a hardware wallet whose required firmware and companion applications have different transparency ratings, add `transparency.surfaces`. Include exactly one firmware surface and cover every supported companion OS exactly once. Each surface uses `good`, `acceptable`, or `caution`; do not also set transparency in `platformOverrides`.
+
+`mixed` is calculated for display when applicable platform or surface ratings differ and cannot be stored. `not_applicable` is ignored during that calculation and does not make a rating mixed.
 
 | Criterion    | Proposed rating | Evidence |
 | ------------ | --------------- | -------- |
@@ -125,7 +127,8 @@ List every way a user can install or open the wallet. Each acquisition path is o
 - [ ] If I included an optional translation above, it is for a language currently published on the site
 - [ ] `platforms` lists every supported OS
 - [ ] `features` and `check` describe the wallet's defaults; per-OS variation lives in `platformOverrides`
-- [ ] If I added `transparency.surfaces`, it covers the firmware and every supported companion OS
+- [ ] If I added `transparency.surfaces`, this is a hardware wallet with companion apps, it includes exactly one firmware surface, and it covers every companion OS exactly once
+- [ ] I did not combine `transparency.surfaces` with transparency ratings in `platformOverrides`
 - [ ] `actions` covers every acquisition path; platform-specific links use `platforms`
 - [ ] Links point to official wallet pages
 - [ ] I provided official links and evidence that maintainers can verify

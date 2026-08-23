@@ -372,6 +372,18 @@ kaspaWallets.forEach((wallet, walletIndex) => {
           validateFeatures(`${overridePath}.features`, override.features);
         }
         if (override.check !== undefined) {
+          if (
+            wallet.transparency !== undefined &&
+            typeof override.check === "object" &&
+            override.check !== null &&
+            (override.check as Record<string, unknown>).transparency !==
+              undefined
+          ) {
+            fail(
+              `${overridePath}.check.transparency`,
+              "must not be set when transparency.surfaces is present",
+            );
+          }
           validateCheck(`${overridePath}.check`, override.check, {
             partial: true,
           });

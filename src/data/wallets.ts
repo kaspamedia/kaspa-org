@@ -8,10 +8,11 @@ Required:
 - put the icon under public/hodl/wallets/<wallet-id>/icon.<ext>
 - list every supported OS in `platforms`
 - choose user as "beginner" or "experienced"
-- set wallet-level `features` and `check` to the values that apply to every
-  platform; use `platformOverrides` only when one platform genuinely differs
-- use `transparency.surfaces` when required firmware and companion applications
-  have different transparency ratings; see docs/wallet-submissions.md
+- set wallet-level `features` and `check` defaults; use `platformOverrides` only
+  when one platform genuinely differs
+- for hardware wallets whose required firmware and companion applications have
+  different transparency ratings, use `transparency.surfaces`; those surfaces
+  replace `check.transparency` in the wallet finder
 - list every acquisition path in `actions`. An action without a `platforms`
   field applies to every platform the wallet supports; use the field to scope
   store listings (App Store, Google Play) or per-OS downloads.

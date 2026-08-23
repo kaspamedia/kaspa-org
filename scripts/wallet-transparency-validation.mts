@@ -40,6 +40,16 @@ export function validateTransparency(
     return errors;
   }
 
+  if (
+    !supportedPlatforms.has("hardware") ||
+    !Array.from(supportedPlatforms).some((platform) => platform !== "hardware")
+  ) {
+    fail(
+      path,
+      "requires hardware and at least one companion application platform",
+    );
+  }
+
   let hasFirmware = false;
   const coveredApplicationPlatforms = new Set<string>();
 

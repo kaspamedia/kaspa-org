@@ -57,20 +57,40 @@ test("platform overrides remain mixed through non-platform filters", () => {
   ]);
 });
 
-test("wallet validation rejects overlapping application transparency scopes", () => {
+test("wallet validation enforces transparency surface scope", () => {
   assert.deepEqual(
     validateTransparency(
       "wallet.transparency",
       {
         surfaces: [
-          { kind: "application", rating: "acceptable", platforms: ["android"] },
-          { kind: "application", rating: "caution", platforms: ["android"] },
+          {
+            kind: "application",
+            rating: "acceptable",
+            platforms: ["android", "ios"],
+          },
         ],
       },
       new Set(["android", "ios"]),
     ),
     [
-      'wallet.transparency.surfaces[1].platforms[0]: platform "android" is already covered by another application surface',
+      "wallet.transparency: requires hardware and at least one companion application platform",
+    ],
+  );
+
+  assert.deepEqual(
+    validateTransparency(
+      "wallet.transparency",
+      {
+        surfaces: [
+          { kind: "firmware", rating: "good" },
+          { kind: "application", rating: "acceptable", platforms: ["android"] },
+          { kind: "application", rating: "caution", platforms: ["android"] },
+        ],
+      },
+      new Set(["hardware", "android", "ios"]),
+    ),
+    [
+      'wallet.transparency.surfaces[2].platforms[0]: platform "android" is already covered by another application surface',
       'wallet.transparency.surfaces: must cover companion platform "ios"',
     ],
   );
