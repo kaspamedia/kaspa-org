@@ -259,7 +259,7 @@
           "good": "Ejecuta de forma predeterminada su propio nodo completo de Kaspa, por lo que valida las transacciones de manera independiente.",
           "acceptable": "Permite conectarla a cualquier nodo de Kaspa de confianza, pero no puede funcionar como nodo por sí misma.",
           "caution": "Solo se conecta a una infraestructura centralizada fija, por lo que debes confiar en el nodo elegido por la billetera.",
-          "not_applicable": "Es solo un dispositivo de hardware y no gestiona las transacciones por sí mismo."
+          "not_applicable": "El dispositivo de hardware firma las transacciones, mientras que el software complementario se encarga del acceso a la red y la validación."
         },
         "transparency": {
           "good": "El código es público y las verificaciones independientes permiten confirmar que el software publicado se creó a partir de él.",

@@ -90,6 +90,7 @@ export function RatingTooltip({
   const [tipRect, setTipRect] = useState<DOMRect | null>(null);
   const ref = useRef<HTMLSpanElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
+  const closeTimerRef = useRef<number | undefined>(undefined);
   const hasBreakdown = breakdown.length > 0;
 
   const explanationKey =
@@ -137,32 +138,58 @@ export function RatingTooltip({
   });
   const tooltipWidth = hasBreakdown ? 300 : TOOLTIP_WIDTH;
 
+  const cancelClose = () => window.clearTimeout(closeTimerRef.current);
+
   const open = () => {
+    cancelClose();
     if (ref.current) {
       setTipRect(ref.current.getBoundingClientRect());
       setVisible(true);
     }
   };
 
-  const close = () => setVisible(false);
+  const close = () => {
+    cancelClose();
+    setVisible(false);
+  };
+
+  const scheduleMouseClose = (event: { pointerType: string }) => {
+    if (event.pointerType !== "mouse") return;
+    cancelClose();
+    closeTimerRef.current = window.setTimeout(close, 100);
+  };
 
   useEffect(() => {
     if (!visible) return;
     const handlePointer = (event: MouseEvent | TouchEvent) => {
-      if (ref.current && !ref.current.contains(event.target as Node)) {
+      const target = event.target as Node;
+      if (
+        !ref.current?.contains(target) &&
+        !tooltipRef.current?.contains(target)
+      ) {
         setVisible(false);
       }
     };
-    const handleScroll = () => setVisible(false);
+    const handleScroll = (event: Event) => {
+      if (
+        event.target instanceof Node &&
+        tooltipRef.current?.contains(event.target)
+      ) {
+        return;
+      }
+      setVisible(false);
+    };
+    const handleResize = () => setVisible(false);
     document.addEventListener("mousedown", handlePointer);
     document.addEventListener("touchstart", handlePointer, { passive: true });
     window.addEventListener("scroll", handleScroll, true);
-    window.addEventListener("resize", handleScroll);
+    window.addEventListener("resize", handleResize);
     return () => {
+      cancelClose();
       document.removeEventListener("mousedown", handlePointer);
       document.removeEventListener("touchstart", handlePointer);
       window.removeEventListener("scroll", handleScroll, true);
-      window.removeEventListener("resize", handleScroll);
+      window.removeEventListener("resize", handleResize);
     };
   }, [visible]);
 
@@ -217,9 +244,7 @@ export function RatingTooltip({
         onPointerEnter={(event) => {
           if (event.pointerType === "mouse") open();
         }}
-        onPointerLeave={(event) => {
-          if (event.pointerType === "mouse") close();
-        }}
+        onPointerLeave={scheduleMouseClose}
         onClick={(event) => {
           event.stopPropagation();
           if (visible) close();
@@ -244,10 +269,20 @@ export function RatingTooltip({
         createPortal(
           <div
             ref={tooltipRef}
-            className={`pointer-events-none fixed z-[9999] rounded-[10px] border border-[var(--border-subtle)] bg-[var(--bg)] p-3 text-[11px] leading-[1.5] text-[var(--text-secondary)] shadow-md ${hasBreakdown ? "w-[300px]" : "w-60"}`}
+            role="tooltip"
+            tabIndex={0}
+            className={`fixed z-[9999] max-h-[calc(100dvh-16px)] overflow-y-auto overscroll-contain rounded-[10px] border border-[var(--border-subtle)] bg-[var(--bg)] p-3 text-[11px] leading-[1.5] text-[var(--text-secondary)] shadow-md ${hasBreakdown ? "w-[300px]" : "w-60"}`}
             style={{
               top: tipRect.bottom + 6,
               left: tooltipLeft,
+            }}
+            onPointerEnter={cancelClose}
+            onPointerLeave={scheduleMouseClose}
+            onKeyDown={(event) => {
+              if (event.key === "Escape") {
+                close();
+                ref.current?.focus();
+              }
             }}
           >
             <p

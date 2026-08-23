@@ -259,7 +259,7 @@
           "good": "Runs its own full Kaspa node by default, so it validates transactions independently.",
           "acceptable": "Lets you point it at any Kaspa node you trust, but cannot run as a node itself.",
           "caution": "Connects only to fixed centralised infrastructure, so you have to trust the wallet's chosen node.",
-          "not_applicable": "Hardware device only. It does not handle transactions itself."
+          "not_applicable": "The hardware device signs transactions, while companion software handles network access and validation."
         },
         "transparency": {
           "good": "The code is public, and independent checks can verify that the released software was built from it.",
