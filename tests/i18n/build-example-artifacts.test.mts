@@ -322,6 +322,21 @@ test("Spanish Build artifacts are deterministic, complete, and catalog-backed", 
   assert.match(controls, /testnet-11/u);
 });
 
+test("Build artifacts use a locale's registered text direction", async () => {
+  const rtlArtifacts = await createBuildExampleArtifactWorkflow(
+    repositoryRoot,
+    {
+      resolveTextDirection: (locale) => (locale === "es" ? "rtl" : "ltr"),
+    },
+  ).compile("production");
+
+  for (const name of exampleNames) {
+    const spanish = rtlArtifacts[`${name}.es.html`];
+    assert.match(spanish, /<html lang="es" dir="rtl">/u);
+    assert.doesNotMatch(spanish, /<html lang="es" dir="ltr">/u);
+  }
+});
+
 test("catalog interpolation text cannot execute in generated JavaScript", async (t) => {
   const root = await createWorkflowFixture();
   t.after(() => rm(root, { recursive: true, force: true }));

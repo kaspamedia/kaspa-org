@@ -2,6 +2,11 @@ import { expect, test } from "@playwright/test";
 
 import { buildExampleContract } from "../src/i18n/build-example-contract.ts";
 import {
+  defaultLocale,
+  localeRegistry,
+  supportedLocaleCodes,
+} from "../src/i18n/locale-registry.ts";
+import {
   buildProductionFixture,
   createEnglishOnlyProductionFixture,
   createPartialSpanishProductionFixture,
@@ -20,13 +25,20 @@ const productionEnvironment = {
 } as const;
 
 const englishRoutes = publicRouteGolden.map(({ path }) => path);
-const spanishRoutes = localizePublicRouteGolden("es").map(({ path }) => path);
+const translatedProductionLocales = supportedLocaleCodes.filter(
+  (locale) =>
+    locale !== defaultLocale &&
+    localeRegistry[locale].lifecycle === "production",
+);
+const translatedProductionRoutes = translatedProductionLocales.flatMap(
+  (locale) => localizePublicRouteGolden(locale).map(({ path }) => path),
+);
 const internalEnglishRoutes = localizePublicRouteGolden("en").map(
   ({ path }) => path,
 );
 const localizedRouteGolden = new Set([
   ...internalEnglishRoutes,
-  ...spanishRoutes,
+  ...translatedProductionRoutes,
 ]);
 
 test.describe("atomic locale publication profiles", () => {
@@ -60,8 +72,12 @@ test.describe("atomic locale publication profiles", () => {
         .filter((pathname) => localizedRouteGolden.has(pathname))
         .sort();
       expect(localizedPageRoutes).toEqual([...internalEnglishRoutes].sort());
-      expect(prerenderRoutes.has("/es/opengraph-image")).toBe(false);
-      expect(prerenderRoutes.has("/api/i18n/home-proof/es")).toBe(false);
+      for (const locale of translatedProductionLocales) {
+        expect(prerenderRoutes.has(`/${locale}/opengraph-image`)).toBe(false);
+        expect(prerenderRoutes.has(`/api/i18n/home-proof/${locale}`)).toBe(
+          false,
+        );
+      }
 
       for (const pathname of englishRoutes) {
         const response = await scenario.request.get(pathname);
@@ -75,7 +91,7 @@ test.describe("atomic locale publication profiles", () => {
         expect(html, pathname).not.toContain("data-language-selector");
       }
 
-      for (const pathname of spanishRoutes) {
+      for (const pathname of translatedProductionRoutes) {
         const response = await scenario.request.get(pathname, {
           maxRedirects: 0,
         });
@@ -87,9 +103,11 @@ test.describe("atomic locale publication profiles", () => {
 
       for (const pathname of [
         "/missing",
-        "/es/missing",
         "/zz/missing",
-        "/es/missing.txt",
+        ...translatedProductionLocales.flatMap((locale) => [
+          `/${locale}/missing`,
+          `/${locale}/missing.txt`,
+        ]),
       ] as const) {
         const response = await scenario.request.get(pathname, {
           headers: {
@@ -109,10 +127,11 @@ test.describe("atomic locale publication profiles", () => {
       }
 
       for (const pathname of [
-        "/es/opengraph-image",
-        "/api/i18n/home-proof/es",
-        ...buildExampleContract.artifactManifest.urlsByLocale.es,
-        ...buildExampleContract.artifactManifest.urlsByLocale["en-XA"],
+        ...translatedProductionLocales.flatMap((locale) => [
+          `/${locale}/opengraph-image`,
+          `/api/i18n/home-proof/${locale}`,
+        ]),
+        ...buildExampleContract.artifactManifest.localizedUrls,
       ]) {
         const response = await scenario.request.get(pathname, {
           maxRedirects: 0,
@@ -130,7 +149,9 @@ test.describe("atomic locale publication profiles", () => {
           (pathname) => `https://kaspa.org${pathname === "/" ? "" : pathname}`,
         ),
       );
-      expect(sitemap).not.toContain("/es");
+      for (const locale of translatedProductionLocales) {
+        expect(sitemap).not.toContain(`/${locale}`);
+      }
       expect(sitemap).not.toContain("hreflang");
 
       await page.goto(`${scenario.baseUrl}/`);

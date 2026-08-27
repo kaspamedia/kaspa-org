@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import spanishWalletSummaries from "../../messages/es/wallets.json" with { type: "json" };
-import { validateSpanishCatalogContract } from "../../scripts/i18n/spanish-contract.mts";
+import { validateTranslationCatalogContract } from "../../scripts/i18n/translation-contract.mts";
 import {
   getRatingExplanationKey,
   ratingExplanations,
@@ -49,13 +49,14 @@ test("route catalogs do not own wallet records", () => {
   assert.equal("wallets" in spanishMessages.hodl.walletFinder, false);
 });
 
-test("Spanish wallet summaries satisfy the site translation contract", () => {
+test("translated wallet summaries satisfy the shared translation contract", () => {
   const englishWalletSummaries = Object.fromEntries(
     kaspaWallets.map((wallet) => [wallet.id, wallet.summary]),
   );
 
   assert.deepEqual(
-    validateSpanishCatalogContract(
+    validateTranslationCatalogContract(
+      "es",
       "wallets",
       englishWalletSummaries,
       spanishWalletSummaries,
