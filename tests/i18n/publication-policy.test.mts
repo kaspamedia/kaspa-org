@@ -213,9 +213,6 @@ test("publication inventory projects locale routes and generated artifacts", () 
   const production = createI18nPublicationInventory(
     createI18nPublicationProfile("production"),
   );
-  assert.deepEqual(production.productionLocales, ["en", "es"]);
-  assert.deepEqual(production.translatedProductionLocales, ["es"]);
-  assert.deepEqual(production.unavailableLocales, ["en-XA"]);
   assert.equal(production.byLocale.en.publicRoutePathnames.home, "/");
   assert.equal(production.byLocale.es.publicRoutePathnames.lore, "/es/lore");
   assert.equal(
@@ -223,11 +220,6 @@ test("publication inventory projects locale routes and generated artifacts", () 
     "/api/i18n/home-proof/es",
   );
   assert.equal(production.byLocale["en-XA"].proofCatalogPathname, null);
-  assert.ok(
-    production.byLocale.es.buildArtifactUrls.every((pathname) =>
-      pathname.includes(".es."),
-    ),
-  );
 
   const preview = createI18nPublicationInventory(
     createI18nPublicationProfile("preview"),

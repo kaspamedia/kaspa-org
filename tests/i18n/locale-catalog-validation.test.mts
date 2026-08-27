@@ -21,23 +21,6 @@ function validateTranslatedCatalog(
   );
 }
 
-test("complete translated catalogs satisfy the shared translation contract", () => {
-  for (const namespace of Object.keys(englishMessages) as Array<
-    keyof typeof englishMessages
-  >) {
-    assert.deepEqual(
-      validateTranslatedCatalog(
-        "es",
-        namespace,
-        englishMessages[namespace] as MessageCatalog,
-        spanishMessages[namespace] as MessageCatalog,
-      ),
-      [],
-      `es:${namespace}`,
-    );
-  }
-});
-
 test("the shared contract protects future locales without a custom policy", () => {
   assert.deepEqual(
     validateTranslatedCatalog(

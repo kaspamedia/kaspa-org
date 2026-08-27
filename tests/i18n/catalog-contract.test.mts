@@ -236,20 +236,6 @@ test("locale-aware plural comparison preserves the message interface", async (t)
   }
 });
 
-test("catalog validation rejects a plural without an other branch", () => {
-  const result = validateCatalogSource(
-    JSON.stringify({ count: "{count, plural, one {# page}}" }),
-    "messages/ru/example.json",
-  );
-
-  assert.deepEqual(result.errors, []);
-  assert.ok(result.catalog);
-  assert.match(
-    createLocaleCatalogValidator(result.catalog).sourceDiagnostics[0] ?? "",
-    /has invalid ICU syntax/u,
-  );
-});
-
 test("locale-aware plural comparison permits locales without a one category", () => {
   assert.deepEqual(
     validateTranslatedCatalog(

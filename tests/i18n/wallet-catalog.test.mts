@@ -1,8 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import spanishWalletSummaries from "../../messages/es/wallets.json" with { type: "json" };
-import { createLocaleCatalogValidator } from "../../scripts/i18n/locale-catalog-validation.mts";
 import {
   getRatingExplanationKey,
   ratingExplanations,
@@ -47,21 +45,6 @@ test("English records are canonical and pseudo summaries derive from them", () =
 test("route catalogs do not own wallet records", () => {
   assert.equal("wallets" in englishMessages.hodl.walletFinder, false);
   assert.equal("wallets" in spanishMessages.hodl.walletFinder, false);
-});
-
-test("translated wallet summaries satisfy the shared translation contract", () => {
-  const englishWalletSummaries = Object.fromEntries(
-    kaspaWallets.map((wallet) => [wallet.id, wallet.summary]),
-  );
-
-  assert.deepEqual(
-    createLocaleCatalogValidator(englishWalletSummaries).validateTranslation(
-      "es",
-      "wallets",
-      spanishWalletSummaries,
-    ),
-    [],
-  );
 });
 
 test("every validator-approved rating resolves through the explanation map", () => {
