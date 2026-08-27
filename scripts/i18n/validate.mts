@@ -1,8 +1,7 @@
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join, relative } from "node:path";
 
-import { defaultLocale, pseudoLocale } from "../../src/i18n/locale-registry.ts";
-import { installI18nPublicationProfile } from "../../src/i18n/publication-profile-node.ts";
+import { defaultLocale } from "../../src/i18n/locale-registry.ts";
 import { analyzeAppRouteFile, isAppRouteFile } from "./app-route-policy.mts";
 import {
   validateCatalogSource,
@@ -13,7 +12,6 @@ import {
   type LocaleCatalogValidator,
 } from "./locale-catalog-validation.mts";
 
-installI18nPublicationProfile();
 const [
   config,
   manifest,
@@ -33,12 +31,10 @@ const [
   import("../../src/data/wallets.ts"),
   import("../../src/i18n/wallets.ts"),
 ]);
-const { isLocaleProductionReady, localeCodes } = config;
+const { localeCodes } = config;
 const { RESERVED_NOT_FOUND_PATHNAME, routeIds, stablePathnames } = manifest;
-const { getRouteDefinition, listPublishedLocales, resolvePublishedRoute } =
-  site;
-const { assertPreviewLocaleComplete, assertProductionLocaleComplete } =
-  siteValidation;
+const { getRouteDefinition, resolveLocalizedRoute } = site;
+const { assertLocaleComplete } = siteValidation;
 const { englishMessages } = messages;
 const { shouldBypassLocaleRouting } = proxyPolicy;
 const { kaspaWallets } = walletData;
@@ -205,14 +201,15 @@ for (const locale of localeCodes) {
 }
 
 for (const locale of localeCodes) {
-  if (locale === pseudoLocale) continue;
   if (!catalogLocales.includes(locale)) {
-    fail(`messages/${locale}`, "enabled locale catalog directory is missing");
+    fail(
+      `messages/${locale}`,
+      "registered locale catalog directory is missing",
+    );
     continue;
   }
   const requiredForLocale = new Set<string>(["errors", "shared"]);
   for (const routeId of routeIds) {
-    if (!listPublishedLocales(routeId).includes(locale)) continue;
     for (const namespace of getRouteDefinition(routeId).namespaces) {
       requiredForLocale.add(namespace);
     }
@@ -249,27 +246,12 @@ const localizedAdapters = new Set(
 );
 
 for (const routeId of routeIds) {
-  const publishedLocales = listPublishedLocales(routeId);
-  if (!publishedLocales.length)
-    fail("src/i18n/manifest.ts", `${routeId} has no published static params`);
-  for (const locale of publishedLocales) {
-    if (!resolvePublishedRoute(routeId, locale)) {
-      fail(
-        "src/i18n/manifest.ts",
-        `${routeId} cannot resolve published locale ${locale}`,
-      );
-    }
-  }
+  for (const locale of localeCodes) resolveLocalizedRoute(routeId, locale);
 }
 
 for (const locale of localeCodes) {
-  if (locale === defaultLocale) continue;
   try {
-    if (isLocaleProductionReady(locale)) {
-      assertProductionLocaleComplete(locale);
-    } else {
-      assertPreviewLocaleComplete(locale);
-    }
+    assertLocaleComplete(locale);
   } catch (error) {
     fail(
       "src/i18n/site.ts",
@@ -332,7 +314,7 @@ for (const sourcePath of listSourceFiles(join(repositoryRoot, "src", "app"))) {
   const source = readFileSync(sourcePath, "utf8");
   const location = sourcePath.slice(repositoryRoot.length + 1);
   if (/from\s+["']next\/link["']/u.test(source)) {
-    fail(location, "internal links must use the publication-aware i18n Link");
+    fail(location, "internal links must use the route-aware i18n Link");
   }
   if (
     /import\s*\{[^}]*\bLink\b[^}]*\}\s*from\s*["']@\/i18n\/navigation["']/su.test(
@@ -359,8 +341,8 @@ const linkSource = readFileSync(
   join(repositoryRoot, "src", "i18n", "link.tsx"),
   "utf8",
 );
-if (!linkSource.includes("isPathnamePublished")) {
-  fail("src/i18n/link.tsx", "Link must consult the publication matrix");
+if (!linkSource.includes("getRouteIdForPathname")) {
+  fail("src/i18n/link.tsx", "Link must reject unknown route pathnames");
 }
 
 if (errors.length) {
@@ -368,6 +350,6 @@ if (errors.length) {
   process.exitCode = 1;
 } else {
   console.log(
-    `i18n validation passed: ${localeCodes.length} locales, ${routeIds.length} routes, atomic locale publication contracts valid`,
+    `i18n validation passed: ${localeCodes.length} registered locales, ${routeIds.length} routes`,
   );
 }

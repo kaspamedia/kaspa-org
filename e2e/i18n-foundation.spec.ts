@@ -2,18 +2,14 @@ import { createHash } from "node:crypto";
 
 import { expect, test } from "@playwright/test";
 
-import { createUnpublishedAssetsFixture } from "../scripts/i18n/unpublished-route-fixture.mts";
-import { productionI18nPublicationInventory } from "../src/i18n/publication-inventory";
+import { supportedLocaleCodes } from "../src/i18n/locale-registry";
 import {
   localizePublicPath,
   publicRouteGolden,
   readPrerenderRoutePathnames,
   runOnlyInProject,
-  startBuiltLocaleScenario,
   type PublicRouteId,
-} from "./i18n-scenario-harness";
-
-const { productionLocales } = productionI18nPublicationInventory;
+} from "./i18n-route-fixtures";
 
 type EnglishRouteExpectation = {
   description: string;
@@ -311,7 +307,7 @@ test.describe("production i18n foundation contract", () => {
       "/missing.txt",
       "/api/nope",
       "/_vercel/missing",
-      "/__kaspa_i18n_unpublished__/not/found",
+      "/__kaspa_i18n_not_found__/not/found",
     ];
 
     for (const pathname of unknownPaths) {
@@ -372,7 +368,7 @@ test.describe("production i18n foundation contract", () => {
       [...sitemap.matchAll(/<loc>(.*?)<\/loc>/gu)].map((match) => match[1]),
     ).toEqual(
       publicRouteGolden.flatMap(({ path }) =>
-        productionLocales.map((locale) =>
+        supportedLocaleCodes.map((locale) =>
           locale === "en"
             ? `https://kaspa.org${path === "/" ? "" : path}`
             : `https://kaspa.org${localizePublicPath(locale, path)}`,
@@ -405,69 +401,23 @@ test.describe("production i18n foundation contract", () => {
     expect(spanishImage.headers()["content-type"]).toBe("image/png");
   });
 
-  test("routes an enabled but unpublished page through the production miss stack", async ({
-    page,
-  }) => {
-    test.setTimeout(180_000);
-    const scenario = await startBuiltLocaleScenario({
-      createFixture: createUnpublishedAssetsFixture,
-      validateClientPayload: false,
+  test("keeps the logo as a normal link", async ({ page }) => {
+    await page.goto("/");
+    const logo = page.getByRole("link", { name: "Kaspa home" });
+    await expect(logo).not.toHaveAttribute("aria-haspopup");
+    await expect(logo).not.toHaveAttribute("aria-expanded");
+    await expect(logo).not.toHaveAttribute("aria-controls");
+    await expect(logo).not.toHaveClass(/\[-webkit-touch-callout:none\]/u);
+    const contextMenuCancelled = await logo.evaluate((element) => {
+      const event = new MouseEvent("contextmenu", {
+        bubbles: true,
+        button: 2,
+        cancelable: true,
+      });
+      element.dispatchEvent(event);
+      return event.defaultPrevented;
     });
-
-    try {
-      const prerenderRoutes = await readPrerenderRoutePathnames(
-        scenario.fixtureRoot,
-      );
-      expect(prerenderRoutes.has("/en/assets")).toBe(false);
-
-      const unpublishedResponse = await scenario.request.get("/assets", {
-        headers: {
-          "x-kaspa-i18n-route-miss": "1",
-          "x-next-intl-locale": "es",
-        },
-        maxRedirects: 0,
-      });
-      expect(unpublishedResponse.status()).toBe(404);
-      expect(unpublishedResponse.headers().location).toBeUndefined();
-      const unpublishedHtml = await unpublishedResponse.text();
-      expect(unpublishedHtml).toContain('<html lang="en" dir="ltr"');
-      expect(unpublishedHtml).toContain('data-kaspa-global-not-found="true"');
-      expect(unpublishedHtml).toContain("Wrong route.");
-      expect(unpublishedHtml).toContain("Right network.");
-
-      const publishedResponse = await scenario.request.get("/lore");
-      expect(publishedResponse.status()).toBe(200);
-      expect(publishedResponse.headers()["x-nextjs-cache"]).toBe("HIT");
-
-      await page.goto(`${scenario.baseUrl}/`);
-      const logo = page.getByRole("link", { name: "Kaspa home" });
-      await expect(logo).not.toHaveAttribute("aria-haspopup");
-      await expect(logo).not.toHaveAttribute("aria-expanded");
-      await expect(logo).not.toHaveAttribute("aria-controls");
-      await expect(logo).not.toHaveClass(/\[-webkit-touch-callout:none\]/u);
-      const contextMenuCancelled = await logo.evaluate((element) => {
-        const event = new MouseEvent("contextmenu", {
-          bubbles: true,
-          button: 2,
-          cancelable: true,
-        });
-        element.dispatchEvent(event);
-        return event.defaultPrevented;
-      });
-      expect(contextMenuCancelled).toBe(false);
-      await expect(page.getByRole("menu")).toHaveCount(0);
-
-      await page.waitForTimeout(250);
-      for (const forbidden of [
-        /NoFallbackError/u,
-        /ERR_INVALID_URL/u,
-        /Internal Server Error/u,
-        /TypeError: Invalid URL/u,
-      ]) {
-        expect(scenario.readLogs()).not.toMatch(forbidden);
-      }
-    } finally {
-      await scenario.dispose();
-    }
+    expect(contextMenuCancelled).toBe(false);
+    await expect(page.getByRole("menu")).toHaveCount(0);
   });
 });

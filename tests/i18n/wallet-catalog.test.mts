@@ -32,14 +32,8 @@ test("every supported locale returns the complete canonical wallet set", () => {
   }
 });
 
-test("English records are canonical and pseudo summaries derive from them", () => {
+test("English records are canonical", () => {
   assert.deepEqual(getLocalizedWallets("en"), kaspaWallets);
-
-  const pseudoWallets = getLocalizedWallets("en-XA");
-  for (const [index, wallet] of pseudoWallets.entries()) {
-    assert.notEqual(wallet.summary, kaspaWallets[index].summary);
-    assert.match(wallet.summary, /^\[!! /u);
-  }
 });
 
 test("route catalogs do not own wallet records", () => {

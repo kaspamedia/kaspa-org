@@ -3,18 +3,12 @@ import { mkdir, readFile, readdir, unlink, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
-import {
-  getLocaleDefinition,
-  resolveI18nBuildTarget,
-  type I18nBuildTarget,
-} from "../../src/i18n/locale-registry.ts";
+import { getLocaleDefinition } from "../../src/i18n/locale-registry.ts";
 import {
   buildExampleContract,
   type BuildArtifactLocale,
   type BuildExampleName,
 } from "../../src/i18n/build-example-contract.ts";
-import { I18N_PUBLICATION_PROFILE_ENV } from "../../src/i18n/publication-profile-contract.ts";
-import { installI18nPublicationProfile } from "../../src/i18n/publication-profile-node.ts";
 import {
   compileBuildExampleArtifacts,
   prepareBuildExampleVendorSources,
@@ -22,28 +16,11 @@ import {
   type BuildExampleSources,
 } from "./build-example-artifact-compiler.mts";
 
-installI18nPublicationProfile();
-const { isLocaleEnabledForTarget } = await import("../../src/i18n/config.ts");
-delete process.env[I18N_PUBLICATION_PROFILE_ENV];
-
 const BUILD_EXAMPLE_NAMES: readonly BuildExampleName[] =
   buildExampleContract.examples.map(({ name }) => name);
 const BUILD_ARTIFACT_LOCALES = buildExampleContract.artifactManifest.locales;
 const LOCALIZED_BUILD_EXAMPLE_PATHS =
   buildExampleContract.artifactManifest.localizedPaths;
-type CatalogBuildArtifactLocale = Exclude<BuildArtifactLocale, "en-XA">;
-const CATALOG_BUILD_ARTIFACT_LOCALES = BUILD_ARTIFACT_LOCALES.filter(
-  (locale): locale is CatalogBuildArtifactLocale => locale !== "en-XA",
-);
-
-function listBuildArtifactLocalesForTarget(
-  buildTarget: I18nBuildTarget,
-): readonly BuildArtifactLocale[] {
-  return BUILD_ARTIFACT_LOCALES.filter((locale) =>
-    isLocaleEnabledForTarget(locale, buildTarget),
-  );
-}
-
 const EXAMPLES_RELATIVE_DIRECTORY =
   buildExampleContract.examplesRelativeDirectory;
 const SOURCE_UTILS_PATH = "resources/utils.js";
@@ -112,7 +89,7 @@ function readMessageGroup(
 
 async function loadBuildArtifactMessages(
   repositoryRoot: string,
-  locale: "en" | CatalogBuildArtifactLocale,
+  locale: "en" | BuildArtifactLocale,
 ): Promise<BuildArtifactMessages> {
   const catalogPath = `messages/${locale}/build.json`;
   const source = await readFile(join(repositoryRoot, catalogPath), "utf8");
@@ -260,17 +237,14 @@ async function assertReturnPathRuntimeMatches(repositoryRoot: string) {
   }
 }
 
-async function compileBuildArtifacts(
-  repositoryRoot: string,
-  buildTarget: I18nBuildTarget,
-) {
+async function compileBuildArtifacts(repositoryRoot: string) {
   await assertReturnPathRuntimeMatches(repositoryRoot);
   const [sources, englishMessages, localizedMessageEntries] = await Promise.all(
     [
       loadEnglishSources(repositoryRoot),
       loadEnglishBuildArtifactMessages(repositoryRoot),
       Promise.all(
-        CATALOG_BUILD_ARTIFACT_LOCALES.map(
+        BUILD_ARTIFACT_LOCALES.map(
           async (locale) =>
             [
               locale,
@@ -282,7 +256,7 @@ async function compileBuildArtifacts(
   );
   const localizedMessages = Object.fromEntries(
     localizedMessageEntries,
-  ) as Record<CatalogBuildArtifactLocale, BuildArtifactMessages>;
+  ) as Record<BuildArtifactLocale, BuildArtifactMessages>;
 
   return compileBuildExampleArtifacts({
     sources,
@@ -290,22 +264,15 @@ async function compileBuildArtifacts(
     targets: BUILD_ARTIFACT_LOCALES.map((locale) => ({
       locale,
       direction: getLocaleDefinition(locale).dir,
-      messages:
-        locale === "en-XA" ? englishMessages : localizedMessages[locale],
+      messages: localizedMessages[locale],
     })),
-    enabledLocales: listBuildArtifactLocalesForTarget(buildTarget),
   });
 }
 
-async function syncLocalizedBuildArtifacts(
-  repositoryRoot: string,
-  buildTarget: I18nBuildTarget,
-) {
+async function syncLocalizedBuildArtifacts(repositoryRoot: string) {
   await cleanLocalizedBuildArtifacts(repositoryRoot);
-  const { generated, expectedPaths } = await compileBuildArtifacts(
-    repositoryRoot,
-    buildTarget,
-  );
+  const { generated, expectedPaths } =
+    await compileBuildArtifacts(repositoryRoot);
 
   const directory = examplesDirectory(repositoryRoot);
   try {
@@ -329,20 +296,15 @@ async function syncLocalizedBuildArtifacts(
   }
 }
 
-async function checkLocalizedBuildArtifacts(
-  repositoryRoot: string,
-  buildTarget: I18nBuildTarget,
-) {
+async function checkLocalizedBuildArtifacts(repositoryRoot: string) {
   const candidates = await listLocalizedArtifactCandidates(repositoryRoot);
   assertNoUnexpectedLocalizedArtifacts(candidates);
-  const { generated, expectedPaths } = await compileBuildArtifacts(
-    repositoryRoot,
-    buildTarget,
-  );
+  const { generated, expectedPaths } =
+    await compileBuildArtifacts(repositoryRoot);
 
   if (JSON.stringify(candidates) !== JSON.stringify(expectedPaths)) {
     throw new Error(
-      `${buildTarget} localized artifact set differs: expected ${expectedPaths.join(", ")}; received ${candidates.join(", ")}`,
+      `Localized artifact set differs: expected ${expectedPaths.join(", ")}; received ${candidates.join(", ")}`,
     );
   }
 
@@ -363,22 +325,21 @@ async function checkLocalizedBuildArtifacts(
 
 export function createBuildExampleArtifactWorkflow(repositoryRoot: string) {
   return Object.freeze({
-    async compile(buildTarget: I18nBuildTarget) {
-      return (await compileBuildArtifacts(repositoryRoot, buildTarget))
-        .generated;
+    async compile() {
+      return (await compileBuildArtifacts(repositoryRoot)).generated;
     },
     clean() {
       return cleanLocalizedBuildArtifacts(repositoryRoot);
     },
-    async prepareVendor(buildTarget: I18nBuildTarget) {
+    async prepareVendor() {
       await prepareVendoredBuildExamples(repositoryRoot);
-      await syncLocalizedBuildArtifacts(repositoryRoot, buildTarget);
+      await syncLocalizedBuildArtifacts(repositoryRoot);
     },
-    sync(buildTarget: I18nBuildTarget) {
-      return syncLocalizedBuildArtifacts(repositoryRoot, buildTarget);
+    sync() {
+      return syncLocalizedBuildArtifacts(repositoryRoot);
     },
-    check(buildTarget: I18nBuildTarget) {
-      return checkLocalizedBuildArtifacts(repositoryRoot, buildTarget);
+    check() {
+      return checkLocalizedBuildArtifacts(repositoryRoot);
     },
   });
 }
@@ -428,33 +389,29 @@ async function main() {
   );
   const artifacts = createBuildExampleArtifactWorkflow(repositoryRoot);
   const { mode, command } = parseCli(process.argv.slice(2));
-  const buildTarget = resolveI18nBuildTarget(
-    process.env.NEXT_PUBLIC_KASPA_I18N_BUILD_TARGET,
-  );
-
   if (mode === "clean") {
     await artifacts.clean();
     console.log("generated localized Build artifacts removed");
     return;
   }
   if (mode === "prepare-vendor") {
-    await artifacts.prepareVendor(buildTarget);
-    console.log(`Vendored Build artifacts prepared for ${buildTarget}`);
+    await artifacts.prepareVendor();
+    console.log("Vendored Build artifacts prepared");
     return;
   }
   if (mode === "check") {
-    await artifacts.check(buildTarget);
-    console.log(`Build artifacts valid for ${buildTarget}`);
+    await artifacts.check();
+    console.log("Build artifacts valid");
     return;
   }
   if (mode === "sync") {
-    await artifacts.sync(buildTarget);
-    console.log(`Build artifacts synchronized for ${buildTarget}`);
+    await artifacts.sync();
+    console.log("Build artifacts synchronized");
     return;
   }
 
   if (mode === "build") {
-    await artifacts.sync(buildTarget);
+    await artifacts.sync();
     try {
       await runCommand(command[0], command.slice(1));
     } catch (error) {
@@ -464,7 +421,7 @@ async function main() {
     return;
   }
 
-  await artifacts.sync(buildTarget);
+  await artifacts.sync();
   try {
     await runCommand(command[0], command.slice(1));
   } finally {

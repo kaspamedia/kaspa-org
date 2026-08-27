@@ -3,23 +3,18 @@ import assert from "node:assert/strict";
 import {
   defaultLocale,
   localeRegistry,
+  supportedLocaleCodes,
 } from "../../src/i18n/locale-registry.ts";
-import { createI18nPublicationInventory } from "../../src/i18n/publication-inventory.ts";
-import { I18N_PUBLICATION_PROFILE_ENV } from "../../src/i18n/publication-profile-contract.ts";
-import { installI18nPublicationProfile } from "../../src/i18n/publication-profile-node.ts";
+import { buildExampleContract } from "../../src/i18n/build-example-contract.ts";
 import { NEXT_INTL_LOCALE_HEADER } from "../../src/i18n/route-request.ts";
 import { startProductionServer } from "./production-server.mts";
 
-installI18nPublicationProfile();
-const [manifest, { i18nPublicationProfile }] = await Promise.all([
-  import("../../src/i18n/manifest.ts"),
-  import("../../src/i18n/publication-profile.ts"),
-]);
-delete process.env[I18N_PUBLICATION_PROFILE_ENV];
+const manifest = await import("../../src/i18n/manifest.ts");
 const { RESERVED_NOT_FOUND_PATHNAME, ROUTE_MISS_HEADER, stablePathnames } =
   manifest;
-const publication = createI18nPublicationInventory(i18nPublicationProfile);
-const { translatedProductionLocales, unavailableLocales } = publication;
+const translatedLocales = supportedLocaleCodes.filter(
+  (locale) => locale !== defaultLocale,
+);
 
 function delay(milliseconds: number) {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
@@ -50,7 +45,7 @@ async function main() {
       assert.equal(response.headers.get("link"), null, pathname);
     }
 
-    for (const locale of translatedProductionLocales) {
+    for (const locale of translatedLocales) {
       for (const stablePathname of stablePathnames) {
         const pathname = `/${locale}${stablePathname === "/" ? "" : stablePathname}`;
         const response = await request(pathname, 200);
@@ -68,14 +63,10 @@ async function main() {
     const prefixed = await request("/en/lore", 307);
     assert.equal(prefixed.headers.get("location"), "/lore");
 
-    for (const locale of publication.unavailableBuildArtifactLocales) {
-      for (const pathname of publication.byLocale[locale].buildArtifactUrls) {
-        await request(pathname, 404);
-      }
-    }
-
-    for (const locale of publication.enabledBuildArtifactLocales) {
-      for (const pathname of publication.byLocale[locale].buildArtifactUrls) {
+    for (const locale of buildExampleContract.artifactManifest.locales) {
+      for (const pathname of buildExampleContract.artifactManifest.urlsByLocale[
+        locale
+      ]) {
         const response = await request(pathname, 200);
         if (pathname.endsWith(".html")) {
           assert.match(
@@ -97,13 +88,6 @@ async function main() {
       "/_vercel/missing",
       RESERVED_NOT_FOUND_PATHNAME,
       "/en/opengraph-image",
-      ...unavailableLocales.flatMap((locale) => [
-        ...stablePathnames.map(
-          (pathname) => `/${locale}${pathname === "/" ? "" : pathname}`,
-        ),
-        `/${locale}/missing`,
-        `/${locale}/opengraph-image`,
-      ]),
     ]) {
       const response = await request(pathname, 404, {
         [ROUTE_MISS_HEADER]: "1",
@@ -114,7 +98,7 @@ async function main() {
       assert.match(html, /data-kaspa-global-not-found="true"/u, pathname);
     }
 
-    for (const locale of translatedProductionLocales) {
+    for (const locale of translatedLocales) {
       const localizedMissing = await request(`/${locale}/missing`, 404, {
         [ROUTE_MISS_HEADER]: "1",
         [NEXT_INTL_LOCALE_HEADER]: defaultLocale,
@@ -133,16 +117,13 @@ async function main() {
     await request("/api/ask", 405);
     const proofCatalog = await request("/api/i18n/home-proof/en", 200);
     assert.match(await proofCatalog.text(), /"trigger":"Verify the proof"/u);
-    for (const locale of unavailableLocales) {
-      await request(`/api/i18n/home-proof/${locale}`, 404);
-    }
-    for (const locale of translatedProductionLocales) {
+    for (const locale of translatedLocales) {
       const proofCatalog = await request(`/api/i18n/home-proof/${locale}`, 200);
       assert.match(await proofCatalog.text(), /"trigger":"[^"]+"/u);
     }
     await request("/icon.svg", 200);
     await request("/opengraph-image", 200);
-    for (const locale of translatedProductionLocales) {
+    for (const locale of translatedLocales) {
       await request(`/${locale}/opengraph-image`, 200);
     }
     await delay(250);

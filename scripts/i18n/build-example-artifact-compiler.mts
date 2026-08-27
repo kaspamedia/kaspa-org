@@ -14,7 +14,6 @@ import {
   type BuildArtifactLocale,
   type BuildExampleName,
 } from "../../src/i18n/build-example-contract.ts";
-import { pseudoLocalizeMessage } from "../../src/i18n/pseudo.ts";
 
 const BUILD_EXAMPLE_NAMES: readonly BuildExampleName[] =
   buildExampleContract.examples.map(({ name }) => name);
@@ -161,28 +160,11 @@ function substituteMessage(
   for (const [name, value] of Object.entries(substitutions)) {
     const placeholder = `{${name}}`;
     if (!result.includes(placeholder)) {
-      throw new Error(`Missing pseudo-message placeholder ${placeholder}`);
+      throw new Error(`Missing message placeholder ${placeholder}`);
     }
     result = result.replaceAll(placeholder, value);
   }
   return result;
-}
-
-type MessageTransform = "identity" | "pseudo";
-
-function transformMessage(
-  message: string,
-  transform: MessageTransform,
-): string {
-  return transform === "pseudo" ? pseudoLocalizeMessage(message) : message;
-}
-
-function localizedMessage(
-  message: string,
-  substitutions: Readonly<Record<string, string>>,
-  transform: MessageTransform,
-): string {
-  return substituteMessage(transformMessage(message, transform), substitutions);
 }
 
 function javascriptStringLiteral(value: string): string {
@@ -214,10 +196,8 @@ function escapeHtml(value: string): string {
 function encodeTemplateMessage(
   message: string,
   substitutions: Readonly<Record<string, string>>,
-  transform: MessageTransform,
   encodeLiteral: (value: string) => string,
 ): string {
-  const transformed = transformMessage(message, transform);
   const placeholders = Object.entries(substitutions).map(
     ([name, value]) => [`{${name}}`, value] as const,
   );
@@ -225,11 +205,11 @@ function encodeTemplateMessage(
   let cursor = 0;
   let result = "";
 
-  while (cursor < transformed.length) {
+  while (cursor < message.length) {
     let next: (typeof placeholders)[number] | undefined;
     let nextIndex = -1;
     for (const placeholder of placeholders) {
-      const index = transformed.indexOf(placeholder[0], cursor);
+      const index = message.indexOf(placeholder[0], cursor);
       if (index !== -1 && (nextIndex === -1 || index < nextIndex)) {
         next = placeholder;
         nextIndex = index;
@@ -237,16 +217,16 @@ function encodeTemplateMessage(
     }
     if (!next) break;
 
-    result += encodeLiteral(transformed.slice(cursor, nextIndex));
+    result += encodeLiteral(message.slice(cursor, nextIndex));
     result += next[1];
     used.add(next[0]);
     cursor = nextIndex + next[0].length;
   }
 
-  result += encodeLiteral(transformed.slice(cursor));
+  result += encodeLiteral(message.slice(cursor));
   for (const [placeholder] of placeholders) {
     if (!used.has(placeholder)) {
-      throw new Error(`Missing pseudo-message placeholder ${placeholder}`);
+      throw new Error(`Missing message placeholder ${placeholder}`);
     }
   }
   return result;
@@ -255,29 +235,26 @@ function encodeTemplateMessage(
 function localizedHtmlTemplateText(
   message: string,
   substitutions: Readonly<Record<string, string>>,
-  transform: MessageTransform,
 ): string {
-  return encodeTemplateMessage(message, substitutions, transform, (value) =>
+  return encodeTemplateMessage(message, substitutions, (value) =>
     escapeJavaScriptTemplateText(escapeHtml(value)),
   );
 }
 
 function localizedHtmlLiteral(
   message: string,
-  transform: MessageTransform,
   substitutions: Readonly<Record<string, string>> = {},
 ): string {
   return javascriptStringLiteral(
-    escapeHtml(localizedMessage(message, substitutions, transform)),
+    escapeHtml(substituteMessage(message, substitutions)),
   );
 }
 
 function localizedHtmlTemplate(
   message: string,
   substitutions: Readonly<Record<string, string>>,
-  transform: MessageTransform,
 ): string {
-  return `\`${localizedHtmlTemplateText(message, substitutions, transform)}\``;
+  return `\`${localizedHtmlTemplateText(message, substitutions)}\``;
 }
 
 function sourceLiteral(
@@ -298,12 +275,9 @@ function sourceHtmlLiteral(
 
 function localizedLiteral(
   message: string,
-  transform: MessageTransform,
   substitutions: Readonly<Record<string, string>> = {},
 ): string {
-  return javascriptStringLiteral(
-    localizedMessage(message, substitutions, transform),
-  );
+  return javascriptStringLiteral(substituteMessage(message, substitutions));
 }
 
 function sourceTemplate(
@@ -313,7 +287,6 @@ function sourceTemplate(
   return `\`${encodeTemplateMessage(
     message,
     substitutions,
-    "identity",
     escapeJavaScriptTemplateText,
   )}\``;
 }
@@ -383,7 +356,6 @@ function compileCardinalPlural(
 function buildHtmlReplacements(
   sourceMessages: BuildArtifactMessages,
   targetMessages: BuildArtifactMessages,
-  transform: MessageTransform,
 ): Readonly<
   Record<(typeof BUILD_EXAMPLE_NAMES)[number], readonly Replacement[]>
 > {
@@ -392,20 +364,14 @@ function buildHtmlReplacements(
   const common: readonly Replacement[] = [
     [
       sourceTemplate(sourceRuntime.connectingKaspaNetwork),
-      localizedHtmlTemplate(
-        targetRuntime.connectingKaspaNetwork,
-        {},
-        transform,
-      ),
+      localizedHtmlTemplate(targetRuntime.connectingKaspaNetwork, {}),
     ],
   ];
   const selectedNetwork = (expression: string): Replacement => [
     sourceTemplate(sourceRuntime.selectedNetwork, { network: expression }),
-    localizedHtmlTemplate(
-      targetRuntime.selectedNetwork,
-      { network: expression },
-      transform,
-    ),
+    localizedHtmlTemplate(targetRuntime.selectedNetwork, {
+      network: expression,
+    }),
   ];
   const apiMessage = (
     sourceMessage: string,
@@ -413,7 +379,7 @@ function buildHtmlReplacements(
     api: "GetBlockDagInfo" | "GetServerInfo",
   ): Replacement => [
     sourceLiteral(sourceMessage, { api }),
-    localizedHtmlLiteral(targetMessage, transform, { api }),
+    localizedHtmlLiteral(targetMessage, { api }),
   ];
 
   return {
@@ -422,7 +388,7 @@ function buildHtmlReplacements(
       selectedNetwork("${networkId}"),
       [
         sourceLiteral(sourceRuntime.connectedTo),
-        localizedHtmlLiteral(targetRuntime.connectedTo, transform),
+        localizedHtmlLiteral(targetRuntime.connectedTo),
       ],
       apiMessage(
         sourceRuntime.apiRequest,
@@ -436,7 +402,7 @@ function buildHtmlReplacements(
       ),
       [
         sourceLiteral(sourceRuntime.disconnected),
-        localizedHtmlLiteral(targetRuntime.disconnected, transform),
+        localizedHtmlLiteral(targetRuntime.disconnected),
       ],
     ],
     "get-block-dag-info": [
@@ -444,7 +410,7 @@ function buildHtmlReplacements(
       selectedNetwork("${networkId}"),
       [
         sourceLiteral(sourceRuntime.connectedTo),
-        localizedHtmlLiteral(targetRuntime.connectedTo, transform),
+        localizedHtmlLiteral(targetRuntime.connectedTo),
       ],
       apiMessage(
         sourceRuntime.apiRequest,
@@ -458,7 +424,7 @@ function buildHtmlReplacements(
       ),
       [
         sourceLiteral(sourceRuntime.disconnected),
-        localizedHtmlLiteral(targetRuntime.disconnected, transform),
+        localizedHtmlLiteral(targetRuntime.disconnected),
       ],
     ],
     "subscribe-block-added": [
@@ -466,23 +432,23 @@ function buildHtmlReplacements(
       selectedNetwork('${networkId.class("network")}'),
       [
         sourceLiteral(sourceRuntime.connectedTo),
-        localizedHtmlLiteral(targetRuntime.connectedTo, transform),
+        localizedHtmlLiteral(targetRuntime.connectedTo),
       ],
       [
         sourceLiteral(sourceRuntime.subscribingBlockAdded),
-        localizedHtmlLiteral(targetRuntime.subscribingBlockAdded, transform),
+        localizedHtmlLiteral(targetRuntime.subscribingBlockAdded),
       ],
       [
         sourceLiteral(sourceRuntime.disconnectedFrom),
-        localizedHtmlLiteral(targetRuntime.disconnectedFrom, transform),
+        localizedHtmlLiteral(targetRuntime.disconnectedFrom),
       ],
       [
         `${sourceLiteral(sourceRuntime.disconnect)},event`,
-        `${localizedHtmlLiteral(targetRuntime.disconnect, transform)},event`,
+        `${localizedHtmlLiteral(targetRuntime.disconnect)},event`,
       ],
       [
         sourceLiteral(sourceRuntime.connectingPublicNode),
-        localizedHtmlLiteral(targetRuntime.connectingPublicNode, transform),
+        localizedHtmlLiteral(targetRuntime.connectingPublicNode),
       ],
     ],
     "subscribe-daa-changed": [
@@ -492,39 +458,33 @@ function buildHtmlReplacements(
         sourceLiteral(sourceRuntime.registeringProtocolNotifications, {
           protocol: "DAA",
         }),
-        localizedHtmlLiteral(
-          targetRuntime.registeringProtocolNotifications,
-          transform,
-          { protocol: "DAA" },
-        ),
+        localizedHtmlLiteral(targetRuntime.registeringProtocolNotifications, {
+          protocol: "DAA",
+        }),
       ],
       [
         sourceLiteral(sourceRuntime.connectedTo),
-        localizedHtmlLiteral(targetRuntime.connectedTo, transform),
+        localizedHtmlLiteral(targetRuntime.connectedTo),
       ],
       [
         sourceLiteral(sourceRuntime.subscribingProtocolScore, {
           protocol: "DAA",
         }),
-        localizedHtmlLiteral(
-          targetRuntime.subscribingProtocolScore,
-          transform,
-          {
-            protocol: "DAA",
-          },
-        ),
+        localizedHtmlLiteral(targetRuntime.subscribingProtocolScore, {
+          protocol: "DAA",
+        }),
       ],
       [
         sourceLiteral(sourceRuntime.disconnectedFrom),
-        localizedHtmlLiteral(targetRuntime.disconnectedFrom, transform),
+        localizedHtmlLiteral(targetRuntime.disconnectedFrom),
       ],
       [
         `${sourceLiteral(sourceRuntime.disconnect)},event`,
-        `${localizedHtmlLiteral(targetRuntime.disconnect, transform)},event`,
+        `${localizedHtmlLiteral(targetRuntime.disconnect)},event`,
       ],
       [
         sourceLiteral(sourceRuntime.connectingPublicNode),
-        localizedHtmlLiteral(targetRuntime.connectingPublicNode, transform),
+        localizedHtmlLiteral(targetRuntime.connectingPublicNode),
       ],
     ],
     "utxo-context": [
@@ -532,7 +492,7 @@ function buildHtmlReplacements(
       selectedNetwork('${network.class("network")}'),
       [
         sourceLiteral(sourceRuntime.connectedTo),
-        localizedHtmlLiteral(targetRuntime.connectedTo, transform),
+        localizedHtmlLiteral(targetRuntime.connectedTo),
       ],
       [
         compileCardinalPlural(
@@ -543,9 +503,7 @@ function buildHtmlReplacements(
           escapeHtml,
         ),
         compileCardinalPlural(
-          transform === "pseudo"
-            ? pseudoLocalizeMessage(targetUtxo.receivedEvents)
-            : targetUtxo.receivedEvents,
+          targetUtxo.receivedEvents,
           "events",
           "eventPluralRules",
           "eventNumberFormat",
@@ -554,11 +512,11 @@ function buildHtmlReplacements(
       ],
       [
         `log(${sourceHtmlLiteral(sourceRuntime.event)}, event);`,
-        `log(${localizedHtmlLiteral(targetRuntime.event, transform)}, event);`,
+        `log(${localizedHtmlLiteral(targetRuntime.event)}, event);`,
       ],
       [
         sourceHtmlLiteral(sourceUtxo.noticeManyUtxos, { term: "UTXOs" }),
-        localizedHtmlLiteral(targetUtxo.noticeManyUtxos, transform, {
+        localizedHtmlLiteral(targetUtxo.noticeManyUtxos, {
           term: "UTXOs",
         }),
       ],
@@ -567,7 +525,7 @@ function buildHtmlReplacements(
           api: "UtxoProcessor",
           term: "UTXOs",
         }),
-        localizedHtmlLiteral(targetUtxo.noticeManualTesting, transform, {
+        localizedHtmlLiteral(targetUtxo.noticeManualTesting, {
           api: "UtxoProcessor",
           term: "UTXOs",
         }),
@@ -577,40 +535,36 @@ function buildHtmlReplacements(
         `placeholder="${localizedHtmlTemplateText(
           targetUtxo.addressPlaceholder,
           { network: "${network}" },
-          transform,
         )}"`,
       ],
       [
         sourceUtxo.monitorAddress,
-        localizedHtmlTemplateText(targetUtxo.monitorAddress, {}, transform),
+        localizedHtmlTemplateText(targetUtxo.monitorAddress, {}),
       ],
       [
         `>${sourceUtxo.restart}<`,
-        `>${localizedHtmlTemplateText(targetUtxo.restart, {}, transform)}<`,
+        `>${localizedHtmlTemplateText(targetUtxo.restart, {})}<`,
       ],
       [
         sourceLiteral(sourceUtxo.trackingAddress),
-        localizedHtmlLiteral(targetUtxo.trackingAddress, transform),
+        localizedHtmlLiteral(targetUtxo.trackingAddress),
       ],
-      [
-        sourceLiteral(sourceUtxo.error),
-        localizedHtmlLiteral(targetUtxo.error, transform),
-      ],
+      [sourceLiteral(sourceUtxo.error), localizedHtmlLiteral(targetUtxo.error)],
       [
         sourceLiteral(sourceUtxo.restarting),
-        localizedHtmlLiteral(targetUtxo.restarting, transform),
+        localizedHtmlLiteral(targetUtxo.restarting),
       ],
       [
         sourceLiteral(sourceUtxo.stoppingProcessor),
-        localizedHtmlLiteral(targetUtxo.stoppingProcessor, transform),
+        localizedHtmlLiteral(targetUtxo.stoppingProcessor),
       ],
       [
         sourceLiteral(sourceUtxo.startingProcessor),
-        localizedHtmlLiteral(targetUtxo.startingProcessor, transform),
+        localizedHtmlLiteral(targetUtxo.startingProcessor),
       ],
       [
         sourceLiteral(sourceUtxo.processorStarted),
-        localizedHtmlLiteral(targetUtxo.processorStarted, transform),
+        localizedHtmlLiteral(targetUtxo.processorStarted),
       ],
     ],
   };
@@ -620,7 +574,6 @@ function buildUtilsReplacements(
   sourceMessages: BuildArtifactMessages,
   targetMessages: BuildArtifactMessages,
   locale: BuildArtifactLocale,
-  transform: MessageTransform,
 ): readonly Replacement[] {
   const { controls: sourceControls, runtime: sourceRuntime } = sourceMessages;
   const { controls: targetControls, runtime: targetRuntime } = targetMessages;
@@ -631,50 +584,29 @@ function buildUtilsReplacements(
       `<- ${localizedHtmlTemplateText(
         targetControls.back,
         {},
-        transform,
-      )}</a> | ${localizedHtmlTemplateText(
-        targetControls.network,
-        {},
-        transform,
-      )}:`,
+      )}</a> | ${localizedHtmlTemplateText(targetControls.network, {})}:`,
     ],
     ['href="/build#try-live"', `href="${localizedBuildPath}#try-live"`],
     ["'/build'", `'${localizedBuildPath}'`, 2],
     ["'/build#try-live'", `'${localizedBuildPath}#try-live'`],
     [
       `console.log(${sourceLiteral(sourceRuntime.networkConsole)},network);`,
-      `console.log(${localizedLiteral(targetRuntime.networkConsole, transform)},network);`,
+      `console.log(${localizedLiteral(targetRuntime.networkConsole)},network);`,
     ],
     [
       `>${sourceControls.disconnect}</a>`,
-      `>${localizedHtmlTemplateText(
-        targetControls.disconnect,
-        {},
-        transform,
-      )}</a>`,
+      `>${localizedHtmlTemplateText(targetControls.disconnect, {})}</a>`,
       2,
     ],
     [
       `>${sourceControls.reconnect}</a>`,
-      `>${localizedHtmlTemplateText(
-        targetControls.reconnect,
-        {},
-        transform,
-      )}</a>`,
+      `>${localizedHtmlTemplateText(targetControls.reconnect, {})}</a>`,
     ],
     [
       sourceTemplate(` ${sourceControls.connecting}`),
-      `\` ${localizedHtmlTemplateText(
-        targetControls.connecting,
-        {},
-        transform,
-      )}\``,
+      `\` ${localizedHtmlTemplateText(targetControls.connecting, {})}\``,
     ],
   ];
-}
-
-function artifactTransform(locale: BuildArtifactLocale): MessageTransform {
-  return locale === "en-XA" ? "pseudo" : "identity";
 }
 
 function localizedArtifactPaths(
@@ -691,7 +623,6 @@ function generateLocalizedHtml(
   locale: BuildArtifactLocale,
   direction: TextDirection,
 ) {
-  const transform = artifactTransform(locale);
   let generated = replaceExactlyOnce(
     source,
     [
@@ -709,7 +640,6 @@ function generateLocalizedHtml(
   for (const replacement of buildHtmlReplacements(
     sourceMessages,
     targetMessages,
-    transform,
   )[name]) {
     generated = replaceExactlyOnce(generated, replacement, `${name}.html`);
   }
@@ -736,7 +666,6 @@ function generateLocalizedUtils(
     sourceMessages,
     targetMessages,
     locale,
-    artifactTransform(locale),
   )) {
     generated = replaceExactlyOnce(generated, replacement, SOURCE_UTILS_PATH);
   }
@@ -860,12 +789,6 @@ function validateLocalizedBuildArtifacts(
         `${path} must not publish canonical, alternate, or OG metadata`,
       );
     }
-    if (locale === "en-XA" && !artifact.includes("[!! ")) {
-      errors.push(`${path} contains no visible pseudo-localized output`);
-    }
-    if (locale !== "en-XA" && artifact.includes("[!! ")) {
-      errors.push(`${path} must contain translated rather than pseudo output`);
-    }
   }
 
   const utilsPath = `resources/utils.${locale}.js`;
@@ -874,18 +797,11 @@ function validateLocalizedBuildArtifacts(
     `'/${locale}/build'`,
     `'/${locale}/build#try-live'`,
     "resolveBuildExampleReturnPath",
-    ...(locale === "en-XA" ? ["[!! "] : []),
   ]) {
     if (!utils.includes(contract)) {
       errors.push(`${utilsPath} is missing ${JSON.stringify(contract)}`);
     }
   }
-  if (locale !== "en-XA" && utils.includes("[!! ")) {
-    errors.push(
-      `${utilsPath} must contain translated rather than pseudo output`,
-    );
-  }
-
   for (const [path, artifact] of Object.entries(artifacts)) {
     const sourcePath = path
       .replace(`.${locale}.html`, ".html")
@@ -920,7 +836,6 @@ export type BuildExampleCompilerInput = Readonly<{
   sources: BuildExampleSources;
   englishMessages: BuildArtifactMessages;
   targets: readonly BuildExampleCompilerTarget[];
-  enabledLocales: readonly BuildArtifactLocale[];
 }>;
 
 export type BuildExampleCompilation = Readonly<{
@@ -1020,7 +935,6 @@ export function compileBuildExampleArtifacts({
   sources,
   englishMessages,
   targets,
-  enabledLocales,
 }: BuildExampleCompilerInput): BuildExampleCompilation {
   const targetLocales = targets.map(({ locale }) => locale);
   const expectedLocales = [...buildExampleContract.artifactManifest.locales];
@@ -1033,14 +947,6 @@ export function compileBuildExampleArtifacts({
       `Build compiler targets must contain each artifact locale exactly once: ${expectedLocales.join(", ")}`,
     );
   }
-  for (const locale of enabledLocales) {
-    if (!targetLocales.includes(locale)) {
-      throw new Error(
-        `Enabled Build artifact locale ${locale} has no compiler target`,
-      );
-    }
-  }
-
   const generatedByLocale = Object.fromEntries(
     targets.map(({ locale, direction, messages }) => [
       locale,
@@ -1070,9 +976,9 @@ export function compileBuildExampleArtifacts({
   return {
     generated: Object.assign(
       {},
-      ...enabledLocales.map((locale) => generatedByLocale[locale]),
+      ...targetLocales.map((locale) => generatedByLocale[locale]),
     ),
-    expectedPaths: enabledLocales
+    expectedPaths: targetLocales
       .flatMap((locale) => localizedArtifactPaths(locale))
       .sort(),
   };
