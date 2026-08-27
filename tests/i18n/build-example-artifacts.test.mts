@@ -167,7 +167,7 @@ test("artifact manifest follows the central Build-example contract", () => {
   );
 });
 
-test("git ignores every generated locale suffix without locale-specific rules", async () => {
+test("git ignores only the registered generated artifacts", async () => {
   const generatedPrefix = `/${examplesRelativeDirectory}/`;
   const ignoredArtifacts = (
     await readFile(join(repositoryRoot, ".gitignore"), "utf8")
@@ -177,10 +177,7 @@ test("git ignores every generated locale suffix without locale-specific rules", 
     .sort();
   assert.deepEqual(
     ignoredArtifacts,
-    [
-      ...exampleNames.map((name) => `${generatedPrefix}${name}.*.html`),
-      `${generatedPrefix}resources/utils.*.js`,
-    ].sort(),
+    manifest.localizedPaths.map((path) => `${generatedPrefix}${path}`).sort(),
   );
 });
 
@@ -513,7 +510,7 @@ test("workflow check rejects artifacts generated from a stale Spanish catalog", 
   );
 });
 
-test("artifact compiler dispatches locale-specific plural categories", async () => {
+test("artifact compiler preserves ICU exact-selector semantics", async () => {
   const input = await loadCompilerInput();
   const target = structuredClone(input.targets[0]);
   target.messages.utxo.receivedEvents =
@@ -543,7 +540,7 @@ test("artifact compiler dispatches locale-specific plural categories", async () 
     return actions.innerHTML;
   };
 
-  assert.equal(render(1, "other"), "exact 1");
+  assert.equal(render(1, "other"), "other 1");
   assert.equal(render(3, "few"), "few 3");
   assert.equal(render(8, "many"), "other 8");
 });

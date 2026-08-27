@@ -353,7 +353,11 @@ function compileCardinalPlural(
           `artifacts.utxo.receivedEvents has unsupported exact selector ${selector}`,
         );
       }
-      return { literal: String(value), selector, value };
+      return {
+        literal: javascriptStringLiteral(selector.slice(1)),
+        selector,
+        value,
+      };
     })
     .sort((left, right) => left.value - right.value);
   const categoryOptions = Object.keys(plural.options)
@@ -376,7 +380,7 @@ function compileCardinalPlural(
     : fallback;
   return exactOptions.reduceRight(
     (next, exact) =>
-      `${countExpression} === ${exact.literal} ? ${compileOption(exact.selector)} : ${next}`,
+      `String(${countExpression}) === ${exact.literal} ? ${compileOption(exact.selector)} : ${next}`,
     selectedCategory,
   );
 }

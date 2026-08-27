@@ -72,6 +72,21 @@ test("language-shaping joiners remain valid translated text", () => {
   }
 });
 
+test("emoji ZWJ sequences remain valid translated text", () => {
+  for (const translated of ["👩‍💻", "❤️‍🔥", "🧑🏽‍💻"]) {
+    assert.deepEqual(
+      validateTranslatedCatalog(
+        "ja",
+        "example",
+        { text: "Visible source" },
+        { text: translated },
+      ),
+      [],
+      translated,
+    );
+  }
+});
+
 test("joiners cannot make untranslated Latin copy appear translated", () => {
   for (const [character, codePoint] of [
     ["\u200C", "200C"],

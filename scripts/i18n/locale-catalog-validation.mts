@@ -450,6 +450,9 @@ const prohibitedZeroWidthCharacter = /[\u200B\u2060\uFEFF]/u;
 const contextualJoiner = /[\u200C\u200D]/gu;
 const shapingContextCharacter = /[\p{L}\p{M}]/u;
 const latinContextCharacter = /[\p{Script_Extensions=Latin}\p{N}_]/u;
+const emojiJoinerPrefix =
+  /\p{Extended_Pictographic}(?:\p{Grapheme_Extend}|\p{Emoji_Modifier})*$/u;
+const emojiJoinerSuffix = /^\p{Extended_Pictographic}/u;
 
 function getTranslationPolicy(locale: string): TranslationPolicy {
   return (
@@ -471,11 +474,22 @@ function hasValidJoinerContext(value: string, index: number): boolean {
   );
 }
 
+function hasValidEmojiJoinerContext(value: string, index: number): boolean {
+  return (
+    emojiJoinerPrefix.test(value.slice(0, index)) &&
+    emojiJoinerSuffix.test(value.slice(index + 1))
+  );
+}
+
 function findProhibitedZeroWidthCharacter(value: string): string | undefined {
   const prohibited = value.match(prohibitedZeroWidthCharacter)?.[0];
   if (prohibited) return prohibited;
   for (const match of value.matchAll(contextualJoiner)) {
-    if (!hasValidJoinerContext(value, match.index)) return match[0];
+    const isValidEmojiJoiner =
+      match[0] === "\u200D" && hasValidEmojiJoinerContext(value, match.index);
+    if (!isValidEmojiJoiner && !hasValidJoinerContext(value, match.index)) {
+      return match[0];
+    }
   }
   return undefined;
 }
