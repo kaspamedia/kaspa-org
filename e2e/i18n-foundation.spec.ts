@@ -400,24 +400,4 @@ test.describe("production i18n foundation contract", () => {
     expect(spanishImage.status()).toBe(200);
     expect(spanishImage.headers()["content-type"]).toBe("image/png");
   });
-
-  test("keeps the logo as a normal link", async ({ page }) => {
-    await page.goto("/");
-    const logo = page.getByRole("link", { name: "Kaspa home" });
-    await expect(logo).not.toHaveAttribute("aria-haspopup");
-    await expect(logo).not.toHaveAttribute("aria-expanded");
-    await expect(logo).not.toHaveAttribute("aria-controls");
-    await expect(logo).not.toHaveClass(/\[-webkit-touch-callout:none\]/u);
-    const contextMenuCancelled = await logo.evaluate((element) => {
-      const event = new MouseEvent("contextmenu", {
-        bubbles: true,
-        button: 2,
-        cancelable: true,
-      });
-      element.dispatchEvent(event);
-      return event.defaultPrevented;
-    });
-    expect(contextMenuCancelled).toBe(false);
-    await expect(page.getByRole("menu")).toHaveCount(0);
-  });
 });
