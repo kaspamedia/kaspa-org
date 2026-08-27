@@ -5,12 +5,13 @@ import { defaultLocale, pseudoLocale } from "../../src/i18n/locale-registry.ts";
 import { installI18nPublicationProfile } from "../../src/i18n/publication-profile-node.ts";
 import { analyzeAppRouteFile, isAppRouteFile } from "./app-route-policy.mts";
 import {
-  compareCatalogs,
-  flattenCatalog,
   validateCatalogSource,
   type MessageCatalog,
 } from "./catalog-contract.mts";
-import { validateTranslationCatalogContract } from "./translation-contract.mts";
+import {
+  createLocaleCatalogValidator,
+  type LocaleCatalogValidator,
+} from "./locale-catalog-validation.mts";
 
 installI18nPublicationProfile();
 const [
@@ -71,7 +72,7 @@ const sourceNamespaces = readdirSync(sourceDirectory, { withFileTypes: true })
   .filter((entry) => entry.isFile() && entry.name.endsWith(".json"))
   .map((entry) => entry.name.slice(0, -".json".length))
   .sort();
-const sourceCatalogs = new Map<string, MessageCatalog>();
+const sourceValidators = new Map<string, LocaleCatalogValidator>();
 for (const namespace of sourceNamespaces) {
   const location = `messages/${defaultLocale}/${namespace}.json`;
   const catalogPath = join(repositoryRoot, location);
@@ -80,12 +81,22 @@ for (const namespace of sourceNamespaces) {
     location,
   );
   errors.push(...result.errors);
-  if (result.catalog) sourceCatalogs.set(namespace, result.catalog);
+  if (result.catalog) {
+    const validator = createLocaleCatalogValidator(result.catalog);
+    for (const issue of validator.sourceDiagnostics) fail(location, issue);
+    sourceValidators.set(namespace, validator);
+  }
 }
 
 const englishWalletSummaries = Object.fromEntries(
   kaspaWallets.map((wallet) => [wallet.id, wallet.summary]),
 ) satisfies MessageCatalog;
+const englishWalletValidator = createLocaleCatalogValidator(
+  englishWalletSummaries,
+);
+for (const issue of englishWalletValidator.sourceDiagnostics) {
+  fail("src/data/wallets.ts", issue);
+}
 
 const registeredNamespaces = Object.keys(englishMessages).sort();
 if (JSON.stringify(sourceNamespaces) !== JSON.stringify(registeredNamespaces)) {
@@ -124,11 +135,10 @@ const requiredSemanticKeys = {
 } as const;
 
 for (const [namespace, keys] of Object.entries(requiredSemanticKeys)) {
-  const catalog = sourceCatalogs.get(namespace);
-  if (!catalog) continue;
-  const flattened = flattenCatalog(catalog);
+  const validator = sourceValidators.get(namespace);
+  if (!validator) continue;
   for (const key of keys) {
-    if (!flattened.has(key)) {
+    if (!validator.sourceMessages.has(key)) {
       fail(
         `messages/${defaultLocale}/${namespace}.json`,
         `missing required ${namespace}.${key}`,
@@ -156,11 +166,11 @@ for (const locale of catalogLocales) {
   for (const namespace of targetNamespaces) {
     const location = `messages/${locale}/${namespace}.json`;
     const catalogPath = join(repositoryRoot, location);
-    const sourceCatalog =
+    const sourceValidator =
       namespace === "wallets"
-        ? englishWalletSummaries
-        : sourceCatalogs.get(namespace);
-    if (!sourceCatalog) {
+        ? englishWalletValidator
+        : sourceValidators.get(namespace);
+    if (!sourceValidator) {
       fail(location, "target namespace has no English source catalog");
       continue;
     }
@@ -170,15 +180,9 @@ for (const locale of catalogLocales) {
     );
     errors.push(...result.errors);
     if (result.catalog) {
-      for (const issue of compareCatalogs(sourceCatalog, result.catalog, {
-        targetLocale: locale,
-      })) {
-        fail(location, issue);
-      }
-      for (const issue of validateTranslationCatalogContract(
+      for (const issue of sourceValidator.validateTranslation(
         locale,
         namespace,
-        sourceCatalog,
         result.catalog,
       )) {
         fail(location, issue);

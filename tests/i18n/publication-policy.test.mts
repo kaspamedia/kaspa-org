@@ -31,6 +31,7 @@ import {
   I18N_PUBLICATION_PROFILE_ENV,
   serializeI18nPublicationProfile,
 } from "../../src/i18n/publication-profile-contract.ts";
+import { createI18nPublicationInventory } from "../../src/i18n/publication-inventory.ts";
 import { installI18nPublicationProfile } from "../../src/i18n/publication-profile-node.ts";
 import { assertProductionLocaleComplete } from "../../src/i18n/site-validation.ts";
 
@@ -206,6 +207,61 @@ test("fixture policy resolves once into the generic publication profile", () => 
       }),
     /invalid publication/u,
   );
+});
+
+test("publication inventory projects locale routes and generated artifacts", () => {
+  const production = createI18nPublicationInventory(
+    createI18nPublicationProfile("production"),
+  );
+  assert.deepEqual(production.productionLocales, ["en", "es"]);
+  assert.deepEqual(production.translatedProductionLocales, ["es"]);
+  assert.deepEqual(production.unavailableLocales, ["en-XA"]);
+  assert.equal(production.byLocale.en.publicRoutePathnames.home, "/");
+  assert.equal(production.byLocale.es.publicRoutePathnames.lore, "/es/lore");
+  assert.equal(
+    production.byLocale.es.proofCatalogPathname,
+    "/api/i18n/home-proof/es",
+  );
+  assert.equal(production.byLocale["en-XA"].proofCatalogPathname, null);
+  assert.ok(
+    production.byLocale.es.buildArtifactUrls.every((pathname) =>
+      pathname.includes(".es."),
+    ),
+  );
+
+  const preview = createI18nPublicationInventory(
+    createI18nPublicationProfile("preview"),
+  );
+  assert.equal(preview.enabledLocales.includes(pseudoLocale), true);
+  assert.equal(preview.unavailableLocales.includes(pseudoLocale), false);
+  assert.equal(
+    preview.byLocale[pseudoLocale].openGraphImagePathname,
+    `/${pseudoLocale}/opengraph-image`,
+  );
+  assert.equal(
+    preview.byLocale[pseudoLocale].proofCatalogPathname,
+    `/api/i18n/home-proof/${pseudoLocale}`,
+  );
+
+  const unpublishedAssets = createI18nPublicationInventory(
+    createI18nPublicationProfile("production", {
+      routePublications: { en: { assets: null } },
+    }),
+  );
+  assert.equal(unpublishedAssets.byLocale.en.publicRoutePathnames.assets, null);
+
+  const unpublishedHome = createI18nPublicationInventory(
+    createI18nPublicationProfile("production", {
+      routePublications: { es: { home: null }, en: { home: null } },
+    }),
+  );
+  assert.equal(unpublishedHome.byLocale.es.openGraphImagePathname, null);
+  assert.equal(unpublishedHome.byLocale.es.proofCatalogPathname, null);
+  assert.equal(
+    unpublishedHome.byLocale.en.openGraphImagePathname,
+    "/opengraph-image",
+  );
+  assert.equal(unpublishedHome.byLocale.en.proofCatalogPathname, null);
 });
 
 test("i18n CLIs reject externally resolved publication profiles", () => {

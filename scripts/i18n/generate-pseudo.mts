@@ -4,11 +4,14 @@ import { pathToFileURL } from "node:url";
 
 import { pseudoLocalizeCatalog } from "../../src/i18n/pseudo.ts";
 import {
-  compareCatalogs,
-  flattenCatalog,
   validateCatalogSource,
   type MessageCatalog,
 } from "./catalog-contract.mts";
+import {
+  createLocaleCatalogValidator,
+  flattenCatalog,
+  type LocaleCatalogValidator,
+} from "./locale-catalog-validation.mts";
 
 const SOURCE_LOCALE = "en";
 const PSEUDO_LOCALE = "en-XA";
@@ -36,8 +39,23 @@ export function validateGeneratedPseudoCatalog(
   generatedCatalog: MessageCatalog,
   unchangedAllowlist: ReadonlySet<string> = defaultUnchangedAllowlist,
 ): string[] {
-  const errors = compareCatalogs(sourceCatalog, generatedCatalog);
-  const sourceMessages = flattenCatalog(sourceCatalog);
+  return validateGeneratedPseudoCatalogWithValidator(
+    createLocaleCatalogValidator(sourceCatalog),
+    generatedCatalog,
+    unchangedAllowlist,
+  );
+}
+
+function validateGeneratedPseudoCatalogWithValidator(
+  sourceValidator: LocaleCatalogValidator,
+  generatedCatalog: MessageCatalog,
+  unchangedAllowlist: ReadonlySet<string>,
+): string[] {
+  const errors = [
+    ...sourceValidator.sourceDiagnostics,
+    ...sourceValidator.compareStructure(generatedCatalog),
+  ];
+  const sourceMessages = sourceValidator.sourceMessages;
   const generatedMessages = flattenCatalog(generatedCatalog);
 
   for (const [key, sourceMessage] of sourceMessages) {
@@ -129,10 +147,15 @@ async function main(): Promise<void> {
   const options = parseCliOptions(process.argv.slice(2));
   const repositoryRoot = process.cwd();
   const sourceCatalog = await loadSourceCatalog(repositoryRoot);
+  const sourceValidator = createLocaleCatalogValidator(sourceCatalog);
+  if (sourceValidator.sourceDiagnostics.length) {
+    throw new Error(sourceValidator.sourceDiagnostics.join("\n"));
+  }
   const generatedCatalog = generatePseudoCatalog(sourceCatalog);
-  const errors = validateGeneratedPseudoCatalog(
-    sourceCatalog,
+  const errors = validateGeneratedPseudoCatalogWithValidator(
+    sourceValidator,
     generatedCatalog,
+    defaultUnchangedAllowlist,
   );
   if (errors.length) throw new Error(errors.join("\n"));
 

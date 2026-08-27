@@ -14,6 +14,11 @@ import test from "node:test";
 import { runInNewContext } from "node:vm";
 
 import { createBuildExampleArtifactWorkflow } from "../../scripts/i18n/build-example-artifacts.mts";
+import {
+  compileBuildExampleArtifacts,
+  type BuildArtifactMessages,
+  type BuildExampleCompilerInput,
+} from "../../scripts/i18n/build-example-artifact-compiler.mts";
 import { resolveBuildExampleReturnPath } from "../../scripts/i18n/build-example-return-path.mjs";
 import { buildExampleContract } from "../../src/i18n/build-example-contract.ts";
 
@@ -57,6 +62,37 @@ async function createWorkflowFixture(): Promise<string> {
     ),
   ]);
   return root;
+}
+
+async function loadCompilerInput(): Promise<BuildExampleCompilerInput> {
+  const sourceEntries = await Promise.all(
+    [...exampleNames.map((name) => `${name}.html`), "resources/utils.js"].map(
+      async (path) =>
+        [path, await readFile(join(examplesDirectory, path), "utf8")] as const,
+    ),
+  );
+  const messages = async (locale: "en" | "es") => {
+    const catalog = JSON.parse(
+      await readFile(
+        join(repositoryRoot, `messages/${locale}/build.json`),
+        "utf8",
+      ),
+    ) as { artifacts: BuildArtifactMessages };
+    return catalog.artifacts;
+  };
+  const [englishMessages, spanishMessages] = await Promise.all([
+    messages("en"),
+    messages("es"),
+  ]);
+  return {
+    sources: Object.fromEntries(sourceEntries),
+    englishMessages,
+    targets: [
+      { locale: "en-XA", direction: "ltr", messages: englishMessages },
+      { locale: "es", direction: "ltr", messages: spanishMessages },
+    ],
+    enabledLocales: ["es"],
+  };
 }
 
 async function restoreUpstreamVendorInputs(root: string): Promise<void> {
@@ -323,12 +359,13 @@ test("Spanish Build artifacts are deterministic, complete, and catalog-backed", 
 });
 
 test("Build artifacts use a locale's registered text direction", async () => {
-  const rtlArtifacts = await createBuildExampleArtifactWorkflow(
-    repositoryRoot,
-    {
-      resolveTextDirection: (locale) => (locale === "es" ? "rtl" : "ltr"),
-    },
-  ).compile("production");
+  const input = await loadCompilerInput();
+  const rtlArtifacts = compileBuildExampleArtifacts({
+    ...input,
+    targets: input.targets.map((target) =>
+      target.locale === "es" ? { ...target, direction: "rtl" } : target,
+    ),
+  }).generated;
 
   for (const name of exampleNames) {
     const spanish = rtlArtifacts[`${name}.es.html`];

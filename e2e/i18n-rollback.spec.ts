@@ -1,11 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 import { buildExampleContract } from "../src/i18n/build-example-contract.ts";
-import {
-  defaultLocale,
-  localeRegistry,
-  supportedLocaleCodes,
-} from "../src/i18n/locale-registry.ts";
+import { productionI18nPublicationInventory } from "../src/i18n/publication-inventory.ts";
 import {
   buildProductionFixture,
   createEnglishOnlyProductionFixture,
@@ -25,11 +21,7 @@ const productionEnvironment = {
 } as const;
 
 const englishRoutes = publicRouteGolden.map(({ path }) => path);
-const translatedProductionLocales = supportedLocaleCodes.filter(
-  (locale) =>
-    locale !== defaultLocale &&
-    localeRegistry[locale].lifecycle === "production",
-);
+const { translatedProductionLocales } = productionI18nPublicationInventory;
 const translatedProductionRoutes = translatedProductionLocales.flatMap(
   (locale) => localizePublicRouteGolden(locale).map(({ path }) => path),
 );

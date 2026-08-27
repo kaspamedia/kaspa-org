@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import spanishWalletSummaries from "../../messages/es/wallets.json" with { type: "json" };
-import { validateTranslationCatalogContract } from "../../scripts/i18n/translation-contract.mts";
+import { createLocaleCatalogValidator } from "../../scripts/i18n/locale-catalog-validation.mts";
 import {
   getRatingExplanationKey,
   ratingExplanations,
@@ -55,10 +55,9 @@ test("translated wallet summaries satisfy the shared translation contract", () =
   );
 
   assert.deepEqual(
-    validateTranslationCatalogContract(
+    createLocaleCatalogValidator(englishWalletSummaries).validateTranslation(
       "es",
       "wallets",
-      englishWalletSummaries,
       spanishWalletSummaries,
     ),
     [],

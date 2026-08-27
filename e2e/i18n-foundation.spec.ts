@@ -3,10 +3,7 @@ import { createHash } from "node:crypto";
 import { expect, test } from "@playwright/test";
 
 import { createUnpublishedAssetsFixture } from "../scripts/i18n/unpublished-route-fixture.mts";
-import {
-  localeRegistry,
-  supportedLocaleCodes,
-} from "../src/i18n/locale-registry";
+import { productionI18nPublicationInventory } from "../src/i18n/publication-inventory";
 import {
   localizePublicPath,
   publicRouteGolden,
@@ -16,9 +13,7 @@ import {
   type PublicRouteId,
 } from "./i18n-scenario-harness";
 
-const productionLocales = supportedLocaleCodes.filter(
-  (locale) => localeRegistry[locale].lifecycle === "production",
-);
+const { productionLocales } = productionI18nPublicationInventory;
 
 type EnglishRouteExpectation = {
   description: string;

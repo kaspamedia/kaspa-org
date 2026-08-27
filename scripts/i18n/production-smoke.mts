@@ -1,36 +1,25 @@
 import assert from "node:assert/strict";
 
-import { buildExampleContract } from "../../src/i18n/build-example-contract.ts";
 import {
   defaultLocale,
   localeRegistry,
-  supportedLocaleCodes,
 } from "../../src/i18n/locale-registry.ts";
+import { createI18nPublicationInventory } from "../../src/i18n/publication-inventory.ts";
 import { I18N_PUBLICATION_PROFILE_ENV } from "../../src/i18n/publication-profile-contract.ts";
 import { installI18nPublicationProfile } from "../../src/i18n/publication-profile-node.ts";
 import { NEXT_INTL_LOCALE_HEADER } from "../../src/i18n/route-request.ts";
 import { startProductionServer } from "./production-server.mts";
 
 installI18nPublicationProfile();
-const [config, manifest] = await Promise.all([
-  import("../../src/i18n/config.ts"),
+const [manifest, { i18nPublicationProfile }] = await Promise.all([
   import("../../src/i18n/manifest.ts"),
+  import("../../src/i18n/publication-profile.ts"),
 ]);
 delete process.env[I18N_PUBLICATION_PROFILE_ENV];
-const { isLocaleProductionReady } = config;
 const { RESERVED_NOT_FOUND_PATHNAME, ROUTE_MISS_HEADER, stablePathnames } =
   manifest;
-const unavailableLocales = supportedLocaleCodes.filter(
-  (locale) => !isLocaleProductionReady(locale),
-);
-const translatedProductionLocales = supportedLocaleCodes.filter(
-  (locale) => locale !== defaultLocale && isLocaleProductionReady(locale),
-);
-const unavailableArtifactLocales = (
-  Object.keys(buildExampleContract.artifactManifest.urlsByLocale) as Array<
-    keyof typeof buildExampleContract.artifactManifest.urlsByLocale
-  >
-).filter((locale) => unavailableLocales.includes(locale));
+const publication = createI18nPublicationInventory(i18nPublicationProfile);
+const { translatedProductionLocales, unavailableLocales } = publication;
 
 function delay(milliseconds: number) {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
@@ -79,23 +68,14 @@ async function main() {
     const prefixed = await request("/en/lore", 307);
     assert.equal(prefixed.headers.get("location"), "/lore");
 
-    for (const locale of unavailableArtifactLocales) {
-      for (const pathname of buildExampleContract.artifactManifest.urlsByLocale[
-        locale
-      ]) {
+    for (const locale of publication.unavailableBuildArtifactLocales) {
+      for (const pathname of publication.byLocale[locale].buildArtifactUrls) {
         await request(pathname, 404);
       }
     }
 
-    for (const locale of Object.keys(
-      buildExampleContract.artifactManifest.urlsByLocale,
-    ) as Array<
-      keyof typeof buildExampleContract.artifactManifest.urlsByLocale
-    >) {
-      if (!isLocaleProductionReady(locale)) continue;
-      for (const pathname of buildExampleContract.artifactManifest.urlsByLocale[
-        locale
-      ]) {
+    for (const locale of publication.enabledBuildArtifactLocales) {
+      for (const pathname of publication.byLocale[locale].buildArtifactUrls) {
         const response = await request(pathname, 200);
         if (pathname.endsWith(".html")) {
           assert.match(

@@ -3,17 +3,30 @@ import test from "node:test";
 
 import type { MessageCatalog } from "../../scripts/i18n/catalog-contract.mts";
 import {
+  createLocaleCatalogValidator,
   isUnchangedMessageAllowed,
-  validateTranslationCatalogContract,
-} from "../../scripts/i18n/translation-contract.mts";
+} from "../../scripts/i18n/locale-catalog-validation.mts";
 import { englishMessages, spanishMessages } from "../../src/i18n/messages.ts";
+
+function validateTranslatedCatalog(
+  locale: string,
+  namespace: string,
+  source: MessageCatalog,
+  target: MessageCatalog,
+): string[] {
+  return createLocaleCatalogValidator(source).validateTranslation(
+    locale,
+    namespace,
+    target,
+  );
+}
 
 test("complete translated catalogs satisfy the shared translation contract", () => {
   for (const namespace of Object.keys(englishMessages) as Array<
     keyof typeof englishMessages
   >) {
     assert.deepEqual(
-      validateTranslationCatalogContract(
+      validateTranslatedCatalog(
         "es",
         namespace,
         englishMessages[namespace] as MessageCatalog,
@@ -27,7 +40,7 @@ test("complete translated catalogs satisfy the shared translation contract", () 
 
 test("the shared contract protects future locales without a custom policy", () => {
   assert.deepEqual(
-    validateTranslationCatalogContract(
+    validateTranslatedCatalog(
       "fr",
       "example",
       {
@@ -48,7 +61,7 @@ test("the shared contract protects future locales without a custom policy", () =
 
 test("the shared contract rejects invisible zero-width characters generically", () => {
   assert.deepEqual(
-    validateTranslationCatalogContract(
+    validateTranslatedCatalog(
       "ru",
       "example",
       { hidden: "Visible source" },
@@ -60,7 +73,7 @@ test("the shared contract rejects invisible zero-width characters generically", 
 
 test("protected terms require exact visible tokens and casing", () => {
   assert.deepEqual(
-    validateTranslationCatalogContract(
+    validateTranslatedCatalog(
       "de",
       "example",
       {
@@ -85,7 +98,7 @@ test("protected terms require exact visible tokens and casing", () => {
   );
 
   assert.deepEqual(
-    validateTranslationCatalogContract(
+    validateTranslatedCatalog(
       "ru",
       "example",
       { release: "waiting for crescendo..." },
@@ -97,7 +110,7 @@ test("protected terms require exact visible tokens and casing", () => {
 
 test("protected terms remain enforced inside ICU branches", () => {
   assert.deepEqual(
-    validateTranslationCatalogContract(
+    validateTranslatedCatalog(
       "es",
       "example",
       {
@@ -119,7 +132,7 @@ test("protected terms support locale-specific no-space boundaries", () => {
     ["ko", "Kaspa를 사용하세요"],
   ] as const) {
     assert.deepEqual(
-      validateTranslationCatalogContract(
+      validateTranslatedCatalog(
         locale,
         "example",
         { text: "Use the Kaspa network" },
@@ -162,7 +175,7 @@ test("locale policy adds only language-specific terminology and loanwords", () =
   );
 
   assert.deepEqual(
-    validateTranslationCatalogContract(
+    validateTranslatedCatalog(
       "es",
       "example",
       { terminology: "Publish on mainnet" },
@@ -191,11 +204,8 @@ test("locale unchanged-message exceptions remain key-specific and detect stalene
     },
   } satisfies MessageCatalog;
 
-  assert.deepEqual(
-    validateTranslationCatalogContract("es", "hodl", source, target),
-    [
-      "hodl.accidental is unchanged from English without an explicit es policy exception",
-      "hodl.walletFinder.ratings.notApplicableCompact has a stale unchanged-message policy exception",
-    ],
-  );
+  assert.deepEqual(validateTranslatedCatalog("es", "hodl", source, target), [
+    "hodl.accidental is unchanged from English without an explicit es policy exception",
+    "hodl.walletFinder.ratings.notApplicableCompact has a stale unchanged-message policy exception",
+  ]);
 });

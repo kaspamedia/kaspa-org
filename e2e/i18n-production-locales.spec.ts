@@ -4,15 +4,15 @@ import { join } from "node:path";
 
 import { expect, test, type Page } from "@playwright/test";
 
-import { isUnchangedMessageAllowed } from "../scripts/i18n/translation-contract.mts";
+import { isUnchangedMessageAllowed } from "../scripts/i18n/locale-catalog-validation.mts";
 import {
   defaultLocale,
   localeRegistry,
   pseudoLocale,
-  supportedLocaleCodes,
   type Locale,
   type TextDirection,
 } from "../src/i18n/locale-registry";
+import { productionI18nPublicationInventory } from "../src/i18n/publication-inventory";
 import {
   assertEqualControlRow,
   assertHeadingUsesResponsiveWrapping,
@@ -412,9 +412,8 @@ test.describe("complete public production locale contract", () => {
   });
 
   test("has one test descriptor for every translated production locale", () => {
-    const registeredProductionLocales = supportedLocaleCodes.filter(
-      (locale) => localeRegistry[locale].lifecycle === "production",
-    );
+    const registeredProductionLocales =
+      productionI18nPublicationInventory.productionLocales;
     expect(registeredProductionLocales).toEqual([
       defaultLocale,
       ...productionLocaleCases.map(({ locale }) => locale),

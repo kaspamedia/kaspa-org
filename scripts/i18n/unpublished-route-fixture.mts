@@ -24,11 +24,7 @@ import {
   parseI18nFixturePolicyMarker,
 } from "../../src/i18n/publication-policy-validation.ts";
 import { I18N_PUBLICATION_PROFILE_ENV } from "../../src/i18n/publication-profile-contract.ts";
-import {
-  defaultLocale,
-  localeRegistry,
-  supportedLocaleCodes,
-} from "../../src/i18n/locale-registry.ts";
+import { productionI18nPublicationInventory } from "../../src/i18n/publication-inventory.ts";
 
 const require = createRequire(import.meta.url);
 const nextCliPath = require.resolve("next/dist/bin/next");
@@ -209,13 +205,9 @@ export function createEnglishOnlyProductionFixture(
   repositoryRoot: string,
 ): Promise<ProductionFixture> {
   const localeLifecycleOverrides = Object.fromEntries(
-    supportedLocaleCodes
-      .filter(
-        (locale) =>
-          locale !== defaultLocale &&
-          localeRegistry[locale].lifecycle === "production",
-      )
-      .map((locale) => [locale, "preview"] as const),
+    productionI18nPublicationInventory.translatedProductionLocales.map(
+      (locale) => [locale, "preview"] as const,
+    ),
   );
   return createProductionFixtureInternal(repositoryRoot, "i18n-english-only-", {
     localeLifecycleOverrides,
