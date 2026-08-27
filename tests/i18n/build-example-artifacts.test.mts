@@ -513,6 +513,41 @@ test("workflow check rejects artifacts generated from a stale Spanish catalog", 
   );
 });
 
+test("artifact compiler dispatches locale-specific plural categories", async () => {
+  const input = await loadCompilerInput();
+  const target = structuredClone(input.targets[0]);
+  target.messages.utxo.receivedEvents =
+    "{count, plural, =01 {exact #} few {few #} other {other #}}";
+
+  const compilation = compileBuildExampleArtifacts({
+    ...input,
+    targets: [target],
+  });
+  const html = compilation.generated["utxo-context.es.html"];
+  const assignment = html
+    .split("\n")
+    .find((candidate) =>
+      candidate.includes('document.getElementById("actions").innerHTML'),
+    );
+  assert.ok(assignment);
+  assert.doesNotMatch(assignment, /=== 01/u);
+
+  const render = (events: number, category: string) => {
+    const actions = { innerHTML: "" };
+    runInNewContext(assignment.trim(), {
+      document: { getElementById: () => actions },
+      eventNumberFormat: { format: (value: number) => String(value) },
+      eventPluralRules: { select: () => category },
+      events,
+    });
+    return actions.innerHTML;
+  };
+
+  assert.equal(render(1, "other"), "exact 1");
+  assert.equal(render(3, "few"), "few 3");
+  assert.equal(render(8, "many"), "other 8");
+});
+
 test("workflow compilation rejects a non-plural event message", async (t) => {
   const root = await createWorkflowFixture();
   t.after(() => rm(root, { recursive: true, force: true }));
@@ -525,7 +560,7 @@ test("workflow compilation rejects a non-plural event message", async (t) => {
 
   await assert.rejects(
     createBuildExampleArtifactWorkflow(root).compile(),
-    /must be a one\/other cardinal count plural/u,
+    /must be a cardinal count plural with an other branch/u,
   );
 });
 

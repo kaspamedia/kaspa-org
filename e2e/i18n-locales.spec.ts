@@ -35,7 +35,7 @@ const baseUrl = process.env.PLAYWRIGHT_BASE_URL ?? "http://127.0.0.1:3100";
 
 async function loadCatalog(
   locale: Locale,
-  namespace: "shared" | PublicRouteId,
+  namespace: "errors" | "shared" | PublicRouteId,
 ) {
   return JSON.parse(
     await readFile(
@@ -62,6 +62,14 @@ function readMessage(catalog: MessageCatalog, path: string): string {
 function getVisibleLanguageSelector(page: Page) {
   return page.locator("[data-language-selector]:visible");
 }
+
+const routeFingerprintPaths = {
+  home: "hero.tagline",
+  lore: "article.heading",
+  build: "start.quickstart.title",
+  assets: "page.heading",
+  hodl: "wallet.description",
+} as const satisfies Readonly<Record<PublicRouteId, string>>;
 
 test.describe("registered locale browser contract", () => {
   test.skip(
@@ -158,6 +166,10 @@ test.describe("registered locale browser contract", () => {
         expect(await page.title(), `${pathname} title`).toBe(
           readMessage(catalog, "metadata.title"),
         );
+        await expect(
+          page.locator("main"),
+          `${pathname} translated copy`,
+        ).toContainText(readMessage(catalog, routeFingerprintPaths[route.id]));
         await assertNoHorizontalOverflow(page, 390, pathname);
         if (route.id === "home") {
           await assertHeadingUsesResponsiveWrapping(
@@ -166,6 +178,17 @@ test.describe("registered locale browser contract", () => {
           );
         }
       }
+
+      const notFoundPathname = localizePublicPath(locale, "/missing");
+      const notFoundResponse = await page.goto(notFoundPathname, {
+        waitUntil: "domcontentloaded",
+      });
+      expect(notFoundResponse?.status(), notFoundPathname).toBe(404);
+      const errors = await loadCatalog(locale, "errors");
+      await expect(
+        page.locator("main"),
+        `${notFoundPathname} translated error copy`,
+      ).toContainText(readMessage(errors, "page.heading"));
 
       await page.goto(
         `${localizePublicPath(locale, "/lore")}?source=locale#roadmap`,

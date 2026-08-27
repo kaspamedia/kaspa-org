@@ -47,11 +47,9 @@ export const SHARED_PROTECTED_TERMS = [
 ] as const;
 
 type ProtectedTerm = (typeof SHARED_PROTECTED_TERMS)[number];
-type ProtectedTermBoundary = "latin" | "unicode";
 type TranslationPolicy = {
   readonly allowedUnchangedKeys?: readonly string[];
   readonly preferredTerms?: readonly PreferredTermRule[];
-  readonly protectedTermBoundary?: ProtectedTermBoundary;
 };
 type ProtectedTermMatchers = {
   readonly source: RegExp;
@@ -445,13 +443,13 @@ const translationPolicies = {
       [/(?:^|\W)stack(?:$|\W)/iu, "pila tecnológica"],
     ],
   },
-  "zh-CN": { protectedTermBoundary: "latin" },
-  ja: { protectedTermBoundary: "latin" },
-  ko: { protectedTermBoundary: "latin" },
 } as const satisfies Readonly<Record<string, TranslationPolicy>>;
 
 const emptyPolicy: TranslationPolicy = {};
-const prohibitedZeroWidthCharacter = /[\u200B-\u200D\u2060\uFEFF]/u;
+const prohibitedZeroWidthCharacter = /[\u200B\u2060\uFEFF]/u;
+const contextualJoiner = /[\u200C\u200D]/gu;
+const shapingContextCharacter = /[\p{L}\p{M}]/u;
+const latinContextCharacter = /[\p{Script_Extensions=Latin}\p{N}_]/u;
 
 function getTranslationPolicy(locale: string): TranslationPolicy {
   return (
@@ -460,28 +458,56 @@ function getTranslationPolicy(locale: string): TranslationPolicy {
   );
 }
 
+function hasValidJoinerContext(value: string, index: number): boolean {
+  const before = [...value.slice(0, index)].at(-1);
+  const after = [...value.slice(index + 1)][0];
+  return Boolean(
+    before &&
+    after &&
+    shapingContextCharacter.test(before) &&
+    shapingContextCharacter.test(after) &&
+    !latinContextCharacter.test(before) &&
+    !latinContextCharacter.test(after),
+  );
+}
+
+function findProhibitedZeroWidthCharacter(value: string): string | undefined {
+  const prohibited = value.match(prohibitedZeroWidthCharacter)?.[0];
+  if (prohibited) return prohibited;
+  for (const match of value.matchAll(contextualJoiner)) {
+    if (!hasValidJoinerContext(value, match.index)) return match[0];
+  }
+  return undefined;
+}
+
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
 }
 
 function protectedTermExpression(
   term: ProtectedTerm,
-  boundary: ProtectedTermBoundary,
+  wordCharacter: string,
 ): string {
   const suffix = ["Kaspa", "Bitcoin", "Ethereum", "cypherpunk"].includes(term)
     ? "s?"
     : "";
-  const wordCharacter = boundary === "latin" ? "A-Za-z0-9_" : "\\p{L}\\p{N}_";
   return `(?<![${wordCharacter}])${escapeRegExp(term)}${suffix}(?![${wordCharacter}])`;
 }
 
-function createProtectedTermMatchers(
-  boundary: ProtectedTermBoundary,
-): ReadonlyMap<ProtectedTerm, ProtectedTermMatchers> {
+function createProtectedTermMatchers(): ReadonlyMap<
+  ProtectedTerm,
+  ProtectedTermMatchers
+> {
   return new Map(
     SHARED_PROTECTED_TERMS.map((term) => {
-      const expression = protectedTermExpression(term, boundary);
-      const sourceExpression = protectedTermExpression(term, "unicode");
+      const sourceExpression = protectedTermExpression(
+        term,
+        "\\p{L}\\p{N}\\p{M}_",
+      );
+      const targetExpression = protectedTermExpression(
+        term,
+        "\\p{Script_Extensions=Latin}\\p{N}_",
+      );
       const sourceFlags = caseInsensitiveProtectedSourceTerms.has(term)
         ? "giu"
         : "gu";
@@ -489,22 +515,17 @@ function createProtectedTermMatchers(
         term,
         {
           source: new RegExp(sourceExpression, sourceFlags),
-          target: new RegExp(expression, term === "cypherpunk" ? "giu" : "gu"),
+          target: new RegExp(
+            targetExpression,
+            term === "cypherpunk" ? "giu" : "gu",
+          ),
         },
       ];
     }),
   );
 }
 
-const protectedTermMatchers = {
-  latin: createProtectedTermMatchers("latin"),
-  unicode: createProtectedTermMatchers("unicode"),
-} as const satisfies Readonly<
-  Record<
-    ProtectedTermBoundary,
-    ReadonlyMap<ProtectedTerm, ProtectedTermMatchers>
-  >
->;
+const protectedTermMatchers = createProtectedTermMatchers();
 
 function countProtectedTerm(value: string, pattern: RegExp): number {
   return value.match(pattern)?.length ?? 0;
@@ -545,8 +566,13 @@ function analyzeCatalog(catalog: MessageCatalog): AnalyzedCatalog {
 }
 
 function containsOnlyMessageSyntax(value: string): boolean {
-  const withoutSimpleArguments = value.replace(/\{[^{}]+\}/gu, "");
-  return !/[{}\p{L}\p{N}]/u.test(withoutSimpleArguments);
+  try {
+    const fragments: string[] = [];
+    collectVisibleMessageText(parseIcuMessage(value), fragments);
+    return !/[\p{L}\p{N}]/u.test(fragments.join(" "));
+  } catch {
+    return false;
+  }
 }
 
 export function isUnchangedMessageAllowed(
@@ -600,10 +626,10 @@ function validateCatalogPair(
 
     const fullKey = `${namespace}.${key}`;
 
-    const zeroWidthMatch = targetValue.match(prohibitedZeroWidthCharacter);
-    if (zeroWidthMatch) {
+    const prohibitedZeroWidth = findProhibitedZeroWidthCharacter(targetValue);
+    if (prohibitedZeroWidth) {
       errors.push(
-        `${fullKey} contains prohibited zero-width character U+${zeroWidthMatch[0]
+        `${fullKey} contains prohibited zero-width character U+${prohibitedZeroWidth
           .codePointAt(0)!
           .toString(16)
           .toUpperCase()
@@ -620,10 +646,8 @@ function validateCatalogPair(
       );
     }
 
-    const matchersForLocale =
-      protectedTermMatchers[policy.protectedTermBoundary ?? "unicode"];
     for (const term of SHARED_PROTECTED_TERMS) {
-      const matchers = matchersForLocale.get(term);
+      const matchers = protectedTermMatchers.get(term);
       if (!matchers) continue;
       const sourceCount = countProtectedTerm(
         sourceMessage.visibleText,

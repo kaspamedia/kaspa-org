@@ -325,32 +325,60 @@ function compileCardinalPlural(
     plural.pluralType !== "cardinal" ||
     plural.offset !== 0 ||
     plural.value !== "count" ||
-    !plural.options.one ||
     !plural.options.other ||
-    Object.keys(plural.options).length !== 2 ||
     !ast.slice(0, pluralIndex).every(isLiteralElement) ||
     !ast.slice(pluralIndex + 1).every(isLiteralElement)
   ) {
     throw new Error(
-      "artifacts.utxo.receivedEvents must be a one/other cardinal count plural",
+      "artifacts.utxo.receivedEvents must be a cardinal count plural with an other branch",
     );
   }
 
   const prefix = ast.slice(0, pluralIndex);
   const suffix = ast.slice(pluralIndex + 1);
-  const one = compilePluralBranch(
-    [...prefix, ...plural.options.one.value, ...suffix],
-    numberFormatExpression,
-    countExpression,
-    encodeLiteral,
+  const compileOption = (key: string) =>
+    compilePluralBranch(
+      [...prefix, ...plural.options[key].value, ...suffix],
+      numberFormatExpression,
+      countExpression,
+      encodeLiteral,
+    );
+  const fallback = compileOption("other");
+  const exactOptions = Object.keys(plural.options)
+    .filter((key) => key.startsWith("="))
+    .map((selector) => {
+      const value = Number(selector.slice(1));
+      if (!Number.isFinite(value)) {
+        throw new Error(
+          `artifacts.utxo.receivedEvents has unsupported exact selector ${selector}`,
+        );
+      }
+      return { literal: String(value), selector, value };
+    })
+    .sort((left, right) => left.value - right.value);
+  const categoryOptions = Object.keys(plural.options)
+    .filter((key) => key !== "other" && !key.startsWith("="))
+    .sort();
+  if (
+    exactOptions.length === 0 &&
+    categoryOptions.length === 1 &&
+    categoryOptions[0] === "one"
+  ) {
+    return `${pluralRulesExpression}.select(${countExpression}) === "one" ? ${compileOption("one")} : ${fallback}`;
+  }
+  const categoryExpression = categoryOptions.reduceRight(
+    (next, category) =>
+      `pluralCategory === ${javascriptStringLiteral(category)} ? ${compileOption(category)} : ${next}`,
+    fallback,
   );
-  const other = compilePluralBranch(
-    [...prefix, ...plural.options.other.value, ...suffix],
-    numberFormatExpression,
-    countExpression,
-    encodeLiteral,
+  const selectedCategory = categoryOptions.length
+    ? `((pluralCategory) => ${categoryExpression})(${pluralRulesExpression}.select(${countExpression}))`
+    : fallback;
+  return exactOptions.reduceRight(
+    (next, exact) =>
+      `${countExpression} === ${exact.literal} ? ${compileOption(exact.selector)} : ${next}`,
+    selectedCategory,
   );
-  return `${pluralRulesExpression}.select(${countExpression}) === "one" ? ${one} : ${other}`;
 }
 
 function buildHtmlReplacements(

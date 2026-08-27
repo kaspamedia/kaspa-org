@@ -54,6 +54,42 @@ test("the shared contract rejects invisible zero-width characters generically", 
   );
 });
 
+test("language-shaping joiners remain valid translated text", () => {
+  for (const [locale, translated] of [
+    ["fa", "می‌رود"],
+    ["hi", "क्‍ष"],
+  ] as const) {
+    assert.deepEqual(
+      validateTranslatedCatalog(
+        locale,
+        "example",
+        { text: "Visible source" },
+        { text: translated },
+      ),
+      [],
+      locale,
+    );
+  }
+});
+
+test("joiners cannot make untranslated Latin copy appear translated", () => {
+  for (const [character, codePoint] of [
+    ["\u200C", "200C"],
+    ["\u200D", "200D"],
+  ] as const) {
+    assert.deepEqual(
+      validateTranslatedCatalog(
+        "fr",
+        "example",
+        { text: "Translate this sentence" },
+        { text: `Translate${character} this sentence` },
+      ),
+      [`example.text contains prohibited zero-width character U+${codePoint}`],
+      codePoint,
+    );
+  }
+});
+
 test("protected terms require exact visible tokens and casing", () => {
   assert.deepEqual(
     validateTranslatedCatalog(
@@ -64,12 +100,14 @@ test("protected terms require exact visible tokens and casing", () => {
         language: "Build with Rust",
         brandCase: "Use Kaspa",
         brandBoundary: "Use Kaspa",
+        latinBoundary: "Use Kaspa",
       },
       {
         ticker: "Kaspa kaufen",
         language: "Mit rusty-kaspa entwickeln",
         brandCase: "kaspa verwenden",
         brandBoundary: "Kaspad verwenden",
+        latinBoundary: "Kaspaé verwenden",
       },
     ),
     [
@@ -77,6 +115,7 @@ test("protected terms require exact visible tokens and casing", () => {
       "example.language removes protected term Rust from translated copy",
       "example.brandCase removes protected term Kaspa from translated copy",
       "example.brandBoundary removes protected term Kaspa from translated copy",
+      "example.latinBoundary removes protected term Kaspa from translated copy",
     ],
   );
 
@@ -108,11 +147,13 @@ test("protected terms remain enforced inside ICU branches", () => {
   );
 });
 
-test("protected terms support locale-specific no-space boundaries", () => {
+test("protected terms support no-space boundaries for every locale", () => {
   for (const [locale, translated] of [
     ["zh-CN", "使用Kaspa网络"],
+    ["zh-TW", "使用Kaspa網路"],
     ["ja", "Kaspaを使用する"],
     ["ko", "Kaspa를 사용하세요"],
+    ["th", "ใช้Kaspaเครือข่าย"],
   ] as const) {
     assert.deepEqual(
       validateTranslatedCatalog(
@@ -125,6 +166,20 @@ test("protected terms support locale-specific no-space boundaries", () => {
       locale,
     );
   }
+});
+
+test("quoted ICU literals still require translation", () => {
+  assert.deepEqual(
+    validateTranslatedCatalog(
+      "fr",
+      "example",
+      { text: "'{Translate me}'" },
+      { text: "'{Translate me}'" },
+    ),
+    [
+      "example.text is unchanged from English without an explicit fr policy exception",
+    ],
+  );
 });
 
 test("locale policy adds only language-specific terminology and loanwords", () => {
