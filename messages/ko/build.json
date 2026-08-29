@@ -352,10 +352,15 @@
         "title": "{kaspaResearch}",
         "description": "프로토콜, 합의, 경제학 및 채굴 논의와 {kip} 초안 및 제안서를 위한 장문 포럼입니다."
       },
+      "kasSmiths": {
+        "label": "커뮤니티",
+        "title": "{kasSmiths}: 개발자 모임",
+        "description": "다른 개발자와 함께 {kaspa} 표준, 프로토콜, 도구, 공유 인프라 및 서비스 아이디어를 논의하고 개선합니다."
+      },
       "toccata": {
-        "label": "메인넷",
-        "title": "{toccata}: 커버넌트 및 {zk}",
-        "description": "2026년 6월 30일 DAA 점수 {daaScore}부터 메인넷에서 활성화되었습니다. 트랜잭션 v1, 커버넌트 ID, 스크립트 내부 조회와 가격 책정, ZK 검증 및 시퀀싱 레인을 추가합니다."
+        "label": "메인넷에서 사용 가능",
+        "title": "{toccata} 프로그래머빌리티",
+        "description": "{toccata}는 커버넌트, 트랜잭션 내부 조회, ZK 검증 및 Based Apps용 시퀀싱 지원을 통해 {kaspa}에 프로그래밍 가능한 UTXO를 추가했습니다. 2026년 6월 30일부터 메인넷에서 가동 중입니다."
       },
       "silverscript": {
         "label": "커버넌트 도구",

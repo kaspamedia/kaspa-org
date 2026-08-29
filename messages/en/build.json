@@ -352,10 +352,15 @@
         "title": "{kaspaResearch}",
         "description": "Long-form forum for protocol, consensus, economics, and mining discussion, plus {kip} drafts and proposals."
       },
+      "kasSmiths": {
+        "label": "Community",
+        "title": "{kasSmiths}: builders' workshop",
+        "description": "Discuss and refine {kaspa} standards, protocols, tooling, shared infrastructure, and product ideas with other builders."
+      },
       "toccata": {
-        "label": "Mainnet",
-        "title": "{toccata}: covenants & {zk}",
-        "description": "Active on mainnet since June 30, 2026 at DAA score {daaScore}. Adds transaction v1, covenant IDs, script introspection and pricing, ZK verification, and sequencing lanes."
+        "label": "Live on mainnet",
+        "title": "{toccata} programmability",
+        "description": "{toccata} added programmable UTXOs to {kaspa} through covenants, transaction introspection, ZK verification, and sequencing support for based apps. It has been live on mainnet since June 30, 2026."
       },
       "silverscript": {
         "label": "Covenant tooling",

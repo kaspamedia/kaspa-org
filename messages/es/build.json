@@ -352,10 +352,15 @@
         "title": "{kaspaResearch}",
         "description": "Foro para debates en profundidad sobre protocolo, consenso, economía y minería, además de borradores y propuestas de {kip}."
       },
+      "kasSmiths": {
+        "label": "Comunidad",
+        "title": "{kasSmiths}: taller de desarrolladores",
+        "description": "Debate y perfecciona estándares, protocolos, herramientas, infraestructura compartida e ideas de productos de {kaspa} con otros desarrolladores."
+      },
       "toccata": {
-        "label": "Red principal",
-        "title": "{toccata}: covenants y {zk}",
-        "description": "Activa en la red principal desde el 30 de junio de 2026, en la puntuación DAA {daaScore}. Añade transacciones v1, identificadores de covenant, introspección y medición de scripts, verificación ZK y carriles de secuenciación."
+        "label": "Activa en la red principal",
+        "title": "Programabilidad de {toccata}",
+        "description": "{toccata} añadió UTXO programables a {kaspa} mediante covenants, introspección de transacciones, verificación ZK y soporte de secuenciación para Based Apps. Está activa en la red principal desde el 30 de junio de 2026."
       },
       "silverscript": {
         "label": "Herramientas de covenant",

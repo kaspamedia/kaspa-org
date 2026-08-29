@@ -34,14 +34,23 @@ export function useDevelopmentCards(): DevelopmentCard[] {
         href: "https://research.kas.pa/",
       },
       {
+        id: "kasSmiths",
+        label: t("kasSmiths.label"),
+        title: t("kasSmiths.title", {
+          kasSmiths: BUILD_TERMS.kasSmiths,
+        }),
+        desc: t("kasSmiths.description", { kaspa: BUILD_TERMS.kaspa }),
+        href: "https://kas-smiths.org/",
+      },
+      {
         id: "toccata",
         label: t("toccata.label"),
         title: t("toccata.title", {
           toccata: BUILD_TERMS.toccata,
-          zk: BUILD_TERMS.zk,
         }),
         desc: t("toccata.description", {
-          daaScore: "474,165,565",
+          kaspa: BUILD_TERMS.kaspa,
+          toccata: BUILD_TERMS.toccata,
         }),
         href: TOCCATA_DOCS_URL,
       },

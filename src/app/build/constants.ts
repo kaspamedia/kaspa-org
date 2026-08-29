@@ -31,6 +31,7 @@ export const BUILD_TERMS = {
   kaspaJs: "kaspa-js",
   kaspaQAndA: "Kaspa Q&A",
   kaspaResearch: "Kaspa Research",
+  kasSmiths: "Kas Smiths",
   kaspaResolver: "Kaspa Resolver",
   kaspaScript: "Kaspa Script",
   khost: "kHost",

@@ -352,10 +352,15 @@
         "title": "{kaspaResearch}",
         "description": "Forum tulisan panjang untuk diskusi protokol, konsensus, ekonomi, dan penambangan, serta draf dan proposal {kip}."
       },
+      "kasSmiths": {
+        "label": "Komunitas",
+        "title": "{kasSmiths}: lokakarya pengembang",
+        "description": "Diskusikan dan sempurnakan standar, protokol, alat, infrastruktur bersama, serta ide produk {kaspa} dengan pengembang lain."
+      },
       "toccata": {
-        "label": "Aktif di mainnet",
-        "title": "{toccata}: covenant & {zk}",
-        "description": "Aktif di mainnet sejak 30 Juni 2026 pada skor DAA {daaScore}. Menambahkan transaksi v1, ID covenant, introspeksi dan penetapan harga skrip, verifikasi ZK, serta jalur pengurutan."
+        "label": "Tersedia di mainnet",
+        "title": "Programabilitas {toccata}",
+        "description": "{toccata} menambahkan UTXO terprogram ke {kaspa} melalui covenant, introspeksi transaksi, verifikasi ZK, dan dukungan pengurutan untuk Based Apps. Fitur ini aktif di mainnet sejak 30 Juni 2026."
       },
       "silverscript": {
         "label": "Alat covenant",

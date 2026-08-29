@@ -352,10 +352,15 @@
         "title": "{kaspaResearch}",
         "description": "围绕协议、共识、经济学和挖矿进行长篇讨论的论坛，也包括 {kip} 草案和提案。"
       },
+      "kasSmiths": {
+        "label": "社区",
+        "title": "{kasSmiths}：开发者工坊",
+        "description": "与其他开发者共同讨论和完善 {kaspa} 标准、协议、工具、共享基础设施及产品构想。"
+      },
       "toccata": {
-        "label": "主网",
-        "title": "{toccata}：契约与 {zk}",
-        "description": "自 2026 年 6 月 30 日 DAA 分数 {daaScore} 起在主网上激活。新增交易 v1、契约 ID、脚本内省与计价、ZK 验证及排序通道。"
+        "label": "已在主网上线",
+        "title": "{toccata} 可编程能力",
+        "description": "{toccata} 通过契约、交易内省、ZK 验证和面向 Based Apps 的排序支持，为 {kaspa} 引入了可编程 UTXO。该功能自 2026 年 6 月 30 日起已在主网上线。"
       },
       "silverscript": {
         "label": "契约工具",
