@@ -1,7 +1,7 @@
 {
   "metadata": {
     "title": "Dokumentasi Pengembang, SDK, API, dan Akses Node Kaspa | Kaspa",
-    "description": "Semua yang Anda perlukan untuk mulai membangun di Kaspa. SDK WASM, pustaka Rust, playground API langsung, akses node, dan alat pengembangan."
+    "description": "Semua yang Anda perlukan untuk mulai membangun di Kaspa. Programabilitas mainnet, SDK WASM, pustaka Rust, playground API langsung, akses node, dan alat pengembangan."
   },
   "openGraph": {
     "imageAlt": "Kaspa — Desentralisasi Real-time"
@@ -103,7 +103,7 @@
       "action": "Lihat rilis"
     },
     "heading": "Bangun di {kaspa}",
-    "description": "{wasmSdk}, pustaka {rust} native, dan infrastruktur node untuk membangun di {kaspa}.",
+    "description": "Programabilitas mainnet, {wasmSdk}, pustaka {rust} native, dan infrastruktur node untuk membangun di {kaspa}.",
     "actions": {
       "openDocs": "Buka dokumentasi",
       "viewGitHub": "Lihat di {github}"
@@ -192,6 +192,13 @@
         "title": "Bangun dengan {rust} native",
         "description": "Gunakan crate {rust} di dalam {rustyKaspa} untuk layanan backend, integrasi sistem, komponen internal dompet, dan beban kerja di sekitar node.",
         "repo": "Repo {rustyKaspa}"
+      },
+      "programmability": {
+        "tier": "Aplikasi terprogram",
+        "title": "Bangun aplikasi terprogram",
+        "description": "Bandingkan {covenants}, {basedApps}, dan {inlineZk} khusus. {fullVprogs} tetap menjadi arah masa depan untuk komposisi antar-aplikasi independen.",
+        "guide": "Pilih model",
+        "toccata": "Panduan pengembang Toccata"
       },
       "node": {
         "tier": "Node",
@@ -331,7 +338,7 @@
     "heading": {
       "label": "Pengembangan",
       "title": "Ikuti pekerjaannya secara terbuka",
-      "description": "Pantau kanal diskusi utama, lalu ikuti perkembangan {sdk}, protokol, dan kemampuan pemrograman eksperimental."
+      "description": "Bedakan kemampuan konsensus yang aktif di mainnet dari alat pengembang dan riset yang masih terus berkembang."
     },
     "liveDiscussion": "Diskusi langsung",
     "cards": {
@@ -346,19 +353,19 @@
         "description": "Forum tulisan panjang untuk diskusi protokol, konsensus, ekonomi, dan penambangan, serta draf dan proposal {kip}."
       },
       "toccata": {
-        "label": "Hardfork",
+        "label": "Aktif di mainnet",
         "title": "{toccata}: covenant & {zk}",
-        "description": "Hardfork yang menggabungkan opcode skrip tambahan ({kip17}), ID covenant ({kip20}), opcode {zk} dengan subsistem precompile pemverifikasi ({kip16}), dan komitmen pengurutan ({kip21}). Saat ini aktif di {tn12} menjelang aktivasi mainnet."
+        "description": "Aktif di mainnet sejak 30 Juni 2026 pada skor DAA {daaScore}. Menambahkan transaksi v1, ID covenant, introspeksi dan penetapan harga skrip, verifikasi ZK, serta jalur pengurutan."
       },
       "silverscript": {
-        "label": "Kemampuan pemrograman",
+        "label": "Alat covenant",
         "title": "{silverscript}",
-        "description": "Bahasa skrip tingkat tinggi yang dikompilasi menjadi {kaspaScript} native. Sedang diuji di {tn12} menjelang hardfork {toccata} yang menghadirkan covenant dan opcode {zk} ke mainnet."
+        "description": "Jalur penulisan tingkat tinggi utama untuk covenant mainnet, yang dikompilasi menjadi {kaspaScript} native. Alatnya masih tahap awal; periksa status rilis dan audit terbaru sebelum digunakan dalam produksi."
       },
       "vprogs": {
-        "label": "Kemampuan pemrograman",
-        "title": "{vprogs}",
-        "description": "Riset awal tentang program yang dapat diverifikasi: pengurutan on-chain dengan eksekusi off-chain yang diselesaikan melalui bukti {zk}. Dibangun di atas primitif skrip yang hadir dalam {toccata}."
+        "label": "Dalam pembangunan",
+        "title": "{vprogs}: aplikasi dengan status bersama",
+        "description": "Jalur aplikasi dengan status bersama masih dalam pembangunan. Runtime vProgs adalah sumber pola yang terus berkembang, belum menjadi API pengembang eksternal yang stabil; Full vProgs tetap menjadi arah masa depan."
       },
       "python": {
         "label": "{sdk}",
@@ -403,15 +410,16 @@
       "gettingStarted": "Bagaimana cara mulai membangun di {kaspa}?",
       "choosePath": "Jalur mana yang sebaiknya saya pilih — {wasmSdk}, {rust} native, atau menjalankan node?",
       "nodeOrApi": "Apakah saya perlu menjalankan node sendiri, atau dapat menggunakan {api} komunitas?",
-      "smartContracts": "Apakah {kaspa} memiliki smart contract?",
+      "smartContracts": "Apa perbedaan programabilitas native UTXO {kaspa} dengan smart contract EVM?",
       "wallet": "Bagaimana cara membuat dompet dengan {wasmSdk}?",
       "transaction": "Bagaimana cara membuat dan menandatangani transaksi?",
       "runNode": "Bagaimana cara menjalankan node {kaspa}?",
       "hardware": "Perangkat keras apa yang saya perlukan untuk node?",
-      "toccata": "Apa itu {toccata} dan perubahan apa yang dibawanya?",
+      "toccata": "Apa yang berubah dengan {toccata}, dan apa yang sudah aktif di mainnet?",
       "covenants": "Apa itu covenant di {kaspa}?",
+      "programmability": "Haruskah saya menggunakan {covenants}, {basedApps}, atau {inlineZk}?",
       "silverscript": "Apa itu {silverscript}?",
-      "networks": "Apa perbedaan antara mainnet dan {tn12}?"
+      "testing": "Bagaimana cara menguji aplikasi Kaspa terprogram sebelum menerapkannya?"
     }
   }
 }

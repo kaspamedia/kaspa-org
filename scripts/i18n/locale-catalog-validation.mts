@@ -698,7 +698,6 @@ const translationPolicies = {
     allowedUnchangedKeys: [
       "assets.formats.png",
       "assets.formats.svg",
-      "build.developments.cards.toccata.label",
       "build.terms.daa",
       "build.terms.dag",
       "build.terms.utxo",
