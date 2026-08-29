@@ -68,7 +68,7 @@
       "paths": {
         "label": "경로 선택",
         "compactLabel": "경로",
-        "description": "{wasmSdk}, 네이티브 {rust} 또는 풀 노드 설정입니다."
+        "description": "통합 방식 또는 프로그래머빌리티 방식을 선택하세요."
       },
       "runNode": {
         "label": "노드 실행",
@@ -114,11 +114,11 @@
       "descriptionWithAi": "{kaspaAi}에서 방향을 확인한 뒤 필요한 경로로 바로 이동하세요.",
       "descriptionWithoutAi": "필요에 맞는 문서, 실시간 예제 또는 노드 경로에서 시작하세요.",
       "aiTitle": "{kaspaAi}에 질문하기",
-      "aiDescription": "알맞은 {sdk}, {api} 또는 노드 경로를 안내받으세요.",
+      "aiDescription": "적합한 {sdk}, {api}, 노드 또는 프로그래머빌리티 경로를 안내합니다.",
       "jumpLabel": "바로 이동",
       "routes": {
         "chainData": "체인 데이터 읽기",
-        "stack": "스택 선택",
+        "stack": "경로 선택",
         "node": "노드 실행"
       }
     }
@@ -177,7 +177,7 @@
     "heading": {
       "label": "경로",
       "title": "개발 경로 선택",
-      "description": "구축하려는 시스템에 맞는 {sdk} 또는 인프라 경로에서 시작하세요."
+      "description": "구축할 시스템에 맞는 통합 방식, 노드 설정 또는 프로그래머빌리티 방식을 선택하세요."
     },
     "cards": {
       "wasm": {
@@ -413,7 +413,7 @@
     },
     "prompts": {
       "gettingStarted": "{kaspa}에서 개발을 시작하려면 어떻게 해야 하나요?",
-      "choosePath": "{wasmSdk}, 네이티브 {rust}, 노드 실행 중 어떤 경로를 선택해야 하나요?",
+      "choosePath": "{wasmSdk} 통합, 네이티브 {rust} 사용, 노드 실행 또는 프로그래머블 앱 구축 중 어떤 경로를 선택해야 하나요?",
       "nodeOrApi": "자체 노드를 실행해야 하나요, 아니면 커뮤니티 {api}를 사용해도 되나요?",
       "smartContracts": "{kaspa}의 UTXO 네이티브 프로그래머빌리티는 EVM 스마트 컨트랙트와 어떻게 다른가요?",
       "wallet": "{wasmSdk}로 지갑을 만들려면 어떻게 해야 하나요?",

@@ -68,7 +68,7 @@
       "paths": {
         "label": "開発方法を選ぶ",
         "compactLabel": "方法",
-        "description": "{wasmSdk}、ネイティブ {rust}、またはフルノードのセットアップ。"
+        "description": "連携スタックまたはプログラマビリティモデルを選びます。"
       },
       "runNode": {
         "label": "ノードを動かす",
@@ -114,11 +114,11 @@
       "descriptionWithAi": "{kaspaAi} で方向性を確認し、目的に合うルートへ進みましょう。",
       "descriptionWithoutAi": "目的に合うドキュメント、ライブサンプル、またはノードの実行方法から始めましょう。",
       "aiTitle": "{kaspaAi} に質問",
-      "aiDescription": "適切な {sdk}、{api}、またはノードの実行方法を案内します。",
+      "aiDescription": "適切な {sdk}、{api}、ノード、プログラマビリティの経路を案内します。",
       "jumpLabel": "すぐに移動",
       "routes": {
         "chainData": "チェーンデータを読む",
-        "stack": "技術スタックを選ぶ",
+        "stack": "開発ルートを選ぶ",
         "node": "ノードを動かす"
       }
     }
@@ -177,7 +177,7 @@
     "heading": {
       "label": "開発方法",
       "title": "開発方法を選ぶ",
-      "description": "開発するシステムに合う {sdk} またはインフラのルートから始めましょう。"
+      "description": "構築するシステムに合う連携スタック、ノード構成、またはプログラマビリティモデルを選びます。"
     },
     "cards": {
       "wasm": {
@@ -413,7 +413,7 @@
     },
     "prompts": {
       "gettingStarted": "{kaspa} 上での開発は、何から始めればよいですか？",
-      "choosePath": "{wasmSdk}、ネイティブ {rust}、ノード運用のどれを選べばよいですか？",
+      "choosePath": "{wasmSdk} を連携する、ネイティブ {rust} を使う、ノードを運用する、プログラマブルアプリを構築する場合のどれを選ぶべきですか？",
       "nodeOrApi": "自分でノードを運用する必要がありますか？それともコミュニティ {api} を利用できますか？",
       "smartContracts": "{kaspa} の UTXO ネイティブなプログラマビリティは EVM スマートコントラクトとどう違いますか？",
       "wallet": "{wasmSdk} を使ってウォレットを構築するにはどうすればよいですか？",

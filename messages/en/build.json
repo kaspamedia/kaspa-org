@@ -68,7 +68,7 @@
       "paths": {
         "label": "Choose path",
         "compactLabel": "Paths",
-        "description": "{wasmSdk}, native {rust}, or full-node setup."
+        "description": "Choose an integration stack or programmability model."
       },
       "runNode": {
         "label": "Run node",
@@ -114,11 +114,11 @@
       "descriptionWithAi": "Use {kaspaAi} for direction, then jump into the route that matches what you need.",
       "descriptionWithoutAi": "Start with the docs, live examples, or node route that matches what you need.",
       "aiTitle": "Ask {kaspaAi}",
-      "aiDescription": "Get pointed to the right {sdk}, {api}, or node path.",
+      "aiDescription": "Get pointed to the right {sdk}, {api}, node, or programmability path.",
       "jumpLabel": "Jump straight to",
       "routes": {
         "chainData": "Read chain data",
-        "stack": "Pick your stack",
+        "stack": "Choose your path",
         "node": "Run a node"
       }
     }
@@ -177,7 +177,7 @@
     "heading": {
       "label": "Paths",
       "title": "Choose your path",
-      "description": "Start with the {sdk} or infrastructure path that matches the system you're building."
+      "description": "Choose an integration stack, node setup, or programmability model for the system you're building."
     },
     "cards": {
       "wasm": {
@@ -413,7 +413,7 @@
     },
     "prompts": {
       "gettingStarted": "How do I get started building on {kaspa}?",
-      "choosePath": "Which path should I pick — {wasmSdk}, native {rust}, or running a node?",
+      "choosePath": "Should I integrate with the {wasmSdk}, use native {rust}, run a node, or build a programmable app?",
       "nodeOrApi": "Do I need to run my own node, or can I use the community {api}?",
       "smartContracts": "How does {kaspa}'s UTXO-native programmability differ from EVM smart contracts?",
       "wallet": "How do I build a wallet with the {wasmSdk}?",

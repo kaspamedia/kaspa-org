@@ -68,7 +68,7 @@
       "paths": {
         "label": "Choisir une voie",
         "compactLabel": "Voies",
-        "description": "{wasmSdk}, {rust} natif ou configuration d’un nœud complet."
+        "description": "Choisissez une pile d’intégration ou un modèle de programmabilité."
       },
       "runNode": {
         "label": "Exécuter un nœud",
@@ -114,11 +114,11 @@
       "descriptionWithAi": "Demandez conseil à {kaspaAi}, puis accédez à la voie qui correspond à votre besoin.",
       "descriptionWithoutAi": "Commencez par la documentation, les exemples en direct ou la voie des nœuds qui correspond à votre besoin.",
       "aiTitle": "Interroger {kaspaAi}",
-      "aiDescription": "Trouvez le bon {sdk}, la bonne {api} ou la bonne voie de nœud.",
+      "aiDescription": "Trouvez la bonne voie pour le {sdk}, l’{api}, les nœuds ou la programmabilité.",
       "jumpLabel": "Accéder directement à",
       "routes": {
         "chainData": "Lire les données de la chaîne",
-        "stack": "Choisir votre pile",
+        "stack": "Choisir votre voie",
         "node": "Exécuter un nœud"
       }
     }
@@ -177,7 +177,7 @@
     "heading": {
       "label": "Voies",
       "title": "Choisissez votre voie",
-      "description": "Commencez par le {sdk} ou la voie d’infrastructure qui correspond au système que vous développez."
+      "description": "Choisissez la pile d’intégration, la configuration de nœud ou le modèle de programmabilité adapté au système que vous développez."
     },
     "cards": {
       "wasm": {
@@ -413,7 +413,7 @@
     },
     "prompts": {
       "gettingStarted": "Comment commencer à développer sur {kaspa} ?",
-      "choosePath": "Quelle voie choisir : {wasmSdk}, {rust} natif ou exécution d’un nœud ?",
+      "choosePath": "Dois-je intégrer le {wasmSdk}, utiliser {rust} natif, exécuter un nœud ou développer une application programmable ?",
       "nodeOrApi": "Dois-je exécuter mon propre nœud ou puis-je utiliser l’{api} communautaire ?",
       "smartContracts": "En quoi la programmabilité native UTXO de {kaspa} diffère-t-elle des contrats intelligents EVM ?",
       "wallet": "Comment créer un portefeuille avec le {wasmSdk} ?",

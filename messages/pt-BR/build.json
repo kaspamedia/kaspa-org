@@ -68,7 +68,7 @@
       "paths": {
         "label": "Escolher caminho",
         "compactLabel": "Caminhos",
-        "description": "{wasmSdk}, {rust} nativo ou configuração de nó completo."
+        "description": "Escolha uma stack de integração ou um modelo de programabilidade."
       },
       "runNode": {
         "label": "Executar nó",
@@ -114,11 +114,11 @@
       "descriptionWithAi": "Use {kaspaAi} para se orientar e vá direto ao caminho que atende ao que você precisa.",
       "descriptionWithoutAi": "Comece pela documentação, pelos exemplos ao vivo ou pela opção de executar um nó, conforme sua necessidade.",
       "aiTitle": "Pergunte à {kaspaAi}",
-      "aiDescription": "Encontre o caminho certo para {sdk}, {api} ou a execução de um nó.",
+      "aiDescription": "Encontre o caminho certo de {sdk}, {api}, nó ou programabilidade.",
       "jumpLabel": "Ir direto para",
       "routes": {
         "chainData": "Ler dados da cadeia",
-        "stack": "Escolher sua stack",
+        "stack": "Escolher seu caminho",
         "node": "Executar um nó"
       }
     }
@@ -177,7 +177,7 @@
     "heading": {
       "label": "Caminhos",
       "title": "Escolha seu caminho",
-      "description": "Comece pelo caminho de {sdk} ou de infraestrutura adequado ao sistema que você está desenvolvendo."
+      "description": "Escolha a stack de integração, a configuração de nó ou o modelo de programabilidade adequado ao sistema que você está desenvolvendo."
     },
     "cards": {
       "wasm": {
@@ -413,7 +413,7 @@
     },
     "prompts": {
       "gettingStarted": "Como começo a desenvolver na {kaspa}?",
-      "choosePath": "Qual caminho devo escolher — {wasmSdk}, {rust} nativo ou executar um nó?",
+      "choosePath": "Devo integrar o {wasmSdk}, usar {rust} nativo, executar um nó ou desenvolver um aplicativo programável?",
       "nodeOrApi": "Preciso executar meu próprio nó ou posso usar a {api} da comunidade?",
       "smartContracts": "Como a programabilidade nativa de UTXO da {kaspa} difere dos contratos inteligentes da EVM?",
       "wallet": "Como criar uma carteira com o {wasmSdk}?",

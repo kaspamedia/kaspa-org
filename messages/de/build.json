@@ -68,7 +68,7 @@
       "paths": {
         "label": "Pfad wählen",
         "compactLabel": "Pfade",
-        "description": "{wasmSdk}, natives {rust} oder Full-Node-Einrichtung."
+        "description": "Integrations-Stack oder Programmierbarkeitsmodell auswählen."
       },
       "runNode": {
         "label": "Node betreiben",
@@ -114,11 +114,11 @@
       "descriptionWithAi": "Nutze {kaspaAi} zur Orientierung und springe dann direkt zu dem Pfad, der zu deinem Vorhaben passt.",
       "descriptionWithoutAi": "Beginne mit der Dokumentation, den Live-Beispielen oder dem Node-Pfad, der zu deinem Vorhaben passt.",
       "aiTitle": "{kaspaAi} fragen",
-      "aiDescription": "Finde den richtigen {sdk}-, {api}- oder Node-Pfad.",
+      "aiDescription": "Finde den richtigen {sdk}-, {api}-, Node- oder Programmierbarkeitspfad.",
       "jumpLabel": "Direkt zu",
       "routes": {
         "chainData": "Chain-Daten lesen",
-        "stack": "Stack auswählen",
+        "stack": "Pfad auswählen",
         "node": "Node betreiben"
       }
     }
@@ -177,7 +177,7 @@
     "heading": {
       "label": "Pfade",
       "title": "Wähle deinen Pfad",
-      "description": "Beginne mit dem {sdk}- oder Infrastrukturpfad, der zu deinem System passt."
+      "description": "Wähle den Integrations-Stack, die Node-Einrichtung oder das Programmierbarkeitsmodell, das zu deinem System passt."
     },
     "cards": {
       "wasm": {
@@ -413,7 +413,7 @@
     },
     "prompts": {
       "gettingStarted": "Wie beginne ich mit der Entwicklung auf {kaspa}?",
-      "choosePath": "Welchen Pfad sollte ich wählen – {wasmSdk}, natives {rust} oder den Betrieb eines eigenen Nodes?",
+      "choosePath": "Sollte ich das {wasmSdk} integrieren, natives {rust} verwenden, einen Node betreiben oder eine programmierbare Anwendung entwickeln?",
       "nodeOrApi": "Muss ich einen eigenen Node betreiben oder kann ich die Community-{api} verwenden?",
       "smartContracts": "Wie unterscheidet sich die UTXO-native Programmierbarkeit von {kaspa} von EVM-Smart-Contracts?",
       "wallet": "Wie entwickle ich mit dem {wasmSdk} eine Wallet?",

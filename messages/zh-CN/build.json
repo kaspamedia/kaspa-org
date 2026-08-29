@@ -68,7 +68,7 @@
       "paths": {
         "label": "选择路径",
         "compactLabel": "路径",
-        "description": "选择 {wasmSdk}、原生 {rust} 或完整节点设置。"
+        "description": "选择集成技术栈或可编程模型。"
       },
       "runNode": {
         "label": "运行节点",
@@ -114,11 +114,11 @@
       "descriptionWithAi": "先向 {kaspaAi} 获取方向，再进入符合您需求的路径。",
       "descriptionWithoutAi": "从文档、在线示例或符合您需求的节点路径开始。",
       "aiTitle": "询问 {kaspaAi}",
-      "aiDescription": "找到合适的 {sdk}、{api} 或节点路径。",
+      "aiDescription": "找到合适的 {sdk}、{api}、节点或可编程路径。",
       "jumpLabel": "直接跳转至",
       "routes": {
         "chainData": "读取链上数据",
-        "stack": "选择技术栈",
+        "stack": "选择构建路径",
         "node": "运行节点"
       }
     }
@@ -177,7 +177,7 @@
     "heading": {
       "label": "路径",
       "title": "选择您的路径",
-      "description": "从符合您所构建系统的 {sdk} 或基础设施路径开始。"
+      "description": "根据正在构建的系统，选择集成技术栈、节点配置或可编程模型。"
     },
     "cards": {
       "wasm": {
@@ -413,7 +413,7 @@
     },
     "prompts": {
       "gettingStarted": "如何开始在 {kaspa} 上构建？",
-      "choosePath": "我应该选择哪条路径——{wasmSdk}、原生 {rust}，还是运行节点？",
+      "choosePath": "我应该集成 {wasmSdk}、使用原生 {rust}、运行节点，还是构建可编程应用？",
       "nodeOrApi": "我需要运行自己的节点，还是可以使用社区 {api}？",
       "smartContracts": "{kaspa} 的 UTXO 原生可编程能力与 EVM 智能合约有何不同？",
       "wallet": "如何使用 {wasmSdk} 构建钱包？",

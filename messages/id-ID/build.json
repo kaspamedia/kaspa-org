@@ -68,7 +68,7 @@
       "paths": {
         "label": "Pilih jalur",
         "compactLabel": "Jalur",
-        "description": "{wasmSdk}, {rust} native, atau penyiapan node penuh."
+        "description": "Pilih stack integrasi atau model programabilitas."
       },
       "runNode": {
         "label": "Jalankan node",
@@ -114,11 +114,11 @@
       "descriptionWithAi": "Gunakan {kaspaAi} untuk mendapatkan arahan, lalu masuk ke jalur yang sesuai dengan kebutuhan Anda.",
       "descriptionWithoutAi": "Mulailah dari dokumentasi, contoh langsung, atau jalur node yang sesuai dengan kebutuhan Anda.",
       "aiTitle": "Tanya {kaspaAi}",
-      "aiDescription": "Dapatkan arahan ke jalur {sdk}, {api}, atau node yang tepat.",
+      "aiDescription": "Temukan jalur {sdk}, {api}, node, atau programabilitas yang tepat.",
       "jumpLabel": "Langsung menuju",
       "routes": {
         "chainData": "Baca data rantai",
-        "stack": "Pilih stack Anda",
+        "stack": "Pilih jalur Anda",
         "node": "Jalankan node"
       }
     }
@@ -177,7 +177,7 @@
     "heading": {
       "label": "Jalur",
       "title": "Pilih jalur Anda",
-      "description": "Mulailah dengan jalur {sdk} atau infrastruktur yang sesuai dengan sistem yang Anda bangun."
+      "description": "Pilih stack integrasi, pengaturan node, atau model programabilitas yang sesuai dengan sistem yang Anda bangun."
     },
     "cards": {
       "wasm": {
@@ -413,7 +413,7 @@
     },
     "prompts": {
       "gettingStarted": "Bagaimana cara mulai membangun di {kaspa}?",
-      "choosePath": "Jalur mana yang sebaiknya saya pilih — {wasmSdk}, {rust} native, atau menjalankan node?",
+      "choosePath": "Haruskah saya mengintegrasikan {wasmSdk}, menggunakan {rust} native, menjalankan node, atau membangun aplikasi terprogram?",
       "nodeOrApi": "Apakah saya perlu menjalankan node sendiri, atau dapat menggunakan {api} komunitas?",
       "smartContracts": "Apa perbedaan programabilitas native UTXO {kaspa} dengan smart contract EVM?",
       "wallet": "Bagaimana cara membuat dompet dengan {wasmSdk}?",
