@@ -53,6 +53,10 @@ type WalletDetails = {
   icon: string;
   user: WalletUserType;
   summary: string;
+  compatibility?: {
+    note: string;
+    link: string;
+  };
   review?: WalletReview;
 
   features: WalletFeature[];

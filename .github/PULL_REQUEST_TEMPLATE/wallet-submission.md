@@ -55,6 +55,21 @@ on the site before the wallet is published.
 
 Summary:
 
+#### Compatibility (when needed)
+
+Keep compatibility restrictions separate from the 140-character summary.
+Add `compatibility: { note, link }` to the wallet record: a short English note
+(up to 240 characters) and an official HTTPS compatibility link. Maintainers
+translate the note as well as the summary.
+
+Hardware models sharing a companion app may use one family entry when the
+ratings and features accurately cover them. If supported platforms differ by
+model, explain that here and link to the official comparison or support page.
+
+Compatibility note:
+
+Official compatibility link:
+
 #### Optional translations
 
 If you are fluent in a language currently published on the site, you may
@@ -127,7 +142,8 @@ List every way a user can install or open the wallet. Each acquisition path is o
 - [ ] The wallet entry includes its short, neutral English `summary`
 - [ ] If I included an optional translation above, it is for a language currently published on the site
 - [ ] I used `platforms` for independently usable OSs or `paths` for components that must be used together, never both
-- [ ] This is one wallet product; independently named products or models use separate records
+- [ ] This is one wallet product or a hardware family meeting the grouping rules in the submission guide
+- [ ] Any model-dependent platform support is explained in `compatibility`, with an official link
 - [ ] `features` and `check` describe the wallet's defaults; per-OS variation lives in `platformOverrides`
 - [ ] `actions` covers every acquisition path; platform-specific links use `platforms`
 - [ ] Links point to official wallet pages

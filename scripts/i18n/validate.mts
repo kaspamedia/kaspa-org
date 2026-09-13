@@ -116,7 +116,15 @@ for (const namespace of sourceNamespaces) {
 }
 
 const englishWalletSummaries = Object.fromEntries(
-  kaspaWallets.map((wallet) => [wallet.id, wallet.summary]),
+  kaspaWallets.map((wallet) => [
+    wallet.id,
+    {
+      summary: wallet.summary,
+      ...(wallet.compatibility
+        ? { compatibilityNote: wallet.compatibility.note }
+        : {}),
+    },
+  ]),
 ) satisfies MessageCatalog;
 const englishWalletValidator = createLocaleCatalogValidator(
   englishWalletSummaries,
@@ -301,7 +309,11 @@ for (const locale of localeCodes) {
     `messages/${locale}: body font`,
     Object.values(localeMessages)
       .flatMap((catalog) => [...flattenCatalog(catalog).values()])
-      .concat(getLocalizedWallets(locale).map(({ summary }) => summary))
+      .concat(
+        getLocalizedWallets(locale).flatMap(({ summary, compatibility }) =>
+          compatibility ? [summary, compatibility.note] : [summary],
+        ),
+      )
       .join(""),
     bodyFont.coveredKoreanCharacters,
     /[가-힣]/u,

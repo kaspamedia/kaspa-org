@@ -33,8 +33,11 @@ const walletRecords = [
     title: "Ledger",
     icon: "/hodl/wallets/ledger/icon.svg",
     user: "beginner",
-    summary:
-      "Hardware wallets for Kaspa with the Ledger Wallet app. Phone and computer compatibility varies by hardware model.",
+    summary: "Hardware wallets for Kaspa with the Ledger Wallet app.",
+    compatibility: {
+      note: "Phone and computer compatibility varies by hardware model.",
+      link: "https://shop.ledger.com/pages/hardware-wallets-comparison",
+    },
     paths: [
       { platforms: ["hardware", "windows"] },
       { platforms: ["hardware", "mac"] },
@@ -60,7 +63,7 @@ const walletRecords = [
     actions: [
       {
         action: "open",
-        link: "https://shop.ledger.com/pages/hardware-wallets-comparison",
+        link: "https://www.ledger.com/coin/wallet/kaspa",
       },
       {
         action: "download",

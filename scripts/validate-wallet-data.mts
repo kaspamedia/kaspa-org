@@ -15,6 +15,7 @@ import {
 import { supportedLocaleCodes } from "../src/i18n/locale-registry.ts";
 import { getLocalizedWallets } from "../src/i18n/wallets.ts";
 import { validateWalletAvailability } from "./wallet-availability-validation.mts";
+import { validateWalletCompatibility } from "./wallet-compatibility-validation.mts";
 
 const allowedOs = new Set<string>(WALLET_OS_IDS);
 const allowedUsers = new Set<string>(WALLET_USER_TYPES);
@@ -288,6 +289,10 @@ kaspaWallets.forEach((wallet, walletIndex) => {
     validateWalletSummary(`${walletPath}.summary`, wallet.summary);
   }
 
+  for (const issue of validateWalletCompatibility(wallet.compatibility, 240)) {
+    fail(`${walletPath}.compatibility`, issue);
+  }
+
   if (!allowedUsers.has(wallet.user)) {
     fail(`${walletPath}.user`, "must be beginner or experienced");
   }
@@ -463,6 +468,9 @@ for (const locale of supportedLocaleCodes) {
       );
     }
     for (const wallet of localizedWallets) {
+      for (const issue of validateWalletCompatibility(wallet.compatibility)) {
+        fail(`wallet compatibility:${locale}.${wallet.id}`, issue);
+      }
       if (!isNonEmptyString(wallet.summary)) {
         fail(
           `wallet summaries:${locale}.${wallet.id}`,

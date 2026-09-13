@@ -13,7 +13,10 @@ import type { WalletCheckRating } from "../../src/app/hodl/wallet-finder/types.t
 import { kaspaWallets } from "../../src/data/wallets.ts";
 import { supportedLocaleCodes } from "../../src/i18n/locale-registry.ts";
 import { englishMessages, spanishMessages } from "../../src/i18n/messages.ts";
-import { getLocalizedWallets } from "../../src/i18n/wallets.ts";
+import {
+  getLocalizedWallets,
+  localizeWalletCatalog,
+} from "../../src/i18n/wallets.ts";
 
 test("every supported locale returns the complete canonical wallet set", () => {
   const canonicalIds = kaspaWallets.map((wallet) => wallet.id).sort();
@@ -34,6 +37,63 @@ test("every supported locale returns the complete canonical wallet set", () => {
 
 test("English records are canonical", () => {
   assert.deepEqual(getLocalizedWallets("en"), kaspaWallets);
+});
+
+test("compatibility translations preserve canonical links and wallet behavior", () => {
+  for (const locale of supportedLocaleCodes) {
+    for (const wallet of getLocalizedWallets(locale)) {
+      const canonical = kaspaWallets.find(({ id }) => id === wallet.id)!;
+      const { summary, compatibility, ...behavior } = wallet;
+      const {
+        summary: englishSummary,
+        compatibility: englishCompatibility,
+        ...canonicalBehavior
+      } = canonical;
+      assert.deepEqual(behavior, canonicalBehavior);
+      assert.ok(summary);
+      assert.ok(englishSummary);
+      assert.equal(compatibility?.link, englishCompatibility?.link);
+      if (englishCompatibility) {
+        assert.ok(compatibility?.note.trim());
+        if (locale !== "en")
+          assert.notEqual(compatibility?.note, englishCompatibility.note);
+      } else {
+        assert.equal(compatibility, undefined);
+      }
+    }
+  }
+});
+
+test("catalogs cannot omit compatibility notes or invent them for other wallets", () => {
+  const catalog = Object.fromEntries(
+    kaspaWallets.map((wallet) => [
+      wallet.id,
+      {
+        summary: wallet.summary,
+        ...(wallet.compatibility
+          ? { compatibilityNote: wallet.compatibility.note }
+          : {}),
+      },
+    ]),
+  );
+  const missing = structuredClone(catalog);
+  delete missing.ledger.compatibilityNote;
+  assert.throws(
+    () => localizeWalletCatalog("es", missing),
+    /ledger:es must contain exactly/,
+  );
+  const empty = structuredClone(catalog);
+  empty.ledger.compatibilityNote = " ";
+  assert.throws(
+    () => localizeWalletCatalog("es", empty),
+    /must be a non-empty string/,
+  );
+  const extra = structuredClone(catalog);
+  extra["tangem-wallet"].compatibilityNote = "An unsupported qualification";
+  assert.throws(
+    () => localizeWalletCatalog("es", extra),
+    /tangem-wallet:es must contain exactly/,
+  );
 });
 
 test("route catalogs do not own wallet records", () => {

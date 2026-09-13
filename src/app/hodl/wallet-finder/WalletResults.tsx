@@ -8,6 +8,7 @@ import ExternalLink from "../../components/ExternalLink";
 import { ACCENT, accentAlpha } from "../content";
 import { getStoreIcon } from "./icons";
 import InfoTooltip from "./InfoTooltip";
+import CompatibilityInfo from "./CompatibilityInfo";
 import { RatingLegend, RatingSymbol, RatingTooltip } from "./Rating";
 import type { WalletMatch } from "./walletModel";
 import { WALLET_DISPLAY_RATINGS } from "./taxonomy";
@@ -52,12 +53,15 @@ function WalletRow({
               className="h-10 w-10 shrink-0 rounded-[13px] object-cover"
             />
             <div>
-              <p
-                className="text-[15px] leading-tight font-semibold"
-                style={{ color: ACCENT }}
-              >
-                {wallet.title}
-              </p>
+              <div className="flex items-center gap-1">
+                <p
+                  className="text-[15px] leading-tight font-semibold"
+                  style={{ color: ACCENT }}
+                >
+                  {wallet.title}
+                </p>
+                <CompatibilityInfo wallet={wallet} />
+              </div>
               <p className="text-muted mt-0.5 text-[11.5px]">
                 {wallet.summary}
               </p>
@@ -137,13 +141,14 @@ function WalletCard({ match }: { match: WalletMatch }) {
           height={44}
           className="h-11 w-11 shrink-0 rounded-[14px] object-cover"
         />
-        <div>
+        <div className="flex items-center gap-1">
           <h4
             className="mt-0.5 text-[18px] leading-tight font-semibold tracking-[-0.02em]"
             style={{ color: ACCENT }}
           >
             {wallet.title}
           </h4>
+          <CompatibilityInfo wallet={wallet} />
         </div>
       </div>
 

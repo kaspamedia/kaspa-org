@@ -10,130 +10,81 @@ import koreanWalletSummariesSource from "../../messages/ko/wallets.json" with { 
 
 import type { KaspaWallet } from "../app/hodl/wallet-finder/types.ts";
 import { kaspaWallets, type WalletId } from "../data/wallets.ts";
+import type { Locale } from "./locale-registry.ts";
 
-import {
-  brazilianPortugueseLocale,
-  chineseLocale,
-  frenchLocale,
-  germanLocale,
-  indonesianLocale,
-  japaneseLocale,
-  koreanLocale,
-  russianLocale,
-  spanishLocale,
-  type Locale,
-} from "./locale-registry.ts";
+type WalletCopy = {
+  summary: string;
+  compatibilityNote?: string;
+};
+type WalletCatalog = Readonly<Record<WalletId, WalletCopy>>;
 
-type WalletSummaryCatalog = Readonly<Record<WalletId, string>>;
+const walletCatalogs = {
+  es: spanishWalletSummariesSource,
+  fr: frenchWalletSummariesSource,
+  "zh-CN": chineseWalletSummariesSource,
+  ru: russianWalletSummariesSource,
+  de: germanWalletSummariesSource,
+  "id-ID": indonesianWalletSummariesSource,
+  "pt-BR": brazilianPortugueseWalletSummariesSource,
+  ja: japaneseWalletSummariesSource,
+  ko: koreanWalletSummariesSource,
+} satisfies Record<Exclude<Locale, "en">, WalletCatalog>;
 
-const spanishWalletSummaries =
-  spanishWalletSummariesSource satisfies WalletSummaryCatalog;
-const frenchWalletSummaries =
-  frenchWalletSummariesSource satisfies WalletSummaryCatalog;
-const chineseWalletSummaries =
-  chineseWalletSummariesSource satisfies WalletSummaryCatalog;
-const russianWalletSummaries =
-  russianWalletSummariesSource satisfies WalletSummaryCatalog;
-const germanWalletSummaries =
-  germanWalletSummariesSource satisfies WalletSummaryCatalog;
-const indonesianWalletSummaries =
-  indonesianWalletSummariesSource satisfies WalletSummaryCatalog;
-const brazilianPortugueseWalletSummaries =
-  brazilianPortugueseWalletSummariesSource satisfies WalletSummaryCatalog;
-const japaneseWalletSummaries =
-  japaneseWalletSummariesSource satisfies WalletSummaryCatalog;
-const koreanWalletSummaries =
-  koreanWalletSummariesSource satisfies WalletSummaryCatalog;
-
-function assertNever(value: never): never {
-  throw new Error(`Unsupported wallet locale: ${String(value)}`);
-}
-
-function assertCompleteCatalog(
+export function localizeWalletCatalog(
   locale: Locale,
   catalog: Readonly<Record<string, unknown>>,
-): void {
+): KaspaWallet[] {
   const walletIds = kaspaWallets.map((wallet) => wallet.id).sort();
   const catalogIds = Object.keys(catalog).sort();
-
   if (JSON.stringify(catalogIds) !== JSON.stringify(walletIds)) {
-    throw new Error(
-      `Wallet summaries for ${locale} must exactly match wallet IDs: expected ${JSON.stringify(walletIds)}, received ${JSON.stringify(catalogIds)}`,
-    );
+    throw new Error(`Wallet copy for ${locale} must exactly match wallet IDs`);
   }
 
-  for (const wallet of kaspaWallets) {
-    const summary = catalog[wallet.id];
-    if (typeof summary !== "string" || summary.trim().length === 0) {
+  return kaspaWallets.map((wallet) => {
+    const copy = catalog[wallet.id];
+    if (typeof copy !== "object" || copy === null || Array.isArray(copy)) {
+      throw new Error(
+        `Wallet copy for ${wallet.id}:${locale} must be an object`,
+      );
+    }
+    const expectedKeys = wallet.compatibility
+      ? ["compatibilityNote", "summary"]
+      : ["summary"];
+    if (
+      JSON.stringify(Object.keys(copy).sort()) !== JSON.stringify(expectedKeys)
+    ) {
+      throw new Error(
+        `Wallet copy for ${wallet.id}:${locale} must contain exactly ${expectedKeys.join(", ")}`,
+      );
+    }
+    if (
+      !("summary" in copy) ||
+      typeof copy.summary !== "string" ||
+      !copy.summary.trim()
+    ) {
       throw new Error(
         `Wallet summary for ${wallet.id}:${locale} must be a non-empty string`,
       );
     }
-  }
+    if (!wallet.compatibility) return { ...wallet, summary: copy.summary };
+    if (
+      !("compatibilityNote" in copy) ||
+      typeof copy.compatibilityNote !== "string" ||
+      !copy.compatibilityNote.trim()
+    ) {
+      throw new Error(
+        `Wallet compatibility note for ${wallet.id}:${locale} must be a non-empty string`,
+      );
+    }
+    return {
+      ...wallet,
+      summary: copy.summary,
+      compatibility: { ...wallet.compatibility, note: copy.compatibilityNote },
+    };
+  });
 }
 
 export function getLocalizedWallets(locale: Locale): KaspaWallet[] {
-  switch (locale) {
-    case "en":
-      return kaspaWallets.map((wallet) => ({ ...wallet }));
-    case spanishLocale:
-      assertCompleteCatalog(spanishLocale, spanishWalletSummaries);
-      return kaspaWallets.map((wallet) => ({
-        ...wallet,
-        summary: spanishWalletSummaries[wallet.id],
-      }));
-    case frenchLocale:
-      assertCompleteCatalog(frenchLocale, frenchWalletSummaries);
-      return kaspaWallets.map((wallet) => ({
-        ...wallet,
-        summary: frenchWalletSummaries[wallet.id],
-      }));
-    case chineseLocale:
-      assertCompleteCatalog(chineseLocale, chineseWalletSummaries);
-      return kaspaWallets.map((wallet) => ({
-        ...wallet,
-        summary: chineseWalletSummaries[wallet.id],
-      }));
-    case russianLocale:
-      assertCompleteCatalog(russianLocale, russianWalletSummaries);
-      return kaspaWallets.map((wallet) => ({
-        ...wallet,
-        summary: russianWalletSummaries[wallet.id],
-      }));
-    case germanLocale:
-      assertCompleteCatalog(germanLocale, germanWalletSummaries);
-      return kaspaWallets.map((wallet) => ({
-        ...wallet,
-        summary: germanWalletSummaries[wallet.id],
-      }));
-    case indonesianLocale:
-      assertCompleteCatalog(indonesianLocale, indonesianWalletSummaries);
-      return kaspaWallets.map((wallet) => ({
-        ...wallet,
-        summary: indonesianWalletSummaries[wallet.id],
-      }));
-    case brazilianPortugueseLocale:
-      assertCompleteCatalog(
-        brazilianPortugueseLocale,
-        brazilianPortugueseWalletSummaries,
-      );
-      return kaspaWallets.map((wallet) => ({
-        ...wallet,
-        summary: brazilianPortugueseWalletSummaries[wallet.id],
-      }));
-    case japaneseLocale:
-      assertCompleteCatalog(japaneseLocale, japaneseWalletSummaries);
-      return kaspaWallets.map((wallet) => ({
-        ...wallet,
-        summary: japaneseWalletSummaries[wallet.id],
-      }));
-    case koreanLocale:
-      assertCompleteCatalog(koreanLocale, koreanWalletSummaries);
-      return kaspaWallets.map((wallet) => ({
-        ...wallet,
-        summary: koreanWalletSummaries[wallet.id],
-      }));
-    default:
-      return assertNever(locale);
-  }
+  if (locale === "en") return kaspaWallets.map((wallet) => ({ ...wallet }));
+  return localizeWalletCatalog(locale, walletCatalogs[locale]);
 }

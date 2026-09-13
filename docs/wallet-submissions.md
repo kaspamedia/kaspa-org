@@ -43,8 +43,13 @@ must use `check.transparency: "caution"`.
 
 - Add or update exactly one wallet record per pull request.
 - Use one record for one wallet product. Keep OS variants together; use separate
-  records for independently named products or models with their own setup and
-  security characteristics.
+  records for independently named products. Hardware models may share one
+  family entry when they use the same companion app and the entry's ratings
+  and features accurately describe all included models. If supported platforms
+  differ by model, provide a `compatibility` note and official comparison or
+  support link. Each listed path must support Kaspa on compatible hardware;
+  it does not imply every model supports that path. A note cannot compensate
+  for inaccurate ratings or feature claims.
 - Use a stable lowercase, hyphen-separated `id`, for example `example-wallet`.
 - Add the wallet icon at `public/hodl/wallets/<wallet-id>/icon.<ext>`.
 - Set `icon` to `/hodl/wallets/<wallet-id>/icon.<ext>`.
@@ -64,7 +69,8 @@ must use `check.transparency: "caution"`.
 ## Translations
 
 Wallet submitters are required to provide only a short, neutral English
-summary in the wallet record. Maintainers arrange translations for every
+summary and any applicable compatibility note in the wallet record. Maintainers
+arrange translations of both for every
 language currently published on the site before the wallet is published.
 Submitters do not edit the site's locale catalogs.
 
@@ -111,6 +117,7 @@ mean the submitter is expected to provide translations.
 | `icon`              | yes         | `/hodl/wallets/<id>/icon.<ext>`.                                                                                 |
 | `user`              | yes         | `beginner` (approachable) or `experienced` (technical familiarity assumed).                                      |
 | `summary`           | yes         | Short, neutral English description. Maintainers own translated versions.                                         |
+| `compatibility`     | no          | Separate English `note` and official HTTPS `link`; opened from the info button beside the wallet name.           |
 | `platforms`         | conditional | Non-empty list of independently usable OSs. Use this or `paths`, never both.                                     |
 | `paths`             | conditional | Non-empty list of platform combinations that must be used together. Use this or `platforms`, never both.         |
 | `features`          | yes         | Default features inherited by each platform. Use `[]` if none.                                                   |
@@ -231,6 +238,28 @@ The wallet `summary` should be neutral and concise:
 - 140 characters or fewer
 - single line
 - no URLs
+
+Optional `compatibility` is for restrictions that affect choosing or using a
+wallet. Omit it when no qualification is needed. An info button beside the wallet name opens the note and official link on
+hover, click, or tap, without expanding the wallet row. Escape or clicking outside
+closes the popover.
+
+- `note`: short neutral English text, up to 240 characters, single line, no URLs.
+- `link`: an absolute HTTPS URL to the official compatibility guidance.
+- This has its own allowance and does not count toward the summary's 140 characters.
+- Maintainers translate the note alongside the summary; translations are not
+  constrained by the English character limits.
+
+```ts
+compatibility: {
+  note: "Phone and computer compatibility varies by hardware model.",
+  link: "https://example.com/compatibility",
+},
+```
+
+Locale catalogs in `messages/<locale>/wallets.json` store an object per wallet
+with `summary`, plus `compatibilityNote` only when the English record has a
+compatibility note. Links remain in the canonical wallet record.
 
 `icon` must be a local public asset:
 
