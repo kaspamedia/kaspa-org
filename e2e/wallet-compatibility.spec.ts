@@ -114,6 +114,11 @@ test("compatibility hover stays open across the gap without stealing focus", asy
     name: "Phone and computer compatibility varies by hardware model.",
     exact: true,
   });
+  // Finish positioning before opening the tooltip: an in-flight smooth scroll
+  // can move the trigger away from the pointer and start its close timer.
+  await info.evaluate((button) =>
+    button.scrollIntoView({ behavior: "instant", block: "center" }),
+  );
   await info.hover();
   await expect(note).toBeVisible();
   await expect(note).not.toBeFocused();
