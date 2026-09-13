@@ -39,6 +39,9 @@ jobs:
       - name: Test wallet finder
         run: npm run test:wallets
 
+      - name: Test agent content extraction
+        run: npm run test:agents
+
       - name: Check i18n contracts
         run: npm run i18n:check
 
@@ -50,6 +53,9 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      - name: Verify agent discovery
+        run: npm run agents:verify
 
   e2e:
     runs-on: ubuntu-latest

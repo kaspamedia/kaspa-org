@@ -74,7 +74,7 @@ export default function RunNodeSection() {
             >
               <span className="flex min-w-0 items-center gap-3">
                 <span className="text-muted select-none">$</span>
-                <span className="truncate">{DOCKER_RUN_COMMAND}</span>
+                <code className="truncate">{DOCKER_RUN_COMMAND}</code>
               </span>
               <span className="text-muted group-hover:text-secondary shrink-0 transition-colors">
                 {copied ? <CheckIcon size={14} /> : <ClipboardIcon size={14} />}

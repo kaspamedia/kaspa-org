@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { discoveryLinkHeader } from "../../src/data/agent-discovery.ts";
 
 import {
   defaultLocale,
@@ -42,14 +43,18 @@ async function main() {
 
     for (const pathname of ["/", "/lore", "/build", "/hodl", "/assets"]) {
       const response = await request(pathname, 200);
-      assert.equal(response.headers.get("link"), null, pathname);
+      assert.equal(response.headers.get("link"), discoveryLinkHeader, pathname);
     }
 
     for (const locale of translatedLocales) {
       for (const stablePathname of stablePathnames) {
         const pathname = `/${locale}${stablePathname === "/" ? "" : stablePathname}`;
         const response = await request(pathname, 200);
-        assert.equal(response.headers.get("link"), null, pathname);
+        assert.equal(
+          response.headers.get("link"),
+          discoveryLinkHeader,
+          pathname,
+        );
         assert.match(
           await response.text(),
           new RegExp(

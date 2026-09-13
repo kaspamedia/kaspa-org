@@ -1,31 +1,39 @@
 # Kaspa
 
-> Real-time Decentralization
-> bitcoin's proof-of-work without the wait.
+> Kaspa is a fair-launched proof-of-work blockDAG cryptocurrency running at 10 blocks per second, built for real-time decentralization.
 
-## Real-time Decentralization
+English content generated from the website during the build. External resources are linked, not copied.
 
-- [Real-time Decentralization](https://kaspa.org/)
-- bitcoin's proof-of-work without the wait.
+## Pages
 
-## LORE
+- [Kaspa | Proof-of-Work blockDAG for Real-Time Decentralization](https://kaspa.org/): Kaspa is a fair-launched proof-of-work blockDAG cryptocurrency running at 10 blocks per second, built for real-time decentralization.
+- [LORE | Kaspa](https://kaspa.org/lore): Kaspa is a fair-launched proof-of-work blockDAG focused on real-time decentralization, with no premine, no insider allocation, and 10 BPS mainnet performance.
+- [Kaspa Developer Docs, SDKs, APIs, and Node Access | Kaspa](https://kaspa.org/build): Everything you need to start building on Kaspa. Mainnet programmability, WASM SDK, Rust libraries, live API playground, node access, and developer tooling.
+- [Kaspa Logos & Assets | Kaspa](https://kaspa.org/assets): Download the official Kaspa logo set — horizontal and stacked lockups, the icon, and brand colors. SVG and high-resolution PNG.
+- [Buy KAS, Set Up a Wallet, and Self-Custody | Kaspa](https://kaspa.org/hodl): Get a wallet, buy KAS, and transfer to self-custody.
 
-- [LORE](https://kaspa.org/lore)
-- Kaspa is a live proof-of-work blockDAG running at 10 blocks per second.
+## Developer resources
 
-## HODL
+- [Kaspa documentation](https://docs.kaspa.org): Developer guides and protocol documentation.
+- [WASM SDK documentation](https://kaspa.aspectron.org/docs/): Browser and Node.js bindings for applications, wallets, and RPC access.
+- [Rusty Kaspa](https://github.com/kaspanet/rusty-kaspa): Core node, native Rust libraries, wallet and RPC implementation.
+- [Developer tools and SDK documentation](https://kaspa.org/build): WASM SDK, node access, and separately labelled community tools.
+- [Community REST API](https://api.kaspa.org/docs): Community-operated Kaspa REST API. Best-effort, no SLA or guaranteed availability. Integrators who depend on it should run their own instance.
+- [REST API source and self-hosting](https://github.com/kaspa-ng/kaspa-rest-server): Upstream contacts: lAmeR1 / supertypo.
+- [API catalog](https://kaspa.org/.well-known/api-catalog): Machine-readable directory of listed APIs.
 
-- [HODL](https://kaspa.org/hodl)
-- Buy KAS and move it into a wallet you control.
+## Full content
 
-## BUIDL
+- [Full English site content](https://kaspa.org/llms-full.txt): Main page content with source URLs; interactive and live data require the website.
 
-- [BUIDL](https://kaspa.org/build)
-- WASM SDK, native Rust libraries, and node infrastructure for building on Kaspa.
+## Other languages
 
-## DAGVIZ
-
-- [DAGVIZ](https://kgi.kaspad.net/)
-- [Explorer](https://explorer.kaspa.org/)
-- [GitHub](https://github.com/kaspanet/rusty-kaspa/)
-- [X](https://x.com/search?q=kaspa)
+- [Español](https://kaspa.org/es)
+- [Français](https://kaspa.org/fr)
+- [简体中文](https://kaspa.org/zh-CN)
+- [Русский](https://kaspa.org/ru)
+- [Deutsch](https://kaspa.org/de)
+- [Bahasa Indonesia](https://kaspa.org/id-ID)
+- [Português (Brasil)](https://kaspa.org/pt-BR)
+- [日本語](https://kaspa.org/ja)
+- [한국어](https://kaspa.org/ko)

@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 
+import { discoveryLinkHeader } from "./src/data/agent-discovery";
+
 import { supportedLocaleCodes } from "./src/i18n/locale-registry";
 
 const legacyRedirects = [
@@ -76,6 +78,20 @@ export default async function createNextConfig(): Promise<NextConfig> {
       ],
       dangerouslyAllowSVG: true,
       contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    },
+    async headers() {
+      return [
+        {
+          source: "/:path*",
+          headers: [
+            { key: "Link", value: discoveryLinkHeader },
+            {
+              key: "Content-Signal",
+              value: "search=yes, ai-input=yes, ai-train=yes",
+            },
+          ],
+        },
+      ];
     },
     async redirects() {
       return legacyRedirects.map(({ source, destination }) => ({

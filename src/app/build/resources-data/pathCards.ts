@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { buildExampleContract } from "@/i18n/build-example-contract";
 
 import {
+  WASM_SDK_DOCS_URL,
   PROGRAMMABILITY_URL,
   RUSTY_KASPA_URL,
   RUSTY_RELEASE_URL,
@@ -28,7 +29,7 @@ export function useChoosePathCards(): PathCard[] {
         links: [
           {
             label: t("wasm.docs", { wasmSdk: terms.wasmSdk }),
-            href: "https://kaspa.aspectron.org/docs/",
+            href: WASM_SDK_DOCS_URL,
           },
           {
             label: t("wasm.examples"),

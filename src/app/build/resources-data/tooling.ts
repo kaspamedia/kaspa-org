@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 
-import { RUSTY_KASPA_URL } from "../constants";
+import { RUSTY_KASPA_URL, WASM_SDK_DOCS_URL } from "../constants";
 import type { CommunityTool, EmergingTool, ToolCard } from "../types";
 import { useBuildTerms } from "../useBuildTerms";
 
@@ -38,7 +38,7 @@ export function useToolingCards(): {
           desc: t("stable.wasm.description", { node: terms.nodeJs }),
           tags: [t("stable.wasm.tag", { node: terms.nodeJs })],
           actionLabel: t("stable.wasm.action"),
-          href: "https://kaspa.aspectron.org/docs/",
+          href: WASM_SDK_DOCS_URL,
         },
       ],
       emergingTools: [

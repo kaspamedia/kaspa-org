@@ -1,4 +1,5 @@
 export const KASPA_VERSION = "Rusty Kaspa v2.0.1";
+export const WASM_SDK_DOCS_URL = "https://kaspa.aspectron.org/docs/";
 export const DOCS_URL = "https://docs.kaspa.org";
 export const PROGRAMMABILITY_URL = `${DOCS_URL}/programmability`;
 export const TOCCATA_DOCS_URL = `${DOCS_URL}/toccata`;
