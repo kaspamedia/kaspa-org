@@ -33,8 +33,9 @@
     "roadmap": {
       "toccata": {
         "heading": "Bifurcación dura Toccata",
-        "overview": "Toccata se activó en la red principal el 30 de junio de 2026 e introduce programabilidad en la capa base mediante covenants. Los covenants son reglas recursivas de gasto que restringen quién puede gastar las monedas y de qué manera, lo que abre el camino a bóvedas, billeteras inteligentes, activos nativos y construcciones asistidas por ZK.",
-        "implementation": "En Bitcoin, OP_CAT es el antiguo código de operación que Satoshi deshabilitó: se ha vuelto a proponer, sigue debatiéndose y todavía no se ha incluido. Toccata se acerca más a OP_CAT++, con una superficie funcional de covenants más amplia y <silverscript>Silverscript</silverscript> como compilador específico para escribir covenants en Kaspa. Toccata está activa en la red principal. <release>Notas de la versión de Toccata</release>."
+        "overview": "Toccata se activó en la red principal el 30 de junio de 2026, en la puntuación DAA 474.165.565. Programabilidad en L1. Los covenants -- una construcción acuñada por Gregory Maxwell en una publicación de BitcoinTalk de 2013 -- son reglas de gasto que trasladan el estado entre transacciones. Restringen quién puede gastar y cómo. Así se entiende la programabilidad en un entorno basado en los principios UTXO y orientado a la verificación, como Bitcoin o Kaspa. Los covenants abren el camino a bóvedas, billeteras inteligentes y activos nativos. <bitcoinTalk>BitcoinTalk, 2013</bitcoinTalk>",
+        "implementation": "Toccata es un diseño desde cero de OP_CAT, el opcode de Bitcoin que suscita intensos debates. Incorpora un verificador de pruebas ZK como opcode nativo -- verificación de Groth16 y STARK de RISC Zero en L1, la única L1 con verificación STARK nativa. Las cabeceras de bloque incluyen un compromiso de secuenciación específico para el orden de las transacciones de las aplicaciones, lo que permite Based Apps cuyas reglas se imponen mediante pruebas ZK.",
+        "silverscript": "Silverscript es un compilador para escribir lógica de covenants en Kaspa. Toma lógica de covenants escrita en un lenguaje de alto nivel y la compila a Kaspa Script. La versión 1.0.0 ya tiene una etiqueta en Git y está disponible para su uso. <github>GitHub de Silverscript</github>"
       },
       "dagKnight": {
         "heading": "Bifurcación dura DAGKnight",
@@ -48,7 +49,7 @@
     },
     "closing": {
       "origin": "Kaspa no surgió del ciclo habitual de entusiasmo especulativo. Surgió de investigación de larga trayectoria, un lanzamiento justo, desarrollo de código abierto y años de seguir avanzando donde la mayor parte del sector cripto dejó de hacerlo.",
-      "summary": "Un blockDAG activo. 10 BPS en la red principal. La descentralización en tiempo real como estrella polar. Toccata está activa en la red principal. Después, DAGKnight.",
+      "summary": "Un blockDAG activo. 10 BPS en la red principal. La descentralización en tiempo real como estrella polar. Toccata ya está activa. DAGKnight es lo próximo.",
       "early": "Si al leer esto parece que aún es pronto, es porque lo es."
     }
   },

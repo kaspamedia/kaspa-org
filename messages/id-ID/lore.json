@@ -33,8 +33,9 @@
     "roadmap": {
       "toccata": {
         "heading": "Hardfork Toccata",
-        "overview": "Hardfork Toccata diaktifkan di mainnet pada 30 Juni 2026 dan memperkenalkan kemampuan pemrograman lapisan dasar berbasis covenant. Covenant adalah aturan pembelanjaan rekursif yang membatasi siapa yang dapat membelanjakan koin dan bagaimana caranya, sehingga membuka jalan bagi brankas, dompet pintar, aset native, dan konstruksi berbantuan ZK.",
-        "implementation": "Di Bitcoin, OP_CAT adalah opcode lama yang dinonaktifkan Satoshi — kini diusulkan lagi, masih diperdebatkan, dan tetap belum disertakan. Toccata lebih mendekati OP_CAT++, dengan cakupan covenant yang lebih luas dan <silverscript>Silverscript</silverscript> sebagai kompilator khusus untuk menulis covenant di Kaspa. Toccata kini aktif di mainnet. <release>Catatan rilis Toccata</release>."
+        "overview": "Toccata diaktifkan di mainnet pada 30 Juni 2026 saat skor DAA mencapai 474.165.565. Programabilitas di L1. Covenant -- konsep yang diberi nama oleh Gregory Maxwell dalam unggahan BitcoinTalk tahun 2013 -- adalah aturan pengeluaran yang meneruskan keadaan dari satu transaksi ke transaksi berikutnya. Aturan ini membatasi siapa yang dapat membelanjakan koin dan bagaimana caranya. Inilah arti kemampuan pemrograman dalam lingkungan yang berpegang pada prinsip UTXO dan berorientasi pada verifikasi, seperti Bitcoin atau Kaspa. Covenant membuka jalan bagi brankas, dompet pintar, dan aset native. <bitcoinTalk>BitcoinTalk, 2013</bitcoinTalk>",
+        "implementation": "Toccata adalah rancangan ulang OP_CAT dari dasar, opcode Bitcoin yang diperdebatkan dengan sengit. Toccata menyertakan pemverifikasi bukti ZK sebagai opcode native -- verifikasi Groth16 dan STARK RISC Zero di L1, satu-satunya L1 dengan verifikasi STARK native. Header blok memuat komitmen khusus atas urutan transaksi aplikasi sehingga memungkinkan Based Apps yang aturannya ditegakkan melalui bukti ZK.",
+        "silverscript": "Silverscript adalah kompiler untuk menulis logika covenant di Kaspa. Kompiler ini mengubah logika covenant yang ditulis dalam bahasa tingkat tinggi menjadi Kaspa Script. v1.0.0 sudah diberi tag dan tersedia. <github>GitHub Silverscript</github>"
       },
       "dagKnight": {
         "heading": "Hardfork DAGKnight",
@@ -48,7 +49,7 @@
     },
     "closing": {
       "origin": "Kaspa tidak lahir dari siklus sensasi biasa. Kaspa lahir dari riset para peneliti berpengalaman, peluncuran adil, pengembangan sumber terbuka, dan upaya bertahun-tahun untuk terus melangkah maju ketika sebagian besar dunia kripto berhenti.",
-      "summary": "blockDAG aktif. 10 BPS di mainnet. Desentralisasi real-time sebagai bintang penuntun. Toccata kini aktif di mainnet. Setelah itu DAGKnight.",
+      "summary": "blockDAG yang aktif. 10 BPS di mainnet. Desentralisasi real-time sebagai arah utama. Toccata sudah aktif. DAGKnight menyusul.",
       "early": "Jika semua ini terasa masih dini, memang begitulah adanya."
     }
   },

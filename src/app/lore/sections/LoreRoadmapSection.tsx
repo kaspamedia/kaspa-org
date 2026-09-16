@@ -22,17 +22,22 @@ export async function LoreRoadmapSection({
         {t("toccata.heading")}
       </h3>
       <p className="text-secondary mt-2 text-[15px] leading-[1.72]">
-        {t("toccata.overview")}
-      </p>
-      <p className="text-secondary mt-3 text-[15px] leading-[1.72]">
-        {t.rich("toccata.implementation", {
-          silverscript: (chunks) => (
-            <LoreLink href="https://github.com/kaspanet/silverscript/">
+        {t.rich("toccata.overview", {
+          bitcoinTalk: (chunks) => (
+            <LoreLink href="https://bitcointalk.org/index.php?topic=278122.msg2970937#msg2970937">
               {chunks}
             </LoreLink>
           ),
-          release: (chunks) => (
-            <LoreLink href="https://github.com/kaspanet/rusty-kaspa/releases/tag/v2.0.0">
+        })}
+      </p>
+      <p className="text-secondary mt-3 text-[15px] leading-[1.72]">
+        {t("toccata.implementation")}
+      </p>
+      <h4 className="text-primary mt-5 text-[15px] font-bold">Silverscript</h4>
+      <p className="text-secondary mt-2 text-[15px] leading-[1.72]">
+        {t.rich("toccata.silverscript", {
+          github: (chunks) => (
+            <LoreLink href="https://github.com/kaspanet/silverscript/">
               {chunks}
             </LoreLink>
           ),

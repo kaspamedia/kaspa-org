@@ -83,9 +83,13 @@ That rewrite is what made Crescendo possible. Kaspa could not move to 10 blocks 
 
 ### Toccata hardfork
 
-Toccata activated on mainnet on June 30, 2026, introducing covenant-based base-layer programmability. Covenants are recursive spending rules that restrict who and how coins can be spent, opening the way to vaults, smart wallets, native assets, and ZK-assisted constructions.
+Toccata activated on mainnet on June 30, 2026, at DAA score 474,165,565. Programmability on L1. Covenants -- the construction coined by Gregory Maxwell in a 2013 BitcoinTalk post -- are spending rules that carry state forward across transactions. They restrict who can spend and how. This is what programmability means in a UTXO-principled, verification-oriented environment like Bitcoin or Kaspa. Covenants open the way to vaults, smart wallets, and native assets. [BitcoinTalk, 2013](https://bitcointalk.org/index.php?topic=278122.msg2970937#msg2970937)
 
-In Bitcoin, OP\_CAT is the old opcode Satoshi disabled - proposed again, still debated, still not included. Toccata is closer to OP\_CAT++, with a broader covenant surface and [Silverscript](https://github.com/kaspanet/silverscript/) as a dedicated compiler for writing covenants in Kaspa. Toccata is live on mainnet. [Toccata release notes](https://github.com/kaspanet/rusty-kaspa/releases/tag/v2.0.0).
+Toccata is a ground-up design of OP\_CAT, the heatedly debated Bitcoin opcode. It ships a ZK proof verifier as a native opcode -- Groth16 and RISC Zero STARK verification at L1, the only L1 with native STARK verification. Block headers carry a designated sequencing commitment to application transaction ordering, enabling ZK-enforced based-apps.
+
+#### Silverscript
+
+Silverscript is a compiler for writing covenant logic on Kaspa. It takes covenant logic written in high-level language and compiles it down to Kaspa Script. v1.0.0 is tagged and live. [Silverscript GitHub](https://github.com/kaspanet/silverscript/)
 
 * * *
 
@@ -105,7 +109,7 @@ On the consensus side, DAGKnight already provides safety under netsplits: transa
 
 Kaspa did not come out of the usual hype cycle. It came out of veteran research, fair launch, open-source execution, and years of pushing where most of crypto stopped pushing.
 
-A live blockDAG. 10 BPS on mainnet. Real-time decentralization as the north star. Toccata is live on mainnet. DAGKnight after that.
+A live blockDAG. 10 BPS on mainnet. Real-time decentralization as the north star. Toccata live. DAGKnight next.
 
 If this reads like it's early, that's because it is.
 

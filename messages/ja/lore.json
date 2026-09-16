@@ -33,8 +33,9 @@
     "roadmap": {
       "toccata": {
         "heading": "Toccata ハードフォーク",
-        "overview": "Toccata は 2026 年 6 月 30 日にメインネットで有効化され、コベナントによるベースレイヤーのプログラマビリティを導入しました。コベナントとは、コインを誰が、どのように使用できるかを制限する再帰的な支出ルールです。これにより、ボールト、スマートウォレット、ネイティブアセット、ZK を活用した構成への道が開かれます。",
-        "implementation": "Bitcoin では、OP_CAT はサトシが無効化した古いオペコードです。再び提案されているものの、議論は続いており、まだ導入されていません。Toccata はむしろ OP_CAT++ に近く、より幅広いコベナント機能を備え、Kaspa でコベナントを記述するための専用コンパイラとして <silverscript>Silverscript</silverscript> が用意されています。Toccata はメインネットで稼働しています。<release>Toccata のリリースノート</release>。"
+        "overview": "Toccata は 2026年6月30日、メインネットの DAA スコアが 474,165,565 に達した時点で有効化されました。L1 のプログラマビリティを実現しました。コベナント -- Gregory Maxwell が 2013 年の BitcoinTalk 投稿で名付けた仕組み -- は、トランザクションをまたいで状態を引き継ぐ支出ルールです。誰がどのようにコインを使えるかを制限します。Bitcoin や Kaspa のような、UTXO の原則に基づき検証を重視する環境では、これがプログラマビリティの意味です。コベナントは、ボールト、スマートウォレット、ネイティブアセットへの道を開きます。<bitcoinTalk>BitcoinTalk、2013 年</bitcoinTalk>",
+        "implementation": "Toccata は、激しい議論の対象となっている Bitcoin のオペコード OP_CAT を根本から設計し直したものです。ZK 証明の検証器をネイティブオペコードとして搭載し、L1 で Groth16 と RISC Zero の STARK を検証します。ネイティブな STARK 検証を備える唯一の L1 です。ブロックヘッダーには、アプリケーションのトランザクション順序に対する専用のシーケンシングコミットメントが含まれ、ZK によってルールが強制される Based Apps の実現を可能にします。",
+        "silverscript": "Silverscript は、Kaspa でコベナントのロジックを書くためのコンパイラです。高水準言語で書かれたコベナントのロジックを Kaspa Script にコンパイルします。v1.0.0 はタグ付けされ、公開されています。<github>Silverscript GitHub</github>"
       },
       "dagKnight": {
         "heading": "DAGKnight ハードフォーク",
@@ -48,7 +49,7 @@
     },
     "closing": {
       "origin": "Kaspa は、ありふれたハイプサイクルから生まれたのではありません。経験豊かな研究者による研究、公平なローンチ、オープンソースでの実践、そして暗号資産業界の大半が歩みを止めた先へ何年も挑み続けたことから生まれました。",
-      "summary": "稼働中の blockDAG。メインネットで 10 BPS。北極星はリアルタイムの分散化。Toccata はメインネットで稼働中。その後に DAGKnight。",
+      "summary": "稼働中の blockDAG。メインネットで 10 BPS。目標はリアルタイムの分散化。Toccata は稼働中。次は DAGKnight です。",
       "early": "これを読んで、まだ初期段階だと感じるなら、それは実際に初期段階だからです。"
     }
   },

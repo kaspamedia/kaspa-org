@@ -33,8 +33,9 @@
     "roadmap": {
       "toccata": {
         "heading": "Toccata-Hardfork",
-        "overview": "Toccata wurde am 30. Juni 2026 im Mainnet aktiviert und führt Covenant-basierte Programmierbarkeit auf der Basisschicht ein. Covenants sind rekursive Ausgaberegeln, die einschränken, wer Coins wie ausgeben kann. Damit ebnen sie den Weg für Tresore, Smart Wallets, native Assets und ZK-gestützte Konstruktionen.",
-        "implementation": "Bei Bitcoin ist OP_CAT der alte Opcode, den Satoshi deaktivierte – erneut vorgeschlagen, weiter umstritten und noch immer nicht enthalten. Toccata ähnelt eher OP_CAT++, bietet eine breitere Covenant-Oberfläche und mit <silverscript>Silverscript</silverscript> einen eigenen Compiler zum Schreiben von Covenants für Kaspa. Toccata ist im Mainnet live. <release>Toccata-Versionshinweise</release>."
+        "overview": "Toccata wurde am 30. Juni 2026 bei einem DAA-Score von 474.165.565 im Mainnet aktiviert. Programmierbarkeit auf L1. Covenants -- eine Konstruktion, die Gregory Maxwell 2013 in einem BitcoinTalk-Beitrag benannte -- sind Ausgaberegeln, die Zustand über Transaktionen hinweg fortführen. Sie schränken ein, wer Coins wie ausgeben darf. Das ist Programmierbarkeit in einer Umgebung, die auf UTXO-Prinzipien und Verifikation ausgerichtet ist, wie Bitcoin oder Kaspa. Covenants ebnen den Weg für Tresore, Smart Wallets und native Assets. <bitcoinTalk>BitcoinTalk, 2013</bitcoinTalk>",
+        "implementation": "Toccata ist ein von Grund auf neu entworfener Ansatz für OP_CAT, den heftig diskutierten Bitcoin-Opcode. Es bringt einen Verifier für ZK-Beweise als nativen Opcode mit -- Groth16- und RISC Zero STARK-Verifikation auf L1, der einzigen L1 mit nativer STARK-Verifikation. Block-Header enthalten ein eigens vorgesehenes Commitment zur Reihenfolge von Anwendungstransaktionen und ermöglichen damit Based Apps, deren Regeln durch ZK-Beweise durchgesetzt werden.",
+        "silverscript": "Silverscript ist ein Compiler zum Schreiben von Covenant-Logik auf Kaspa. Er übersetzt Covenant-Logik aus einer höheren Programmiersprache in Kaspa Script. v1.0.0 ist getaggt und verfügbar. <github>Silverscript auf GitHub</github>"
       },
       "dagKnight": {
         "heading": "DAGKnight-Hardfork",
@@ -48,7 +49,7 @@
     },
     "closing": {
       "origin": "Kaspa entstand nicht aus dem üblichen Hype-Zyklus. Es entstand aus langjähriger Forschung, einem fairen Start, konsequenter Open-Source-Entwicklung und jahrelanger Arbeit an den Grenzen, die der Großteil der Kryptobranche nicht weiter verschoben hat.",
-      "summary": "Ein aktiver blockDAG. 10 BPS im Mainnet. Echtzeit-Dezentralisierung als Leitstern. Toccata ist im Mainnet live. Danach DAGKnight.",
+      "summary": "Ein aktiver blockDAG. 10 BPS im Mainnet. Echtzeit-Dezentralisierung als Leitstern. Toccata ist aktiv. DAGKnight kommt als Nächstes.",
       "early": "Wenn sich das nach einer frühen Phase anhört, dann deshalb, weil es eine ist."
     }
   },
