@@ -55,7 +55,7 @@
       "verseBody": "Die Coinbase dieses Blocks enthält einen Vers aus <reference>Esra 7,18</reference>, der auf Aramäisch verfasst ist und die von den alten persischen Königen geförderten Werte der Freiheit würdigt.",
       "translatedQuotation": "„Und was dir und deinen Brüdern mit dem übrigen Silber und Gold zu tun gut erscheint, das tut nach dem Willen eures Gottes.“",
       "quotationAttribution": "Esra 7,18, in der Genesis-Coinbase",
-      "timestampBody": "Die Coinbase enthält außerdem den Hash von <bitcoinBlock>Bitcoin-Block Nr. 708.639</bitcoinBlock>. Dieser Hash belegt, dass der Genesis-Block erst danach erzeugt wurde – ohne Premine."
+      "timestampBody": "Die Coinbase enthält außerdem den Hash von <bitcoinBlock>Bitcoin-Block Nr. 708.639</bitcoinBlock>. Damit ist belegt, dass der Genesis-Block frühestens danach erzeugt wurde."
     },
     "run": {
       "eyebrow": "Vertrau nicht, verifiziere",
@@ -107,9 +107,9 @@
           "description": "In den ersten rund zwei Wochen des Mainnets wurden die Blockbelohnungen zufällig zwischen 1 und 1.000 KAS pro Block festgelegt. Dadurch wurden vor einem Hardfork, der die Belohnung pro Block fixierte, zusätzlich 327.792.544 KAS ausgegeben. Die historische Umlaufmenge wird durch die fest verdrahtete Genesis festgeschrieben."
         },
         "preDeflationary": {
-          "label": "Prädeflationäre Phase",
+          "label": "Mitte der prädeflationären Phase",
           "date": "{startDate, date, medium} – {endDate, date, medium}",
-          "description": "Feste Belohnung pro Block für rund sechs Monate nach dem Checkpoint, bevor der deflationäre Plan einsetzt."
+          "description": "Umlaufmenge am Mittelpunkt dieser Phase nach DAA-Score. Die feste Belohnung von 500 KAS pro Block gilt bis zur chromatischen Phase."
         },
         "chromatic": {
           "label": "Beginn der chromatischen Phase",

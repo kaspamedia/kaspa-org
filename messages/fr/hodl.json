@@ -57,7 +57,7 @@
     "steps": {
       "receiveAddress": {
         "title": "Obtenir votre adresse de réception",
-        "description": "Ouvrez l’application Kaspium, appuyez sur « Recevoir », puis copiez votre adresse unique."
+        "description": "Ouvrez votre portefeuille, sélectionnez « Recevoir », puis copiez votre adresse Kaspa."
       },
       "testTransaction": {
         "title": "Envoyer une transaction de test",
@@ -70,7 +70,7 @@
     },
     "waitTimes": {
       "label": "Délais des plateformes d’échange :",
-      "body": "Les transferts natifs sur Kaspa sont pratiquement instantanés, mais les plateformes d’échange appliquent leurs propres délais internes. Il est tout à fait normal d’attendre 30 à 60 minutes avant qu’une plateforme ne transmette vos fonds au réseau."
+      "body": "Les délais de traitement des plateformes d’échange varient. Consultez le statut du retrait et les indications de l’assistance avant de supposer que le réseau retarde vos fonds."
     },
     "security": {
       "label": "Contrôle de sécurité :",

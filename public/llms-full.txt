@@ -319,9 +319,9 @@ Open docs
 
 ](https://kaspa.aspectron.org/docs/)[
 
-BetaPython SDK
+StablePython SDK
 
-Nearly complete. Usable today if Python is part of your stack.
+Released as Production/Stable in v2.0.1. Native Python bindings for Rusty Kaspa.
 
 Open repo
 
@@ -471,7 +471,7 @@ SDK
 
 ### Python SDK
 
-In beta and nearly complete. Python tooling is progressing in the open and expanding the developer surface.
+Released as Production/Stable in v2.0.1. Native Python bindings for Rusty Kaspa.
 
 ](https://github.com/kaspanet/kaspa-python-sdk)
 
@@ -757,7 +757,7 @@ Missing a wallet? [Learn how to submit it on GitHub](https://github.com/kaspamed
 
 KAS is listed on many exchanges. Acquire it on a platform supported in your region, then transfer it to your private wallet.
 
-[Kraken](https://www.kraken.com/learn/buy-kaspa-kas)[KuCoin](https://www.kucoin.com/how-to-buy/kaspa)[MEXC](https://www.mexc.com/how-to-buy/KAS)[CoinEx](https://www.coinex.com/s/buy-kaspa)[Bybit](https://www.bybit.com/en/how-to-buy/kaspa/)[Gate](https://www.gate.io/how-to-buy/kaspa)[BingX](https://bingx.com/en-us/how-to-buy/kaspa/)[Bitget](https://www.bitget.com/how-to-buy/kaspa)[WEEX](https://www.weex.com/pl/futures/KAS-USDT)[BitMart](https://www.bitmart.com/trade/KAS_USDT)[OurBit](https://www.ourbit.com/exchange/KAS_USDT?_from=market)[BYDFi](https://www.bydfi.com/en/spot/kas_usdt)[LBank](https://www.lbank.info/trade/kas_usdt)[CoinW](https://www.coinw.com/spot/kasusdt)
+[Kraken](https://www.kraken.com/learn/buy-kaspa-kas)[KuCoin](https://www.kucoin.com/how-to-buy/kaspa)[MEXC](https://www.mexc.com/how-to-buy/KAS)[CoinEx](https://www.coinex.com/s/buy-kaspa)[Bybit](https://www.bybit.com/en/how-to-buy/kaspa/)[Gate](https://www.gate.io/how-to-buy/kaspa)[BingX](https://bingx.com/en-us/how-to-buy/kaspa/)[Bitget](https://www.bitget.com/how-to-buy/kaspa)[WEEX](https://www.weex.com/spot/KAS-USDT)[BitMart](https://www.bitmart.com/trade/KAS_USDT)[OurBit](https://www.ourbit.com/exchange/KAS_USDT?_from=market)[BYDFi](https://www.bydfi.com/en/spot/kas_usdt)[LBank](https://www.lbank.info/trade/kas_usdt)[CoinW](https://www.coinw.com/spot/kasusdt)
 
 And 50+ more
 
@@ -777,7 +777,7 @@ Step 01
 
 ### Get your receive address
 
-Open your Kaspium app, tap 'Receive', and copy your unique address.
+Open your wallet, choose 'Receive', and copy your Kaspa address.
 
 Step 02
 
@@ -791,7 +791,7 @@ Step 03
 
 Once the test transaction arrives safely in your wallet, withdraw the remaining balance.
 
-**Exchange wait times:** Native Kaspa transfers are practically instant, but exchanges apply their own internal delays. It is completely normal to wait 30–60 minutes for an exchange to release your funds to the network.
+**Exchange wait times:** Exchange processing times vary. Check the exchange withdrawal status and support guidance before assuming the network is delaying your funds.
 
 **Security Check:** Always verify the first and last few characters of your address before confirming.
 

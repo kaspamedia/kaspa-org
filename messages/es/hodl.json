@@ -57,7 +57,7 @@
     "steps": {
       "receiveAddress": {
         "title": "Obtén tu dirección de recepción",
-        "description": "Abre la aplicación Kaspium, toca «Recibir» y copia tu dirección única."
+        "description": "Abre tu billetera, selecciona «Recibir» y copia tu dirección de Kaspa."
       },
       "testTransaction": {
         "title": "Envía una transacción de prueba",
@@ -70,7 +70,7 @@
     },
     "waitTimes": {
       "label": "Tiempos de espera de las plataformas de intercambio:",
-      "body": "Las transferencias nativas de Kaspa son prácticamente instantáneas, pero las plataformas de intercambio aplican sus propias demoras internas. Es completamente normal esperar entre 30 y 60 minutos hasta que una plataforma libere tus fondos a la red."
+      "body": "Los tiempos de procesamiento de las plataformas de intercambio varían. Consulta el estado del retiro y la información de soporte de la plataforma antes de suponer que la red está retrasando tus fondos."
     },
     "security": {
       "label": "Comprobación de seguridad:",

@@ -55,7 +55,7 @@
       "verseBody": "Di dalam coinbase blok tersebut terdapat ayat dari <reference>Ezra 7:18</reference>, ditulis dalam bahasa Aram, yang merayakan nilai-nilai kebebasan yang dijunjung para raja Persia kuno.",
       "translatedQuotation": "“Dan apa pun yang menurutmu dan saudara-saudaramu baik untuk dilakukan dengan sisa perak dan emas itu, lakukanlah sesuai kehendak Allahmu.”",
       "quotationAttribution": "Ezra 7:18, dalam coinbase genesis",
-      "timestampBody": "Coinbase tersebut juga memuat hash <bitcoinBlock>blok Bitcoin #708.639</bitcoinBlock>, yang membuktikan bahwa blok itu dibuat setelah titik waktu tersebut, tanpa premine."
+      "timestampBody": "Coinbase tersebut juga memuat hash <bitcoinBlock>blok Bitcoin #708.639</bitcoinBlock>, yang menetapkan waktu paling awal blok tersebut mungkin dibuat."
     },
     "run": {
       "eyebrow": "Jangan percaya, verifikasi",
@@ -107,9 +107,9 @@
           "description": "Imbalan blok diacak antara 1–1.000 KAS per blok selama ~2 minggu pertama mainnet, menerbitkan +327.792.544 KAS sebelum hardfork menetapkan imbalan per blok. Suplai historis terikat secara kriptografis pada genesis yang tertanam dalam protokol."
         },
         "preDeflationary": {
-          "label": "Fase pradeflasi",
+          "label": "Pertengahan fase pradeflasi",
           "date": "{startDate, date, medium} – {endDate, date, medium}",
-          "description": "Imbalan tetap per blok selama ~6 bulan setelah checkpoint, sebelum jadwal deflasi mulai berlaku."
+          "description": "Suplai pada titik tengah fase ini menurut skor DAA. Imbalan tetap 500 KAS per blok berlaku hingga fase kromatik."
         },
         "chromatic": {
           "label": "Fase kromatik dimulai",

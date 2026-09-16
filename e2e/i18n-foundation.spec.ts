@@ -97,6 +97,7 @@ const legacyRedirects = [
   ["/whitepapers", "/lore"],
   ["/resources/white-papers", "/lore"],
   ["/kaspa-faq", "/lore"],
+  ["/tokenomics", "/?proof=1"],
 ] as const;
 
 function decodeHtml(value: string) {
@@ -296,6 +297,19 @@ test.describe("production i18n foundation contract", () => {
       expect(response.status(), source).toBe(308);
       expect(response.headers().location, source).toBe(destination);
     }
+  });
+
+  test("routes the legacy tokenomics page to the proof overlay", async ({
+    page,
+  }) => {
+    await page.goto("/tokenomics");
+
+    await expect(page).toHaveURL(/\/\?proof=1$/u);
+    await expect(
+      page
+        .getByRole("heading", { name: "Live supply vs. emission schedule" })
+        .first(),
+    ).toBeVisible();
   });
 
   test("returns raw English global 404s and ignores spoofed routing headers", async ({

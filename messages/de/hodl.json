@@ -57,7 +57,7 @@
     "steps": {
       "receiveAddress": {
         "title": "Empfangsadresse abrufen",
-        "description": "Öffne deine Kaspium-App, tippe auf „Empfangen“ und kopiere deine eindeutige Adresse."
+        "description": "Öffne deine Wallet, wähle „Empfangen“ und kopiere deine Kaspa-Adresse."
       },
       "testTransaction": {
         "title": "Testtransaktion senden",
@@ -70,7 +70,7 @@
     },
     "waitTimes": {
       "label": "Wartezeiten bei Börsen:",
-      "body": "Native Kaspa-Übertragungen erfolgen praktisch sofort, Börsen wenden jedoch eigene interne Verzögerungen an. Es ist völlig normal, 30 bis 60 Minuten darauf zu warten, dass eine Börse dein Guthaben an das Netzwerk freigibt."
+      "body": "Die Bearbeitungszeiten von Börsen variieren. Prüfe den Auszahlungsstatus und die Support-Hinweise der Börse, bevor du annimmst, dass das Netzwerk deine Übertragung verzögert."
     },
     "security": {
       "label": "Sicherheitsprüfung:",

@@ -255,9 +255,9 @@
     },
     "emerging": {
       "python": {
-        "status": "测试版",
+        "status": "稳定版",
         "title": "{pythonSdk}",
-        "description": "已接近完成。如果您的技术栈包含 {python}，现在即可使用。",
+        "description": "已在 v2.0.1 中作为 Production/Stable 发布。面向 Rusty Kaspa 的原生 {python} 绑定。",
         "action": "打开代码仓库"
       }
     },
@@ -375,7 +375,7 @@
       "python": {
         "label": "{sdk}",
         "title": "{pythonSdk}",
-        "description": "目前处于测试版并已接近完成。{python} 工具正在公开推进，不断扩展开发者能力。"
+        "description": "已在 v2.0.1 中作为 Production/Stable 发布。面向 Rusty Kaspa 的原生 {python} 绑定。"
       },
       "kips": {
         "label": "协议",

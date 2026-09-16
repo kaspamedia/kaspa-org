@@ -255,9 +255,9 @@
     },
     "emerging": {
       "python": {
-        "status": "Em beta",
+        "status": "Estável",
         "title": "{pythonSdk}",
-        "description": "Quase completo. Já pode ser usado hoje se {python} fizer parte da sua stack.",
+        "description": "Lançado como Production/Stable na v2.0.1. Bindings nativos de {python} para o Rusty Kaspa.",
         "action": "Abrir repositório"
       }
     },
@@ -375,7 +375,7 @@
       "python": {
         "label": "{sdk}",
         "title": "{pythonSdk}",
-        "description": "Em beta e quase completo. As ferramentas de {python} avançam de forma aberta e ampliam os recursos para desenvolvedores."
+        "description": "Lançado como Production/Stable na v2.0.1. Bindings nativos de {python} para o Rusty Kaspa."
       },
       "kips": {
         "label": "Protocolo",

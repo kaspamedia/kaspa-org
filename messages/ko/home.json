@@ -55,7 +55,7 @@
       "verseBody": "그 블록의 코인베이스에는 고대 페르시아 왕들이 장려한 자유의 가치를 기리는 아람어 구절인 <reference>에스라 7:18</reference>이 담겨 있습니다.",
       "translatedQuotation": "“당신과 당신의 형제들이 남은 은과 금으로 무엇을 하는 것이 좋다고 여겨지든, 당신의 하나님의 뜻에 따라 행하십시오.”",
       "quotationAttribution": "제네시스 코인베이스에 기록된 에스라 7:18",
-      "timestampBody": "코인베이스에는 <bitcoinBlock>Bitcoin 블록 #708,639</bitcoinBlock>의 해시도 담겨 있어, 제네시스 블록이 해당 시점 이후에 생성되었으며 사전 채굴이 없었음을 입증합니다."
+      "timestampBody": "코인베이스에는 <bitcoinBlock>Bitcoin 블록 #708,639</bitcoinBlock>의 해시도 담겨 있어, 제네시스 블록이 생성될 수 있었던 가장 이른 시점을 정합니다."
     },
     "run": {
       "eyebrow": "믿지 말고, 검증하라",
@@ -107,9 +107,9 @@
           "description": "메인넷 초기 약 2주 동안 블록 보상은 블록당 1~1,000 KAS 사이에서 무작위로 정해져 327,792,544 KAS가 추가 발행되었고, 이후 하드포크로 블록당 보상이 고정되었습니다. 이 과거 공급량은 하드코딩된 제네시스에 커밋되어 있습니다."
         },
         "preDeflationary": {
-          "label": "디플레이션 이전 단계",
+          "label": "디플레이션 이전 단계의 중간",
           "date": "{startDate, date, medium} – {endDate, date, medium}",
-          "description": "체크포인트 이후 약 6개월 동안 블록당 보상이 고정되며, 그 뒤 디플레이션 일정이 시작됩니다."
+          "description": "DAA 점수 기준 이 단계의 중간 시점 공급량입니다. 블록당 500 KAS의 고정 보상은 크로매틱 단계까지 이어집니다."
         },
         "chromatic": {
           "label": "크로매틱 단계 시작",
