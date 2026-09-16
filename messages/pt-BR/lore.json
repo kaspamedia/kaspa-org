@@ -33,8 +33,9 @@
     "roadmap": {
       "toccata": {
         "heading": "Hard fork Toccata",
-        "overview": "O próximo hard fork é o Toccata, que introduz programabilidade na camada base por meio de covenants. Covenants são regras recursivas de gasto que restringem quem pode gastar as moedas e de que forma, abrindo caminho para cofres, carteiras inteligentes, ativos nativos e construções auxiliadas por ZK.",
-        "implementation": "No Bitcoin, OP_CAT é o antigo opcode que Satoshi desativou — foi proposto novamente, continua em debate e ainda não foi incluído. O Toccata se aproxima mais de um OP_CAT++, com uma superfície de covenants mais ampla e o <silverscript>Silverscript</silverscript> como compilador dedicado à criação de covenants na Kaspa. Uma implementação madura já está funcionando na <tn12>TN12</tn12>."
+        "overview": "Toccata foi ativado na mainnet em 30 de junho de 2026, na pontuação DAA 474.165.565. Programabilidade na L1. Covenants -- uma construção batizada por Gregory Maxwell em uma publicação no BitcoinTalk em 2013 -- são regras de gasto que levam o estado adiante entre transações. Elas restringem quem pode gastar e como. É isso que programabilidade significa em um ambiente baseado nos princípios UTXO e voltado à verificação, como Bitcoin ou Kaspa. Covenants abrem caminho para cofres, carteiras inteligentes e ativos nativos. <bitcoinTalk>BitcoinTalk, 2013</bitcoinTalk>",
+        "implementation": "Toccata é um projeto de OP_CAT criado do zero, o opcode do Bitcoin que gera intenso debate. Ele inclui um verificador de provas ZK como opcode nativo -- verificação de Groth16 e STARK de RISC Zero na L1, a única L1 com verificação STARK nativa. Os cabeçalhos de bloco contêm um compromisso de sequenciamento específico para a ordem das transações de aplicativos, viabilizando Based Apps cujas regras são impostas por provas ZK.",
+        "silverscript": "Silverscript é um compilador para escrever lógica de covenants na Kaspa. Ele transforma lógica de covenants escrita em linguagem de alto nível em Kaspa Script. A versão 1.0.0 já recebeu uma tag no Git e está disponível para uso. <github>GitHub do Silverscript</github>"
       },
       "dagKnight": {
         "heading": "Hard fork DAGKnight",
@@ -48,7 +49,7 @@
     },
     "closing": {
       "origin": "A Kaspa não surgiu do ciclo habitual de hype. Surgiu de pesquisa conduzida por veteranos, lançamento justo, execução em código aberto e anos avançando onde a maior parte do setor cripto parou.",
-      "summary": "Um blockDAG em operação. 10 BPS na mainnet. A descentralização em tempo real como norte. Toccata a seguir. Depois, DAGKnight.",
+      "summary": "Um blockDAG em operação. 10 BPS na mainnet. A descentralização em tempo real como norte. Toccata está ativo. DAGKnight vem a seguir.",
       "early": "Se parece que ainda é cedo, é porque é."
     }
   },
