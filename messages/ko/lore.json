@@ -33,8 +33,9 @@
     "roadmap": {
       "toccata": {
         "heading": "Toccata 하드포크",
-        "overview": "다음 하드포크는 커버넌트 기반의 베이스 레이어 프로그래밍 기능을 도입하는 Toccata다. 커버넌트는 코인을 사용할 수 있는 주체와 방식을 제한하는 재귀적 지출 규칙으로, 볼트, 스마트 지갑, 네이티브 자산, ZK 보조 구조로 가는 길을 연다.",
-        "implementation": "Bitcoin에서 OP_CAT은 Satoshi가 비활성화한 오래된 옵코드다. 다시 제안됐지만 여전히 논의 중이며 아직 포함되지 않았다. Toccata는 더 폭넓은 커버넌트 기능과 Kaspa에서 커버넌트를 작성하기 위한 전용 컴파일러인 <silverscript>Silverscript</silverscript>를 갖춰 OP_CAT++에 더 가깝다. 성숙한 구현이 이미 <tn12>TN12</tn12>에서 실행 중이다."
+        "overview": "Toccata는 2026년 6월 30일 DAA 점수가 474,165,565일 때 메인넷에서 활성화됐다. L1에서 프로그래밍이 가능해졌다. 커버넌트 -- Gregory Maxwell이 2013년 BitcoinTalk 게시물에서 이름 붙인 구조 -- 는 트랜잭션 간에 상태를 이어 가는 지출 규칙이다. 누가 어떤 방식으로 코인을 사용할 수 있는지 제한한다. Bitcoin이나 Kaspa처럼 UTXO 원칙을 따르고 검증을 중시하는 환경에서 이것이 프로그래밍 가능성의 의미다. 커버넌트는 볼트, 스마트 지갑, 네이티브 자산으로 가는 길을 연다. <bitcoinTalk>BitcoinTalk, 2013</bitcoinTalk>",
+        "implementation": "Toccata는 논쟁이 많은 Bitcoin 옵코드 OP_CAT을 처음부터 새로 설계한 것이다. Groth16과 RISC Zero STARK를 L1에서 검증하는 ZK 증명 검증기를 네이티브 옵코드로 제공하며, 네이티브 STARK 검증을 제공하는 유일한 L1이다. 블록 머리말에는 애플리케이션 트랜잭션 순서를 위한 전용 시퀀싱 커밋먼트가 담겨 ZK로 규칙을 강제하는 Based Apps를 구현할 수 있다.",
+        "silverscript": "Silverscript는 Kaspa에서 커버넌트 로직을 작성하는 컴파일러다. 고급 언어로 작성된 커버넌트 로직을 Kaspa Script로 컴파일한다. v1.0.0 버전에 태그가 붙었고 현재 사용 가능하다. <github>Silverscript GitHub</github>"
       },
       "dagKnight": {
         "heading": "DAGKnight 하드포크",
@@ -48,7 +49,7 @@
     },
     "closing": {
       "origin": "Kaspa는 흔한 과대광고의 순환 속에서 탄생하지 않았다. 베테랑 연구진의 연구, 공정한 출시, 오픈 소스 기반의 실행력, 그리고 암호화폐 업계 대부분이 멈춰 선 지점에서도 수년간 계속 밀어붙인 노력에서 탄생했다.",
-      "summary": "가동 중인 blockDAG. 메인넷 10 BPS. 북극성은 실시간 탈중앙화. 다음은 Toccata. 그다음은 DAGKnight.",
+      "summary": "가동 중인 blockDAG. 메인넷 10 BPS. 북극성은 실시간 탈중앙화. Toccata는 가동 중이다. 다음은 DAGKnight다.",
       "early": "아직 초기처럼 느껴진다면, 실제로 그렇기 때문이다."
     }
   },

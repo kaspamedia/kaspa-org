@@ -33,8 +33,9 @@
     "roadmap": {
       "toccata": {
         "heading": "Toccata hardfork",
-        "overview": "The next hardfork is Toccata, introducing covenant-based base-layer programmability. Covenants are recursive spending rules that restrict who and how coins can be spent, opening the way to vaults, smart wallets, native assets, and ZK-assisted constructions.",
-        "implementation": "In Bitcoin, OP_CAT is the old opcode Satoshi disabled - proposed again, still debated, still not included. Toccata is closer to OP_CAT++, with a broader covenant surface and <silverscript>Silverscript</silverscript> as a dedicated compiler for writing covenants in Kaspa. A mature implementation is already up and running on <tn12>TN12</tn12>."
+        "overview": "Toccata activated on mainnet on June 30, 2026, at DAA score 474,165,565. Programmability on L1. Covenants -- the construction coined by Gregory Maxwell in a 2013 BitcoinTalk post -- are spending rules that carry state forward across transactions. They restrict who can spend and how. This is what programmability means in a UTXO-principled, verification-oriented environment like Bitcoin or Kaspa. Covenants open the way to vaults, smart wallets, and native assets. <bitcoinTalk>BitcoinTalk, 2013</bitcoinTalk>",
+        "implementation": "Toccata is a ground-up design of OP_CAT, the heatedly debated Bitcoin opcode. It ships a ZK proof verifier as a native opcode -- Groth16 and RISC Zero STARK verification at L1, the only L1 with native STARK verification. Block headers carry a designated sequencing commitment to application transaction ordering, enabling ZK-enforced based-apps.",
+        "silverscript": "Silverscript is a compiler for writing covenant logic on Kaspa. It takes covenant logic written in high-level language and compiles it down to Kaspa Script. v1.0.0 is tagged and live. <github>Silverscript GitHub</github>"
       },
       "dagKnight": {
         "heading": "DAGKnight hardfork",
@@ -48,7 +49,7 @@
     },
     "closing": {
       "origin": "Kaspa did not come out of the usual hype cycle. It came out of veteran research, fair launch, open-source execution, and years of pushing where most of crypto stopped pushing.",
-      "summary": "A live blockDAG. 10 BPS on mainnet. Real-time decentralization as the north star. Toccata next. DAGKnight after that.",
+      "summary": "A live blockDAG. 10 BPS on mainnet. Real-time decentralization as the north star. Toccata live. DAGKnight next.",
       "early": "If this reads like it's early, that's because it is."
     }
   },
