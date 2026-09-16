@@ -35,6 +35,7 @@ const legacyRedirects = [
   { source: "/whitepapers", destination: "/lore" },
   { source: "/resources/white-papers", destination: "/lore" },
   { source: "/kaspa-faq", destination: "/lore" },
+  { source: "/tokenomics", destination: "/?proof=1" },
 ] as const;
 
 const allowedDevOrigins = Array.from(

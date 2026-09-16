@@ -31,8 +31,8 @@ export async function LoreRoadmapSection({
               {chunks}
             </LoreLink>
           ),
-          tn12: (chunks) => (
-            <LoreLink href="https://medium.com/@michaelsuttonil/kaspa-covenants-toccata-hard-fork-outlook-a4d81a40900c">
+          release: (chunks) => (
+            <LoreLink href="https://github.com/kaspanet/rusty-kaspa/releases/tag/v2.0.0">
               {chunks}
             </LoreLink>
           ),

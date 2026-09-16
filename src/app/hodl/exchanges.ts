@@ -65,7 +65,7 @@ export const exchanges = [
   },
   {
     name: "WEEX",
-    url: "https://www.weex.com/pl/futures/KAS-USDT",
+    url: "https://www.weex.com/spot/KAS-USDT",
     logo: "/exchanges/weex.svg",
     logoWidth: 119,
     logoHeight: 25,

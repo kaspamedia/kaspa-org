@@ -57,7 +57,7 @@
     "steps": {
       "receiveAddress": {
         "title": "Obtenha seu endereço de recebimento",
-        "description": "Abra o aplicativo Kaspium, toque em \"Receber\" e copie seu endereço exclusivo."
+        "description": "Abra sua carteira, selecione \"Receber\" e copie seu endereço Kaspa."
       },
       "testTransaction": {
         "title": "Envie uma transação de teste",
@@ -70,7 +70,7 @@
     },
     "waitTimes": {
       "label": "Tempo de espera das corretoras:",
-      "body": "As transferências nativas da Kaspa são praticamente instantâneas, mas as corretoras aplicam seus próprios atrasos internos. É perfeitamente normal esperar de 30 a 60 minutos para que uma corretora libere seus fundos para a rede."
+      "body": "Os tempos de processamento das corretoras variam. Confira o status do saque e as orientações de suporte da corretora antes de presumir que a rede está atrasando seus fundos."
     },
     "security": {
       "label": "Verificação de segurança:",

@@ -57,7 +57,7 @@
     "steps": {
       "receiveAddress": {
         "title": "Get your receive address",
-        "description": "Open your Kaspium app, tap 'Receive', and copy your unique address."
+        "description": "Open your wallet, choose 'Receive', and copy your Kaspa address."
       },
       "testTransaction": {
         "title": "Send a test transaction",
@@ -70,7 +70,7 @@
     },
     "waitTimes": {
       "label": "Exchange wait times:",
-      "body": "Native Kaspa transfers are practically instant, but exchanges apply their own internal delays. It is completely normal to wait 30–60 minutes for an exchange to release your funds to the network."
+      "body": "Exchange processing times vary. Check the exchange withdrawal status and support guidance before assuming the network is delaying your funds."
     },
     "security": {
       "label": "Security Check:",

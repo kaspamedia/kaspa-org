@@ -55,7 +55,7 @@
       "verseBody": "Dentro da coinbase desse bloco há um versículo de <reference>Esdras 7:18</reference>, escrito em aramaico, que celebra os valores de liberdade promovidos pelos antigos reis persas.",
       "translatedQuotation": "“E tudo o que parecer bom a você e a seus irmãos fazer com o restante da prata e do ouro, façam conforme a vontade de seu Deus.”",
       "quotationAttribution": "Esdras 7:18, na coinbase do bloco gênese",
-      "timestampBody": "A coinbase também contém o hash do <bitcoinBlock>bloco #708.639 do Bitcoin</bitcoinBlock>, comprovando que o bloco gênese foi produzido depois daquele momento, sem pré-mineração."
+      "timestampBody": "A coinbase também contém o hash do <bitcoinBlock>bloco #708.639 do Bitcoin</bitcoinBlock>, estabelecendo o momento mais cedo em que o bloco gênese poderia ter sido produzido."
     },
     "run": {
       "eyebrow": "Não confie, verifique",
@@ -107,9 +107,9 @@
           "description": "As recompensas por bloco variaram aleatoriamente entre 1 e 1.000 KAS por bloco durante as primeiras ~2 semanas da mainnet, emitindo +327.792.544 KAS antes que um hard fork fixasse a recompensa por bloco. A oferta histórica está criptograficamente vinculada ao bloco gênese fixado no código."
         },
         "preDeflationary": {
-          "label": "Fase pré-deflacionária",
+          "label": "Meio da fase pré-deflacionária",
           "date": "{startDate, date, medium} – {endDate, date, medium}",
-          "description": "Recompensa fixa por bloco durante cerca de 6 meses após o ponto de controle, antes do início do cronograma deflacionário."
+          "description": "Oferta no ponto médio desta fase pelo score DAA. A recompensa fixa de 500 KAS por bloco continua até a fase cromática."
         },
         "chromatic": {
           "label": "Início da fase cromática",

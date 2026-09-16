@@ -55,7 +55,7 @@
       "verseBody": "Inside that block's coinbase is a verse from <reference>Ezra 7:18</reference>, written in Aramaic, celebrating the values of liberty promoted by the ancient Persian kings.",
       "translatedQuotation": "“And whatever seems good to you and your brothers to do with the rest of the silver and gold, do according to the will of your God.”",
       "quotationAttribution": "Ezra 7:18, in the genesis coinbase",
-      "timestampBody": "The coinbase also carries the hash of <bitcoinBlock>Bitcoin block #708,639</bitcoinBlock>, proving the block was produced after that point in time, with no premine."
+      "timestampBody": "The coinbase also carries the hash of <bitcoinBlock>Bitcoin block #708,639</bitcoinBlock>, establishing the earliest possible creation time for the block."
     },
     "run": {
       "eyebrow": "Don't trust, verify",
@@ -107,9 +107,9 @@
           "description": "Block rewards were randomized between 1–1000 KAS per block for the first ~2 weeks of mainnet, emitting +327,792,544 KAS before a hardfork fixed the per-block reward. Historical supply committed to by the hardwired genesis."
         },
         "preDeflationary": {
-          "label": "Pre-deflationary phase",
+          "label": "Pre-deflationary midpoint",
           "date": "{startDate, date, medium} – {endDate, date, medium}",
-          "description": "Fixed per-block reward for ~6 months after the checkpoint, before the deflationary schedule kicks in."
+          "description": "Supply at the midpoint of this phase by DAA score. The fixed 500 KAS per-block reward continues until the chromatic phase."
         },
         "chromatic": {
           "label": "Chromatic phase begins",

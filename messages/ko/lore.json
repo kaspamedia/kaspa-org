@@ -33,8 +33,8 @@
     "roadmap": {
       "toccata": {
         "heading": "Toccata 하드포크",
-        "overview": "다음 하드포크는 커버넌트 기반의 베이스 레이어 프로그래밍 기능을 도입하는 Toccata다. 커버넌트는 코인을 사용할 수 있는 주체와 방식을 제한하는 재귀적 지출 규칙으로, 볼트, 스마트 지갑, 네이티브 자산, ZK 보조 구조로 가는 길을 연다.",
-        "implementation": "Bitcoin에서 OP_CAT은 Satoshi가 비활성화한 오래된 옵코드다. 다시 제안됐지만 여전히 논의 중이며 아직 포함되지 않았다. Toccata는 더 폭넓은 커버넌트 기능과 Kaspa에서 커버넌트를 작성하기 위한 전용 컴파일러인 <silverscript>Silverscript</silverscript>를 갖춰 OP_CAT++에 더 가깝다. 성숙한 구현이 이미 <tn12>TN12</tn12>에서 실행 중이다."
+        "overview": "Toccata는 2026년 6월 30일 메인넷에서 활성화되었으며 커버넌트 기반의 베이스 레이어 프로그래밍 기능을 도입했다. 커버넌트는 코인을 사용할 수 있는 주체와 방식을 제한하는 재귀적 지출 규칙으로, 볼트, 스마트 지갑, 네이티브 자산, ZK 보조 구조로 가는 길을 연다.",
+        "implementation": "Bitcoin에서 OP_CAT은 Satoshi가 비활성화한 오래된 옵코드다. 다시 제안됐지만 여전히 논의 중이며 아직 포함되지 않았다. Toccata는 더 폭넓은 커버넌트 기능과 Kaspa에서 커버넌트를 작성하기 위한 전용 컴파일러인 <silverscript>Silverscript</silverscript>를 갖춰 OP_CAT++에 더 가깝다. Toccata는 메인넷에서 가동 중이다. <release>Toccata 릴리스 노트</release>."
       },
       "dagKnight": {
         "heading": "DAGKnight 하드포크",
@@ -48,7 +48,7 @@
     },
     "closing": {
       "origin": "Kaspa는 흔한 과대광고의 순환 속에서 탄생하지 않았다. 베테랑 연구진의 연구, 공정한 출시, 오픈 소스 기반의 실행력, 그리고 암호화폐 업계 대부분이 멈춰 선 지점에서도 수년간 계속 밀어붙인 노력에서 탄생했다.",
-      "summary": "가동 중인 blockDAG. 메인넷 10 BPS. 북극성은 실시간 탈중앙화. 다음은 Toccata. 그다음은 DAGKnight.",
+      "summary": "가동 중인 blockDAG. 메인넷 10 BPS. 북극성은 실시간 탈중앙화. Toccata는 메인넷에서 가동 중이다. 그다음은 DAGKnight.",
       "early": "아직 초기처럼 느껴진다면, 실제로 그렇기 때문이다."
     }
   },

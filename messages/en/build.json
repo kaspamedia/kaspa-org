@@ -255,9 +255,9 @@
     },
     "emerging": {
       "python": {
-        "status": "Beta",
+        "status": "Stable",
         "title": "{pythonSdk}",
-        "description": "Nearly complete. Usable today if {python} is part of your stack.",
+        "description": "Released as Production/Stable in v2.0.1. Native {python} bindings for Rusty Kaspa.",
         "action": "Open repo"
       }
     },
@@ -375,7 +375,7 @@
       "python": {
         "label": "{sdk}",
         "title": "{pythonSdk}",
-        "description": "In beta and nearly complete. {python} tooling is progressing in the open and expanding the developer surface."
+        "description": "Released as Production/Stable in v2.0.1. Native {python} bindings for Rusty Kaspa."
       },
       "kips": {
         "label": "Protocol",

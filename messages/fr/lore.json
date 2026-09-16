@@ -33,8 +33,8 @@
     "roadmap": {
       "toccata": {
         "heading": "Hard fork Toccata",
-        "overview": "Le prochain hard fork est Toccata. Il introduit une programmabilité fondée sur les covenants dans la couche de base. Les covenants sont des règles de dépense récursives qui limitent qui peut dépenser des fonds et de quelle manière. Ils ouvrent la voie aux coffres-forts, aux portefeuilles intelligents, aux actifs natifs et aux constructions assistées par ZK.",
-        "implementation": "Dans Bitcoin, OP_CAT est l’ancien code opération désactivé par Satoshi : proposé de nouveau, toujours débattu et toujours absent. Toccata se rapproche davantage d’OP_CAT++, avec un éventail de covenants plus large et <silverscript>Silverscript</silverscript>, un compilateur dédié à l’écriture de covenants sur Kaspa. Une implémentation mature fonctionne déjà sur <tn12>TN12</tn12>."
+        "overview": "Toccata a été activé sur le réseau principal le 30 juin 2026 et introduit une programmabilité fondée sur les covenants dans la couche de base. Les covenants sont des règles de dépense récursives qui limitent qui peut dépenser des fonds et de quelle manière. Ils ouvrent la voie aux coffres-forts, aux portefeuilles intelligents, aux actifs natifs et aux constructions assistées par ZK.",
+        "implementation": "Dans Bitcoin, OP_CAT est l’ancien code opération désactivé par Satoshi : proposé de nouveau, toujours débattu et toujours absent. Toccata se rapproche davantage d’OP_CAT++, avec un éventail de covenants plus large et <silverscript>Silverscript</silverscript>, un compilateur dédié à l’écriture de covenants sur Kaspa. Toccata est actif sur le réseau principal. <release>Notes de version de Toccata</release>."
       },
       "dagKnight": {
         "heading": "Hard fork DAGKnight",
@@ -48,7 +48,7 @@
     },
     "closing": {
       "origin": "Kaspa n’est pas né d’un cycle d’engouement ordinaire. Il est issu de recherches de longue date, d’un lancement équitable, d’une réalisation open source et d’années passées à avancer là où la plupart des acteurs de la cryptosphère avaient cessé de le faire.",
-      "summary": "Un blockDAG actif. 10 BPS sur le réseau principal. La décentralisation en temps réel comme étoile polaire. Toccata ensuite. Puis DAGKnight.",
+      "summary": "Un blockDAG actif. 10 BPS sur le réseau principal. La décentralisation en temps réel comme étoile polaire. Toccata est désormais actif sur le réseau principal. Puis DAGKnight.",
       "early": "Si tout cela semble encore précoce, c’est parce que ça l’est."
     }
   },

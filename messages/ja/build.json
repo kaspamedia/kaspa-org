@@ -255,9 +255,9 @@
     },
     "emerging": {
       "python": {
-        "status": "ベータ",
+        "status": "安定版",
         "title": "{pythonSdk}",
-        "description": "ほぼ完成しています。技術スタックに {python} を使っている場合は、現在でも利用できます。",
+        "description": "v2.0.1でProduction/Stableとしてリリース。Rusty Kaspa向けのネイティブ{python}バインディング。",
         "action": "リポジトリを開く"
       }
     },
@@ -375,7 +375,7 @@
       "python": {
         "label": "{sdk}",
         "title": "{pythonSdk}",
-        "description": "ベータ版で、ほぼ完成しています。{python} ツールは公開の場で開発が進められ、開発者向け機能も拡充しています。"
+        "description": "v2.0.1でProduction/Stableとしてリリース。Rusty Kaspa向けのネイティブ{python}バインディング。"
       },
       "kips": {
         "label": "プロトコル",

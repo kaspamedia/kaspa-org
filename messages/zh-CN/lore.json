@@ -33,8 +33,8 @@
     "roadmap": {
       "toccata": {
         "heading": "Toccata 硬分叉",
-        "overview": "下一次硬分叉是 Toccata，它将引入基于契约的基础层可编程性。契约是递归的花费规则，用于限制币可以由谁、以何种方式花费，从而为保险库、智能钱包、原生资产和 ZK 辅助结构打开大门。",
-        "implementation": "在 Bitcoin 中，OP_CAT 是 Satoshi 当年禁用的旧操作码——如今再次被提议，仍有争议，也仍未纳入协议。Toccata 更接近 OP_CAT++，提供更广泛的契约能力，并配有专为在 Kaspa 上编写契约而设计的编译器 <silverscript>Silverscript</silverscript>。成熟的实现已在 <tn12>TN12</tn12> 上启动运行。"
+        "overview": "Toccata 于 2026 年 6 月 30 日在主网上激活，引入了基于契约的基础层可编程性。契约是递归的花费规则，用于限制币可以由谁、以何种方式花费，从而为保险库、智能钱包、原生资产和 ZK 辅助结构打开大门。",
+        "implementation": "在 Bitcoin 中，OP_CAT 是 Satoshi 当年禁用的旧操作码——如今再次被提议，仍有争议，也仍未纳入协议。Toccata 更接近 OP_CAT++，提供更广泛的契约能力，并配有专为在 Kaspa 上编写契约而设计的编译器 <silverscript>Silverscript</silverscript>。Toccata 已在主网上运行。<release>Toccata 发布说明</release>。"
       },
       "dagKnight": {
         "heading": "DAGKnight 硬分叉",
@@ -48,7 +48,7 @@
     },
     "closing": {
       "origin": "Kaspa 并非诞生于寻常的炒作周期。它源自深厚的研究积累、公平启动、开源实践，以及在大多数加密项目止步之处仍坚持推进的岁月。",
-      "summary": "一个正在运行的 blockDAG。主网达到 10 BPS。以实时去中心化为北极星。下一步是 Toccata，之后是 DAGKnight。",
+      "summary": "一个正在运行的 blockDAG。主网达到 10 BPS。以实时去中心化为北极星。Toccata 已在主网上运行。之后是 DAGKnight。",
       "early": "如果读到这里觉得一切仍处于早期，那正是因为确实还早。"
     }
   },

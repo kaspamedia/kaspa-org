@@ -55,7 +55,7 @@
       "verseBody": "La coinbase de ce bloc contient un verset d’<reference>Esdras 7:18</reference>, rédigé en araméen, qui célèbre les valeurs de liberté promues par les anciens rois perses.",
       "translatedQuotation": "« Et ce qu’il vous semblera bon, à vous et à vos frères, de faire du reste de l’argent et de l’or, faites-le selon la volonté de votre Dieu. »",
       "quotationAttribution": "Esdras 7:18, dans la coinbase du bloc de genèse",
-      "timestampBody": "La coinbase contient également l’empreinte du <bitcoinBlock>bloc Bitcoin n° 708 639</bitcoinBlock>, ce qui prouve que le bloc a été produit après ce moment, sans préminage."
+      "timestampBody": "La coinbase contient également l’empreinte du <bitcoinBlock>bloc Bitcoin n° 708 639</bitcoinBlock>, ce qui établit le moment le plus tôt auquel le bloc a pu être produit."
     },
     "run": {
       "eyebrow": "ne faites pas confiance, vérifiez",
@@ -107,9 +107,9 @@
           "description": "Les récompenses de bloc ont varié aléatoirement de 1 à 1 000 KAS par bloc pendant les quelque deux premières semaines du réseau principal, émettant 327 792 544 KAS supplémentaires avant qu’un hard fork fixe la récompense par bloc. L’offre historique fait l’objet d’un engagement cryptographique dans le bloc de genèse codé en dur."
         },
         "preDeflationary": {
-          "label": "Phase pré-déflationniste",
+          "label": "Milieu de la phase pré-déflationniste",
           "date": "{startDate, date, medium} – {endDate, date, medium}",
-          "description": "Récompense fixe par bloc pendant environ six mois après le point de contrôle, avant l’entrée en vigueur du calendrier déflationniste."
+          "description": "Offre au milieu de cette phase selon le score DAA. La récompense fixe de 500 KAS par bloc reste en vigueur jusqu’à la phase chromatique."
         },
         "chromatic": {
           "label": "Début de la phase chromatique",

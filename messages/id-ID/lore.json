@@ -33,8 +33,8 @@
     "roadmap": {
       "toccata": {
         "heading": "Hardfork Toccata",
-        "overview": "Hardfork berikutnya adalah Toccata, yang memperkenalkan kemampuan pemrograman lapisan dasar berbasis covenant. Covenant adalah aturan pembelanjaan rekursif yang membatasi siapa yang dapat membelanjakan koin dan bagaimana caranya, sehingga membuka jalan bagi brankas, dompet pintar, aset native, dan konstruksi berbantuan ZK.",
-        "implementation": "Di Bitcoin, OP_CAT adalah opcode lama yang dinonaktifkan Satoshi — kini diusulkan lagi, masih diperdebatkan, dan tetap belum disertakan. Toccata lebih mendekati OP_CAT++, dengan cakupan covenant yang lebih luas dan <silverscript>Silverscript</silverscript> sebagai kompilator khusus untuk menulis covenant di Kaspa. Implementasi yang matang sudah aktif dan berjalan di <tn12>TN12</tn12>."
+        "overview": "Hardfork Toccata diaktifkan di mainnet pada 30 Juni 2026 dan memperkenalkan kemampuan pemrograman lapisan dasar berbasis covenant. Covenant adalah aturan pembelanjaan rekursif yang membatasi siapa yang dapat membelanjakan koin dan bagaimana caranya, sehingga membuka jalan bagi brankas, dompet pintar, aset native, dan konstruksi berbantuan ZK.",
+        "implementation": "Di Bitcoin, OP_CAT adalah opcode lama yang dinonaktifkan Satoshi — kini diusulkan lagi, masih diperdebatkan, dan tetap belum disertakan. Toccata lebih mendekati OP_CAT++, dengan cakupan covenant yang lebih luas dan <silverscript>Silverscript</silverscript> sebagai kompilator khusus untuk menulis covenant di Kaspa. Toccata kini aktif di mainnet. <release>Catatan rilis Toccata</release>."
       },
       "dagKnight": {
         "heading": "Hardfork DAGKnight",
@@ -48,7 +48,7 @@
     },
     "closing": {
       "origin": "Kaspa tidak lahir dari siklus sensasi biasa. Kaspa lahir dari riset para peneliti berpengalaman, peluncuran adil, pengembangan sumber terbuka, dan upaya bertahun-tahun untuk terus melangkah maju ketika sebagian besar dunia kripto berhenti.",
-      "summary": "blockDAG aktif. 10 BPS di mainnet. Desentralisasi real-time sebagai bintang penuntun. Toccata berikutnya. DAGKnight setelah itu.",
+      "summary": "blockDAG aktif. 10 BPS di mainnet. Desentralisasi real-time sebagai bintang penuntun. Toccata kini aktif di mainnet. Setelah itu DAGKnight.",
       "early": "Jika semua ini terasa masih dini, memang begitulah adanya."
     }
   },

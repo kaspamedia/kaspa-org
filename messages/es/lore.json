@@ -33,8 +33,8 @@
     "roadmap": {
       "toccata": {
         "heading": "Bifurcación dura Toccata",
-        "overview": "La próxima bifurcación dura es Toccata, que introduce programabilidad en la capa base mediante covenants. Los covenants son reglas recursivas de gasto que restringen quién puede gastar las monedas y de qué manera, lo que abre el camino a bóvedas, billeteras inteligentes, activos nativos y construcciones asistidas por ZK.",
-        "implementation": "En Bitcoin, OP_CAT es el antiguo código de operación que Satoshi deshabilitó: se ha vuelto a proponer, sigue debatiéndose y todavía no se ha incluido. Toccata se acerca más a OP_CAT++, con una superficie funcional de covenants más amplia y <silverscript>Silverscript</silverscript> como compilador específico para escribir covenants en Kaspa. Ya hay una implementación madura y operativa en <tn12>TN12</tn12>."
+        "overview": "Toccata se activó en la red principal el 30 de junio de 2026 e introduce programabilidad en la capa base mediante covenants. Los covenants son reglas recursivas de gasto que restringen quién puede gastar las monedas y de qué manera, lo que abre el camino a bóvedas, billeteras inteligentes, activos nativos y construcciones asistidas por ZK.",
+        "implementation": "En Bitcoin, OP_CAT es el antiguo código de operación que Satoshi deshabilitó: se ha vuelto a proponer, sigue debatiéndose y todavía no se ha incluido. Toccata se acerca más a OP_CAT++, con una superficie funcional de covenants más amplia y <silverscript>Silverscript</silverscript> como compilador específico para escribir covenants en Kaspa. Toccata está activa en la red principal. <release>Notas de la versión de Toccata</release>."
       },
       "dagKnight": {
         "heading": "Bifurcación dura DAGKnight",
@@ -48,7 +48,7 @@
     },
     "closing": {
       "origin": "Kaspa no surgió del ciclo habitual de entusiasmo especulativo. Surgió de investigación de larga trayectoria, un lanzamiento justo, desarrollo de código abierto y años de seguir avanzando donde la mayor parte del sector cripto dejó de hacerlo.",
-      "summary": "Un blockDAG activo. 10 BPS en la red principal. La descentralización en tiempo real como estrella polar. Toccata es lo próximo. Después, DAGKnight.",
+      "summary": "Un blockDAG activo. 10 BPS en la red principal. La descentralización en tiempo real como estrella polar. Toccata está activa en la red principal. Después, DAGKnight.",
       "early": "Si al leer esto parece que aún es pronto, es porque lo es."
     }
   },

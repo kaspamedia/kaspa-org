@@ -33,8 +33,8 @@
     "roadmap": {
       "toccata": {
         "heading": "Toccata hardfork",
-        "overview": "The next hardfork is Toccata, introducing covenant-based base-layer programmability. Covenants are recursive spending rules that restrict who and how coins can be spent, opening the way to vaults, smart wallets, native assets, and ZK-assisted constructions.",
-        "implementation": "In Bitcoin, OP_CAT is the old opcode Satoshi disabled - proposed again, still debated, still not included. Toccata is closer to OP_CAT++, with a broader covenant surface and <silverscript>Silverscript</silverscript> as a dedicated compiler for writing covenants in Kaspa. A mature implementation is already up and running on <tn12>TN12</tn12>."
+        "overview": "Toccata activated on mainnet on June 30, 2026, introducing covenant-based base-layer programmability. Covenants are recursive spending rules that restrict who and how coins can be spent, opening the way to vaults, smart wallets, native assets, and ZK-assisted constructions.",
+        "implementation": "In Bitcoin, OP_CAT is the old opcode Satoshi disabled - proposed again, still debated, still not included. Toccata is closer to OP_CAT++, with a broader covenant surface and <silverscript>Silverscript</silverscript> as a dedicated compiler for writing covenants in Kaspa. Toccata is live on mainnet. <release>Toccata release notes</release>."
       },
       "dagKnight": {
         "heading": "DAGKnight hardfork",
@@ -48,7 +48,7 @@
     },
     "closing": {
       "origin": "Kaspa did not come out of the usual hype cycle. It came out of veteran research, fair launch, open-source execution, and years of pushing where most of crypto stopped pushing.",
-      "summary": "A live blockDAG. 10 BPS on mainnet. Real-time decentralization as the north star. Toccata next. DAGKnight after that.",
+      "summary": "A live blockDAG. 10 BPS on mainnet. Real-time decentralization as the north star. Toccata is live on mainnet. DAGKnight after that.",
       "early": "If this reads like it's early, that's because it is."
     }
   },

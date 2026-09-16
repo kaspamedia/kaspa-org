@@ -57,7 +57,7 @@
     "steps": {
       "receiveAddress": {
         "title": "Dapatkan alamat penerimaan Anda",
-        "description": "Buka aplikasi Kaspium, ketuk 'Terima', lalu salin alamat unik Anda."
+        "description": "Buka dompet Anda, pilih 'Terima', lalu salin alamat Kaspa Anda."
       },
       "testTransaction": {
         "title": "Kirim transaksi uji coba",
@@ -70,7 +70,7 @@
     },
     "waitTimes": {
       "label": "Waktu tunggu bursa:",
-      "body": "Pengiriman Kaspa secara native praktis seketika, tetapi bursa menerapkan jeda internalnya sendiri. Menunggu 30–60 menit hingga bursa melepas dana Anda ke jaringan adalah hal yang sepenuhnya wajar."
+      "body": "Waktu pemrosesan bursa berbeda-beda. Periksa status penarikan dan panduan dukungan bursa sebelum menganggap jaringan menunda dana Anda."
     },
     "security": {
       "label": "Pemeriksaan keamanan:",

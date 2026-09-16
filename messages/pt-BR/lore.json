@@ -33,8 +33,8 @@
     "roadmap": {
       "toccata": {
         "heading": "Hard fork Toccata",
-        "overview": "O próximo hard fork é o Toccata, que introduz programabilidade na camada base por meio de covenants. Covenants são regras recursivas de gasto que restringem quem pode gastar as moedas e de que forma, abrindo caminho para cofres, carteiras inteligentes, ativos nativos e construções auxiliadas por ZK.",
-        "implementation": "No Bitcoin, OP_CAT é o antigo opcode que Satoshi desativou — foi proposto novamente, continua em debate e ainda não foi incluído. O Toccata se aproxima mais de um OP_CAT++, com uma superfície de covenants mais ampla e o <silverscript>Silverscript</silverscript> como compilador dedicado à criação de covenants na Kaspa. Uma implementação madura já está funcionando na <tn12>TN12</tn12>."
+        "overview": "O Toccata foi ativado na mainnet em 30 de junho de 2026 e introduz programabilidade na camada base por meio de covenants. Covenants são regras recursivas de gasto que restringem quem pode gastar as moedas e de que forma, abrindo caminho para cofres, carteiras inteligentes, ativos nativos e construções auxiliadas por ZK.",
+        "implementation": "No Bitcoin, OP_CAT é o antigo opcode que Satoshi desativou — foi proposto novamente, continua em debate e ainda não foi incluído. O Toccata se aproxima mais de um OP_CAT++, com uma superfície de covenants mais ampla e o <silverscript>Silverscript</silverscript> como compilador dedicado à criação de covenants na Kaspa. O Toccata está ativo na mainnet. <release>Notas de lançamento do Toccata</release>."
       },
       "dagKnight": {
         "heading": "Hard fork DAGKnight",
@@ -48,7 +48,7 @@
     },
     "closing": {
       "origin": "A Kaspa não surgiu do ciclo habitual de hype. Surgiu de pesquisa conduzida por veteranos, lançamento justo, execução em código aberto e anos avançando onde a maior parte do setor cripto parou.",
-      "summary": "Um blockDAG em operação. 10 BPS na mainnet. A descentralização em tempo real como norte. Toccata a seguir. Depois, DAGKnight.",
+      "summary": "Um blockDAG em operação. 10 BPS na mainnet. A descentralização em tempo real como norte. O Toccata está ativo na mainnet. Depois, DAGKnight.",
       "early": "Se parece que ainda é cedo, é porque é."
     }
   },
