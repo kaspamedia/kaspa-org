@@ -48,7 +48,7 @@ const walletRecords = [
     features: ["hardware_wallet"],
     check: {
       control: "good",
-      validation: "acceptable",
+      validation: "caution",
       transparency: "caution",
       fees: "good",
     },
