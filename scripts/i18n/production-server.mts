@@ -83,9 +83,14 @@ function signalServerTree(
   }
 }
 
-function isServerTreeRunning(child: ChildProcessWithoutNullStreams) {
+export function isServerTreeRunning(
+  child: ProcessExitState & Pick<ChildProcessWithoutNullStreams, "pid">,
+) {
   if (!child.pid) return false;
-  if (process.platform === "win32") return !hasProcessExited(child);
+  // Wait for Node to reap the child before probing its group. On macOS, a
+  // group probe during signal termination can transiently fail with EPERM.
+  if (!hasProcessExited(child)) return true;
+  if (process.platform === "win32") return false;
 
   try {
     process.kill(-child.pid, 0);
