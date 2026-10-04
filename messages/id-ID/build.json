@@ -255,9 +255,9 @@
     },
     "emerging": {
       "python": {
-        "status": "Stabil",
+        "status": "Beta",
         "title": "{pythonSdk}",
-        "description": "Dirilis sebagai Production/Stable pada v2.0.1. Binding native {python} untuk Rusty Kaspa.",
+        "description": "Hampir selesai. Sudah dapat digunakan jika {python} menjadi bagian dari stack Anda.",
         "action": "Buka repo"
       }
     },
@@ -375,7 +375,7 @@
       "python": {
         "label": "{sdk}",
         "title": "{pythonSdk}",
-        "description": "Dirilis sebagai Production/Stable pada v2.0.1. Binding native {python} untuk Rusty Kaspa."
+        "description": "Dalam tahap beta dan hampir selesai. Alat {python} terus dikembangkan secara terbuka dan memperluas sarana bagi pengembang."
       },
       "kips": {
         "label": "Protokol",

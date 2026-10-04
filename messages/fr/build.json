@@ -255,9 +255,9 @@
     },
     "emerging": {
       "python": {
-        "status": "Stable",
+        "status": "Bêta",
         "title": "{pythonSdk}",
-        "description": "Publié en version Production/Stable dans v2.0.1. Bindings natifs {python} pour Rusty Kaspa.",
+        "description": "Presque terminé. Utilisable dès aujourd’hui si {python} fait partie de votre pile.",
         "action": "Ouvrir le dépôt"
       }
     },
@@ -375,7 +375,7 @@
       "python": {
         "label": "{sdk}",
         "title": "{pythonSdk}",
-        "description": "Publié en version Production/Stable dans v2.0.1. Bindings natifs {python} pour Rusty Kaspa."
+        "description": "En version bêta et presque terminé. Les outils {python} progressent ouvertement et élargissent les possibilités offertes aux développeurs."
       },
       "kips": {
         "label": "Protocole",

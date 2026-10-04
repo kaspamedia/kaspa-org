@@ -57,7 +57,7 @@
     "steps": {
       "receiveAddress": {
         "title": "Get your receive address",
-        "description": "Open your wallet, choose 'Receive', and copy your Kaspa address."
+        "description": "Open your wallet, choose 'Receive', and copy your address."
       },
       "testTransaction": {
         "title": "Send a test transaction",
@@ -70,7 +70,7 @@
     },
     "waitTimes": {
       "label": "Exchange wait times:",
-      "body": "Exchange processing times vary. Check the exchange withdrawal status and support guidance before assuming the network is delaying your funds."
+      "body": "Kaspa transfers are fast, but exchanges may apply delays or withdrawal holds. Check your withdrawal status and the exchange’s guidance."
     },
     "security": {
       "label": "Security Check:",

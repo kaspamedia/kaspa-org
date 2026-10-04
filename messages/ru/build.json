@@ -255,9 +255,9 @@
     },
     "emerging": {
       "python": {
-        "status": "Стабильная версия",
+        "status": "Бета",
         "title": "{pythonSdk}",
-        "description": "Выпущен как Production/Stable в версии v2.0.1. Нативные биндинги {python} для Rusty Kaspa.",
+        "description": "Почти завершено. Можно использовать сегодня, если {python} является частью вашего стека.",
         "action": "Открыть репозиторий"
       }
     },
@@ -375,7 +375,7 @@
       "python": {
         "label": "{sdk}",
         "title": "{pythonSdk}",
-        "description": "Выпущен как Production/Stable в версии v2.0.1. Нативные биндинги {python} для Rusty Kaspa."
+        "description": "Проект находится в бета-версии и почти завершён. Инструменты {python} разрабатываются открыто и расширяют возможности для разработчиков."
       },
       "kips": {
         "label": "Протокол",

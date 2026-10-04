@@ -257,7 +257,7 @@
       "python": {
         "status": "Stable",
         "title": "{pythonSdk}",
-        "description": "Released as Production/Stable in v2.0.1. Native {python} bindings for Rusty Kaspa.",
+        "description": "Released as Production/Stable in v2.1.0. Native {python} bindings.",
         "action": "Open repo"
       }
     },
@@ -375,7 +375,7 @@
       "python": {
         "label": "{sdk}",
         "title": "{pythonSdk}",
-        "description": "Released as Production/Stable in v2.0.1. Native {python} bindings for Rusty Kaspa."
+        "description": "Released as Production/Stable in v2.1.0. Native {python} bindings."
       },
       "kips": {
         "label": "Protocol",

@@ -694,7 +694,6 @@ const translationPolicies = {
     allowedUnchangedKeys: [
       "assets.formats.png",
       "assets.formats.svg",
-      "build.tooling.emerging.python.status",
       "build.terms.daa",
       "build.terms.dag",
       "build.terms.utxo",
