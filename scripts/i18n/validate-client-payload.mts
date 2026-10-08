@@ -1,6 +1,7 @@
 import { readFile, readdir } from "node:fs/promises";
 import { join, relative, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
+import { createAppPageArtifactResolver } from "../next-app-artifacts.mts";
 
 import {
   resolveSupportedLocale,
@@ -188,15 +189,7 @@ async function listFilesRecursively(directory: string): Promise<string[]> {
   return files;
 }
 
-async function readRouteArtifacts(
-  internalPath: string,
-): Promise<RouteArtifact[]> {
-  const basePath = join(
-    nextDirectory,
-    "server",
-    "app",
-    ...internalPath.split("/").filter(Boolean),
-  );
+async function readRouteArtifacts(basePath: string): Promise<RouteArtifact[]> {
   const artifacts: RouteArtifact[] = [
     { kind: "rsc", path: `${basePath}.rsc` },
     { kind: "html", path: `${basePath}.html` },
@@ -222,11 +215,12 @@ function manifestPathForRoute(routeSegments: readonly string[]): string {
 async function validateRoute(
   internalPath: string,
   route: NonNullable<ReturnType<typeof resolveInternalRoute>>,
+  artifactBasePath: string,
 ): Promise<{ artifacts: number; errors: string[] }> {
   const errors: string[] = [];
   const manifestPath = manifestPathForRoute(route.routeSegments);
   const manifestSource = await readFile(manifestPath, "utf8");
-  const artifacts = await readRouteArtifacts(internalPath);
+  const artifacts = await readRouteArtifacts(artifactBasePath);
 
   async function* readAuditArtifacts() {
     for (const artifact of artifacts) {
@@ -235,13 +229,8 @@ async function validateRoute(
         path: relative(repositoryRoot, artifact.path),
         source: await readFile(artifact.path, "utf8"),
         providerRequired:
-          artifact.path ===
-            join(
-              nextDirectory,
-              "server",
-              "app",
-              `${internalPath.slice(1)}.rsc`,
-            ) || artifact.kind === "html",
+          artifact.path === `${artifactBasePath}.rsc` ||
+          artifact.kind === "html",
       };
     }
   }
@@ -356,8 +345,16 @@ async function main(): Promise<void> {
   }
 
   let artifactCount = 0;
+  const resolveArtifact = await createAppPageArtifactResolver(nextDirectory);
   for (const { internalPath, route } of routes) {
-    const result = await validateRoute(internalPath, route);
+    const sourcePage = ["", "[locale]", ...route.routeSegments, "page"].join(
+      "/",
+    );
+    const result = await validateRoute(
+      internalPath,
+      route,
+      resolveArtifact(internalPath, sourcePage),
+    );
     artifactCount += result.artifacts;
     errors.push(...result.errors);
   }

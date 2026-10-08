@@ -1,5 +1,4 @@
 import { readFile, writeFile } from "node:fs/promises";
-import { join } from "node:path";
 
 import { routeIds, routeManifest } from "../src/i18n/manifest.ts";
 import {
@@ -14,13 +13,19 @@ import {
 } from "../src/app/build/constants.ts";
 import { communityApi } from "../src/data/agent-discovery.ts";
 import { extractPage } from "./agent-content.mts";
+import { createAppPageArtifactResolver } from "./next-app-artifacts.mts";
 
 // Read this build's prerendered HTML: no live-site fetch, browser, or AI call.
+const resolveArtifact = await createAppPageArtifactResolver(".next");
 const pages = await Promise.all(
   routeIds.map(async (id) => {
     const pathname = routeManifest[id].pathname;
-    const artifact = `${defaultLocale}${pathname === "/" ? "" : pathname}.html`;
-    const html = await readFile(join(".next/server/app", artifact), "utf8");
+    const routePath = pathname === "/" ? "" : pathname;
+    const artifact = resolveArtifact(
+      `/${defaultLocale}${routePath}`,
+      `/[locale]${routePath}/page`,
+    );
+    const html = await readFile(`${artifact}.html`, "utf8");
     return extractPage(html, `https://kaspa.org${pathname}`);
   }),
 );
