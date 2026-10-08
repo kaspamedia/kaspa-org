@@ -48,6 +48,7 @@ export default function WalletFinder({ wallets }: { wallets: KaspaWallet[] }) {
   const [mode, setMode] = useState<WalletFinderMode>("guided");
   const [step, setStep] = useState(1);
   const [filters, setFilters] = useState<WalletFilters>(initialFilters);
+  const [urlReady, setUrlReady] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   // The mode and step last written to (or read from) the URL. A change to
@@ -71,13 +72,16 @@ export default function WalletFinder({ wallets }: { wallets: KaspaWallet[] }) {
       // Re-apply the user type so a link can't combine "new" with
       // experienced-only features.
       setFilters(selectUser(state.filters, state.filters.user));
+      setUrlReady(true);
     };
-    if (parseWalletFinderUrl(window.location.search)) applyUrl();
+    applyUrl();
     window.addEventListener("popstate", applyUrl);
     return () => window.removeEventListener("popstate", applyUrl);
   }, []);
 
   useEffect(() => {
+    // Wait for the URL-derived state to commit before writing history.
+    if (!urlReady) return;
     const href = serializeWalletFinderUrl(
       window.location.href,
       { mode, step, filters },
@@ -91,7 +95,7 @@ export default function WalletFinder({ wallets }: { wallets: KaspaWallet[] }) {
     } else {
       window.history.replaceState(null, "", href);
     }
-  }, [mode, step, filters]);
+  }, [mode, step, filters, urlReady]);
 
   const model = useMemo(
     () => createWalletFinderModel(wallets, filters),
