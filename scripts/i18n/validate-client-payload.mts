@@ -301,8 +301,9 @@ export async function readServerOnlyCatalogFingerprints(
 async function validateStaticChunks(): Promise<string[]> {
   const errors: string[] = [];
   const fingerprints = await readServerOnlyCatalogFingerprints();
-  const chunksDirectory = join(nextDirectory, "static", "chunks");
-  const chunks = (await listFilesRecursively(chunksDirectory)).filter((path) =>
+  // Adapters can emit immutable JavaScript outside the classic chunks folder.
+  const staticDirectory = join(nextDirectory, "static");
+  const chunks = (await listFilesRecursively(staticDirectory)).filter((path) =>
     path.endsWith(".js"),
   );
 
