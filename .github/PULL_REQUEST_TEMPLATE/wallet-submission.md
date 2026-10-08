@@ -43,8 +43,11 @@ Hardware wallets that require companion apps put the working combinations in
 
 ### User type
 
-- [ ] New
-- [ ] Experienced
+Advanced wallets are labelled "Advanced" in the wallet finder and hidden when
+"Hide advanced wallets" is on.
+
+- [ ] Approachable for new users (`user: "beginner"`)
+- [ ] Advanced; assumes technical familiarity (`user: "experienced"`)
 
 ### Wallet summary
 
@@ -109,13 +112,15 @@ For a hardware wallet with companion apps, list every usable path (for example, 
 
 ### Features
 
-The `features` array provides defaults. Use `platformOverrides.<os>.features` only for genuine platform differences.
+The `features` array provides defaults. Use `platformOverrides.<os>.features` only for genuine platform differences. See the feature definitions in `docs/wallet-submissions.md`.
 
 2FA:
 
 Hardware wallet support:
 
 Multisig:
+
+Hashed addresses (P2SH):
 
 If any platform overrides the feature list, list it here:
 

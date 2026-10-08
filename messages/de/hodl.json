@@ -108,12 +108,14 @@
     "common": {
       "optional": "Optional",
       "notAvailable": "Nicht verfügbar",
-      "notAvailableSentence": "Nicht verfügbar.",
+      "unavailable": {
+        "unsupported": "Bisher unterstützt keine gelistete Wallet diese Option.",
+        "experienced": "Nur in fortgeschrittenen Wallets verfügbar.",
+        "selections": "Mit deiner aktuellen Auswahl nicht verfügbar."
+      },
       "moreInformation": "Weitere Informationen",
       "pros": "Vorteile",
-      "cons": "Nachteile",
-      "newUser": "Neu",
-      "experiencedUser": "Erfahren"
+      "cons": "Nachteile"
     },
     "operatingSystems": {
       "android": "Android",
@@ -128,36 +130,36 @@
         "title": "Mobile Wallets",
         "shortTitle": "Mobil",
         "pros": {
-          "portable": "Tragbar und praktisch; ideal für persönliche Transaktionen vor Ort",
-          "qr": "Für schnelle und reibungslose Transaktionen mit QR-Codes ausgelegt"
+          "portable": "Immer dabei und ideal zum Bezahlen vor Ort",
+          "qr": "QR-Codes scannen und in Sekunden senden und empfangen"
         },
         "cons": {
-          "marketplaces": "App-Marktplätze können Wallets aus dem Angebot nehmen, wodurch künftige Updates schwerer erhältlich sind",
-          "deviceLoss": "Beschädigung oder Verlust des Geräts kann möglicherweise zum Verlust von Guthaben führen"
+          "marketplaces": "App-Stores können eine Wallet entfernen und so Updates abschneiden",
+          "deviceLoss": "Geht dein Smartphone ohne Backup verloren, kann dein Guthaben verloren sein"
         }
       },
       "desktop": {
         "title": "Desktop-Wallets",
         "shortTitle": "Desktop",
         "pros": {
-          "control": "Desktop-Umgebungen können Nutzern die vollständige Kontrolle über ihr Guthaben geben",
-          "advanced": "Einige Desktop-Wallets unterstützen Hardware-Wallets oder den Betrieb eines Full Nodes"
+          "control": "Volle Kontrolle über deine Software und Einrichtung",
+          "advanced": "Einige unterstützen Hardware-Wallets oder betreiben einen vollständigen Kaspa-Node"
         },
         "cons": {
-          "qr": "Weniger praktisch für persönliche Zahlungen mit QR-Code",
-          "malware": "Kompromittierte Computer können Nutzer Malware, Spyware oder Viren aussetzen"
+          "qr": "Weniger praktisch zum Bezahlen vor Ort mit QR-Codes",
+          "malware": "Schadsoftware auf deinem Computer kann dein Guthaben gefährden"
         }
       },
       "hardware": {
         "title": "Hardware-Wallets",
         "shortTitle": "Hardware",
         "pros": {
-          "secure": "Eine der sichersten Methoden zur Aufbewahrung von Guthaben",
-          "longTerm": "Ideal, um große Mengen KAS langfristig aufzubewahren"
+          "secure": "Private Schlüssel bleiben auf dem Gerät, getrennt von Smartphone oder Computer",
+          "longTerm": "Ideal, um größere Mengen KAS langfristig zu halten"
         },
         "cons": {
-          "mobile": "Unterwegs weniger praktisch und nicht für schnelle Transaktionen ausgelegt",
-          "deviceLoss": "Der Verlust des Geräts ohne ordnungsgemäße Sicherung kann dazu führen, dass das Guthaben nicht wiederhergestellt werden kann"
+          "mobile": "Langsamer für schnelle Zahlungen im Alltag",
+          "deviceLoss": "Geht das Gerät ohne Backup verloren, kann dein Guthaben verloren sein"
         }
       }
     },
@@ -168,40 +170,38 @@
       "prosAndCons": "Vor- und Nachteile",
       "back": "Zurück",
       "next": "Weiter",
-      "showWallets": "Wallets anzeigen",
-      "showMatchingWallets": "Passende Wallets anzeigen",
+      "showCount": "{count, plural, one {# Wallet} other {# Wallets}} anzeigen",
+      "walletCount": "{count, plural, one {# Wallet} other {# Wallets}}",
+      "anyOs": "Unsicher? Alle Plattformen anzeigen",
+      "progressLabel": "Schritte der Wallet-Suche",
+      "stepLabels": {
+        "os": "Plattform",
+        "criteria": "Kriterien",
+        "features": "Funktionen"
+      },
       "steps": {
         "os": {
           "title": "Welches Betriebssystem verwendest du?",
           "subtitle": "Filtert die Liste nach Wallets, die auf deinem Betriebssystem laufen."
         },
-        "experience": {
-          "title": "Wie gut kennst du dich mit Kaspa aus?",
-          "subtitle": "Hilft uns, Wallets anzuzeigen, die zu deiner Erfahrung passen."
-        },
         "criteria": {
           "title": "Welche Kriterien sind dir wichtig?",
-          "subtitle": "Optional"
+          "subtitle": "Wähle, was dir am wichtigsten ist. Angezeigt werden nur Wallets, die bei jeder Auswahl mit „Gut“ oder „Akzeptabel“ bewertet sind."
         },
         "features": {
           "title": "Welche Funktionen suchst du?",
-          "subtitle": "Optional"
+          "subtitle": "Wähle die Funktionen, die du brauchst. Angezeigt werden nur Wallets, die alle davon bieten."
         }
-      },
-      "experience": {
-        "newDescription": "Für neue Nutzer geeignete Wallets anzeigen.",
-        "experiencedDescription": "Alle Wallets anzeigen."
       }
     },
     "filters": {
       "heading": "Wallets filtern",
       "clearAll": "Alle löschen",
       "operatingSystem": "Betriebssystem",
-      "userType": "Nutzertyp",
+      "hideAdvanced": "Fortgeschrittene Wallets ausblenden",
+      "hideAdvancedHint": "Blendet Wallets für erfahrene Nutzer aus, etwa Kommandozeilen-Werkzeuge.",
       "criteria": "Kriterien",
       "features": "Funktionen",
-      "showNewUsers": "Für neue Nutzer geeignete Wallets anzeigen.",
-      "showExperiencedUsers": "Alle Wallets anzeigen.",
       "show": "Filter",
       "hide": "Filter ausblenden",
       "remove": "Filter {filter} entfernen"
@@ -209,33 +209,45 @@
     "criteria": {
       "control": {
         "label": "Kontrolle",
+        "short": "Kein Dritter kann dein Guthaben einfrieren oder entziehen.",
         "description": "Einige Wallets geben dir die vollständige Kontrolle über deine KAS. Das bedeutet, dass Dritte dein Guthaben weder einfrieren noch wegnehmen können. Du bist jedoch weiterhin dafür verantwortlich, deine Wallet zu sichern und eine Sicherungskopie anzulegen."
       },
       "validation": {
         "label": "Validierung",
+        "short": "Betreibe oder wähle den Kaspa-Node, den deine Wallet nutzt.",
         "description": "Bei einigen Wallets kannst du steuern, welcher Kaspa-Node deine Transaktionen verarbeitet: entweder indem sie einen eigenen betreiben oder indem sie Verbindungen zu einem beliebigen Node deines Vertrauens erlauben."
       },
       "transparency": {
         "label": "Transparenz",
+        "short": "Öffentlicher Quellcode, den jeder prüfen kann.",
         "description": "Einige Wallets sind quelloffen und lassen sich deterministisch bauen. Bei diesem Kompilierungsverfahren kann der resultierende Code reproduziert werden, um Manipulationen leichter auszuschließen."
       },
       "fees": {
         "label": "Gebühren",
+        "short": "Wähle die Netzwerkgebühr, die du zahlst.",
         "description": "Einige Wallets geben dir vor einer Transaktion die vollständige Kontrolle über die an das Kaspa-Netzwerk gezahlte Gebühr. So können Transaktionen rechtzeitig bestätigt werden, ohne mehr als nötig zu bezahlen."
       }
     },
     "features": {
       "two_fa": {
         "label": "2FA",
+        "short": "Für den Zugriff auf dein Guthaben ist ein zweiter Code nötig.",
         "description": "Die Zwei-Faktor-Authentifizierung (2FA) fügt deiner Wallet eine zweite Sicherheitsebene hinzu. Zusätzlich zu deinem Passwort ist ein Bestätigungscode aus einer App oder SMS erforderlich, um auf dein Guthaben zuzugreifen. Beachte, dass 2FA für die Bestätigung normalerweise auf einen Drittanbieterdienst angewiesen ist."
       },
       "hardware_wallet": {
         "label": "Hardware-Wallet-Unterstützung",
+        "short": "Kopplung mit einem Gerät, das deine Schlüssel offline hält.",
         "description": "Einige Software-Wallets können mit einer Hardware-Wallet wie Ledger oder Tangem gekoppelt werden. So bleiben deine privaten Schlüssel auf dem Gerät isoliert, während du weiterhin eine vertraute Software-Oberfläche nutzt."
       },
       "multisig": {
         "label": "Multisig",
+        "short": "Zum Bewegen von Guthaben ist mehr als ein Schlüssel nötig.",
         "description": "Einige Wallets unterstützen Transaktionen mit mehreren Signaturen, bei denen mehr als ein Schlüssel eine Übertragung autorisieren muss. Damit lässt sich die Verantwortung auf mehrere Parteien verteilen oder eine zusätzliche Schutzebene für wertvolle Bestände schaffen."
+      },
+      "hashed_addresses": {
+        "label": "Gehashte Adressen (P2SH)",
+        "short": "Dein öffentlicher Schlüssel bleibt bis zum Ausgeben verborgen.",
+        "description": "Standardmäßige Kaspa-Adressen legen deinen öffentlichen Schlüssel offen. Pay-to-Script-Hash-Adressen (P2SH) verbergen ihn hinter einem Hash, bis du ausgibst, und schützen so zusätzlich vor künftigen Angriffen auf Public-Key-Kryptografie, etwa durch Quantencomputer. Beim Ausgeben wird der Schlüssel offengelegt, daher solltest du verbleibende Mittel auf eine neue gehashte Adresse übertragen."
       }
     },
     "ratings": {
@@ -286,7 +298,9 @@
       "noMatches": "Keine passenden Wallets",
       "removeFilters": "Versuche, einige Filter zu entfernen.",
       "noLinks": "Für diesen Filter sind keine Links verfügbar.",
-      "aboutCriterion": "Über {criterion}"
+      "aboutCriterion": "Über {criterion}",
+      "linksFor": "Links für {wallet}",
+      "advanced": "Fortgeschritten"
     },
     "actions": {
       "app_store": "App Store",

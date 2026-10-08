@@ -108,12 +108,14 @@
     "common": {
       "optional": "Opcional",
       "notAvailable": "No disponible",
-      "notAvailableSentence": "No disponible.",
+      "unavailable": {
+        "unsupported": "Ninguna billetera de la lista lo admite todavía.",
+        "experienced": "Solo disponible en billeteras avanzadas.",
+        "selections": "No disponible con tus elecciones actuales."
+      },
       "moreInformation": "Más información",
       "pros": "Ventajas",
-      "cons": "Desventajas",
-      "newUser": "Principiante",
-      "experiencedUser": "Con experiencia"
+      "cons": "Desventajas"
     },
     "operatingSystems": {
       "android": "Android",
@@ -128,36 +130,36 @@
         "title": "Billeteras móviles",
         "shortTitle": "Móvil",
         "pros": {
-          "portable": "Portátiles y prácticas; ideales para hacer transacciones en persona",
-          "qr": "Diseñadas para usar códigos QR y realizar transacciones rápidas y sencillas"
+          "portable": "Siempre contigo e ideal para pagar en persona",
+          "qr": "Escanea códigos QR para enviar y recibir en segundos"
         },
         "cons": {
-          "marketplaces": "Las tiendas de aplicaciones pueden retirar billeteras y dificultar la recepción de futuras actualizaciones",
-          "deviceLoss": "Los daños o la pérdida del dispositivo pueden provocar la pérdida de fondos"
+          "marketplaces": "Las tiendas de aplicaciones pueden retirar una billetera y cortar sus actualizaciones",
+          "deviceLoss": "Perder tu teléfono sin una copia de seguridad puede significar perder tus fondos"
         }
       },
       "desktop": {
         "title": "Billeteras de escritorio",
         "shortTitle": "Escritorio",
         "pros": {
-          "control": "Los entornos de escritorio pueden ofrecer a los usuarios un control total sobre sus fondos",
-          "advanced": "Algunas billeteras de escritorio admiten billeteras de hardware o el funcionamiento como nodo completo"
+          "control": "Control total sobre tu software y tu configuración",
+          "advanced": "Algunas se conectan con billeteras de hardware o ejecutan un nodo completo de Kaspa"
         },
         "cons": {
-          "qr": "Son menos prácticas para pagar con códigos QR al realizar transacciones en persona",
-          "malware": "Los equipos comprometidos pueden exponer a los usuarios a malware, spyware o virus"
+          "qr": "Menos práctico para pagar en persona con códigos QR",
+          "malware": "El malware en tu computadora puede poner en riesgo tus fondos"
         }
       },
       "hardware": {
         "title": "Billeteras de hardware",
         "shortTitle": "Hardware",
         "pros": {
-          "secure": "Uno de los métodos más seguros para guardar fondos",
-          "longTerm": "Ideales para guardar grandes cantidades de KAS a largo plazo"
+          "secure": "Las claves privadas permanecen en el dispositivo, lejos de tu teléfono o computadora",
+          "longTerm": "Ideal para guardar grandes cantidades de KAS a largo plazo"
         },
         "cons": {
-          "mobile": "Son menos prácticas al desplazarse y no están diseñadas para transacciones rápidas",
-          "deviceLoss": "Perder el dispositivo sin una copia de seguridad adecuada puede hacer que los fondos sean irrecuperables"
+          "mobile": "Más lento para pagos rápidos del día a día",
+          "deviceLoss": "Perder el dispositivo sin una copia de seguridad puede significar perder tus fondos"
         }
       }
     },
@@ -168,40 +170,38 @@
       "prosAndCons": "Ventajas y desventajas",
       "back": "Atrás",
       "next": "Siguiente",
-      "showWallets": "Mostrar billeteras",
-      "showMatchingWallets": "Mostrar billeteras compatibles",
+      "showCount": "Mostrar {count, plural, one {# billetera} other {# billeteras}}",
+      "walletCount": "{count, plural, one {# billetera} other {# billeteras}}",
+      "anyOs": "¿No estás seguro? Mostrar todas las plataformas",
+      "progressLabel": "Pasos del buscador de billeteras",
+      "stepLabels": {
+        "os": "Plataforma",
+        "criteria": "Criterios",
+        "features": "Funciones"
+      },
       "steps": {
         "os": {
           "title": "¿Qué sistema operativo utilizas?",
           "subtitle": "Esto filtra la lista y muestra las billeteras compatibles con tu sistema operativo."
         },
-        "experience": {
-          "title": "¿Cuánto sabes sobre Kaspa?",
-          "subtitle": "Nos ayuda a mostrar billeteras adecuadas para tu nivel de experiencia."
-        },
         "criteria": {
           "title": "¿Qué criterios son importantes para ti?",
-          "subtitle": "Opcional"
+          "subtitle": "Elige lo que más te importa. Solo se muestran billeteras calificadas como «Bien» o «Aceptable» en cada elección."
         },
         "features": {
           "title": "¿Qué funciones buscas?",
-          "subtitle": "Opcional"
+          "subtitle": "Elige las funciones que necesites. Solo se muestran billeteras que las tengan todas."
         }
-      },
-      "experience": {
-        "newDescription": "Muestra las billeteras ideales para usuarios principiantes.",
-        "experiencedDescription": "Muestra todas las billeteras."
       }
     },
     "filters": {
       "heading": "Filtrar billeteras",
       "clearAll": "Borrar todo",
       "operatingSystem": "Sistema operativo",
-      "userType": "Tipo de usuario",
+      "hideAdvanced": "Ocultar billeteras avanzadas",
+      "hideAdvancedHint": "Oculta las billeteras pensadas para usuarios con experiencia, como las herramientas de línea de comandos.",
       "criteria": "Criterios",
       "features": "Funciones",
-      "showNewUsers": "Muestra las billeteras ideales para usuarios principiantes.",
-      "showExperiencedUsers": "Muestra todas las billeteras.",
       "show": "Filtros",
       "hide": "Ocultar filtros",
       "remove": "Quitar el filtro {filter}"
@@ -209,33 +209,45 @@
     "criteria": {
       "control": {
         "label": "Control",
+        "short": "Ningún tercero puede congelar ni quitarte tus fondos.",
         "description": "Algunas billeteras te dan un control total sobre tus KAS. Esto significa que ningún tercero puede congelar ni confiscar tus fondos. Sin embargo, tú sigues siendo responsable de proteger tu billetera y de hacer una copia de seguridad."
       },
       "validation": {
         "label": "Validación",
+        "short": "Ejecuta o elige el nodo de Kaspa que usa tu billetera.",
         "description": "Algunas billeteras te permiten controlar qué nodo de Kaspa procesa tus transacciones, ya sea ejecutando su propio nodo o permitiéndote conectarlas a cualquier nodo de confianza."
       },
       "transparency": {
         "label": "Transparencia",
+        "short": "Código fuente público que cualquiera puede revisar.",
         "description": "Algunas billeteras son de código abierto y se pueden compilar de forma determinista. Este proceso permite reproducir el código resultante y ayuda a comprobar que no haya sido manipulado."
       },
       "fees": {
         "label": "Comisiones",
+        "short": "Elige la comisión de red que pagas.",
         "description": "Algunas billeteras te permiten controlar por completo la comisión que pagas a la red Kaspa antes de realizar una transacción, para que esta se confirme a tiempo sin pagar más de lo necesario."
       }
     },
     "features": {
       "two_fa": {
         "label": "2FA",
+        "short": "Exige un segundo código para acceder a tus fondos.",
         "description": "La autenticación de dos factores (2FA) añade una segunda capa de seguridad a tu billetera. Además de tu contraseña, se requiere un código de verificación enviado por una aplicación o por mensaje de texto para acceder a tus fondos. Ten en cuenta que 2FA suele depender de un servicio externo para proporcionar la verificación."
       },
       "hardware_wallet": {
         "label": "Compatibilidad con billeteras de hardware",
+        "short": "Se conecta con un dispositivo que mantiene tus claves sin conexión.",
         "description": "Algunas billeteras de software se pueden vincular con un dispositivo de billetera de hardware, como Ledger o Tangem. Así puedes mantener tus claves privadas aisladas en el dispositivo mientras utilizas una interfaz de software conocida."
       },
       "multisig": {
         "label": "Multisig",
+        "short": "Exige más de una clave para mover fondos.",
         "description": "Algunas billeteras admiten transacciones Multisig, que requieren más de una clave para autorizar una transferencia. Esto permite repartir la responsabilidad entre varias partes o añadir una capa de protección adicional para fondos de gran valor."
+      },
+      "hashed_addresses": {
+        "label": "Direcciones con hash (P2SH)",
+        "short": "Mantén tu clave pública oculta hasta que gastes.",
+        "description": "Las direcciones estándar de Kaspa revelan tu clave pública. Las direcciones pay-to-script-hash (P2SH) la mantienen oculta tras un hash hasta que gastas, lo que añade protección frente a futuros ataques a la criptografía de clave pública, como los de computadoras cuánticas. Al gastar se revela la clave, así que mueve los fondos restantes a una nueva dirección con hash."
       }
     },
     "ratings": {
@@ -286,7 +298,9 @@
       "noMatches": "No hay billeteras que coincidan",
       "removeFilters": "Intenta quitar algunos filtros.",
       "noLinks": "No hay enlaces disponibles para este filtro.",
-      "aboutCriterion": "Acerca de {criterion}"
+      "aboutCriterion": "Acerca de {criterion}",
+      "linksFor": "Enlaces de {wallet}",
+      "advanced": "Avanzada"
     },
     "actions": {
       "app_store": "App Store",

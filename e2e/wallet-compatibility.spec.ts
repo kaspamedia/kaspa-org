@@ -55,7 +55,10 @@ test("compatibility info opens independently by touch and keyboard", async ({
   });
   await expect(info).toBeVisible();
   await expect(note).toHaveCount(0);
-  const row = page.getByRole("row").filter({ has: info });
+  const rowLinks = page
+    .getByRole("row")
+    .filter({ has: info })
+    .getByRole("button", { name: "Links for Ledger", exact: true });
   if (testInfo.project.name === "mobile-chromium") await info.tap();
   else await info.click();
   await expect(note).toBeVisible();
@@ -69,7 +72,7 @@ test("compatibility info opens independently by touch and keyboard", async ({
   await expect(note).toHaveAttribute("href", url);
   await expect(note).toHaveAttribute("rel", /noopener/);
   if (testInfo.project.name === "desktop-chromium") {
-    await expect(row).toHaveAttribute("aria-expanded", "false");
+    await expect(rowLinks).toHaveAttribute("aria-expanded", "false");
   }
   // Isolate navigation behavior from the vendor's availability.
   await context.route(url, (route) =>
@@ -84,7 +87,7 @@ test("compatibility info opens independently by touch and keyboard", async ({
   await page.keyboard.press("Escape");
   await expect(note).toHaveCount(0);
   if (testInfo.project.name === "desktop-chromium") {
-    await expect(row).toHaveAttribute("aria-expanded", "false");
+    await expect(rowLinks).toHaveAttribute("aria-expanded", "false");
   }
   const summary = page.locator("p:visible").filter({
     hasText: /^Hardware wallets for Kaspa with the Ledger Wallet app\.$/,

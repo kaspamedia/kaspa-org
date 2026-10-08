@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { useTranslations } from "next-intl";
@@ -19,7 +19,8 @@ export default function InfoTooltip({
   const t = useTranslations("hodl");
   const [visible, setVisible] = useState(false);
   const [tipRect, setTipRect] = useState<DOMRect | null>(null);
-  const ref = useRef<HTMLSpanElement>(null);
+  const ref = useRef<HTMLButtonElement>(null);
+  const tooltipId = useId();
 
   const open = () => {
     if (ref.current) {
@@ -62,13 +63,14 @@ export default function InfoTooltip({
 
   return (
     <>
-      <span
+      {/* The ::before pseudo-element widens the touch target to ~46px. */}
+      <button
         ref={ref}
-        role="button"
-        tabIndex={0}
+        type="button"
         aria-expanded={visible}
+        aria-describedby={visible ? tooltipId : undefined}
         aria-label={ariaLabel ?? t("walletFinder.common.moreInformation")}
-        className="inline-flex shrink-0 cursor-pointer items-center"
+        className="relative -m-1.5 inline-flex shrink-0 cursor-pointer items-center rounded-full p-1.5 before:absolute before:-inset-2.5 before:content-[''] focus-visible:outline-2 focus-visible:outline-offset-1"
         onPointerEnter={(event) => {
           if (event.pointerType === "mouse") open();
         }}
@@ -81,14 +83,7 @@ export default function InfoTooltip({
           else open();
         }}
         onKeyDown={(event) => {
-          if (event.key === "Enter" || event.key === " ") {
-            event.preventDefault();
-            event.stopPropagation();
-            if (visible) close();
-            else open();
-          } else if (event.key === "Escape") {
-            close();
-          }
+          if (event.key === "Escape") close();
         }}
       >
         <svg
@@ -103,11 +98,13 @@ export default function InfoTooltip({
             d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zM0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm9-2.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM7 7a.75.75 0 0 1 1.5 0v3.5a.75.75 0 0 1-1.5 0V7z"
           />
         </svg>
-      </span>
+      </button>
       {visible &&
         tipRect &&
         createPortal(
           <div
+            id={tooltipId}
+            role="tooltip"
             className="fixed z-[9999] w-56 rounded-[10px] border border-[var(--border-subtle)] bg-[var(--bg)] p-3 text-[11px] leading-[1.5] text-[var(--text-secondary)] shadow-md"
             style={{
               top: tipRect.bottom + 6,

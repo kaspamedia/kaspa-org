@@ -108,12 +108,14 @@
     "common": {
       "optional": "可选",
       "notAvailable": "不可用",
-      "notAvailableSentence": "不可用。",
+      "unavailable": {
+        "unsupported": "目前列出的钱包都还不支持此项。",
+        "experienced": "仅适用于进阶钱包。",
+        "selections": "在你当前的选择下不可用。"
+      },
       "moreInformation": "更多信息",
       "pros": "优点",
-      "cons": "缺点",
-      "newUser": "新手",
-      "experiencedUser": "有经验的用户"
+      "cons": "缺点"
     },
     "operatingSystems": {
       "android": "Android",
@@ -128,36 +130,36 @@
         "title": "移动钱包",
         "shortTitle": "移动端",
         "pros": {
-          "portable": "便携又方便，适合面对面交易",
-          "qr": "专为使用二维码快速、顺畅地完成交易而设计"
+          "portable": "随身携带，适合当面付款",
+          "qr": "扫描二维码，几秒内完成收发"
         },
         "cons": {
-          "marketplaces": "应用商店可能下架或移除钱包，导致后续更新更难获取",
-          "deviceLoss": "设备损坏或丢失可能导致资金损失"
+          "marketplaces": "应用商店可能下架钱包，导致无法获取更新",
+          "deviceLoss": "手机丢失且没有备份，可能意味着资金丢失"
         }
       },
       "desktop": {
         "title": "桌面钱包",
         "shortTitle": "桌面端",
         "pros": {
-          "control": "桌面环境可让用户完全掌控资金",
-          "advanced": "部分桌面钱包支持硬件钱包或完整节点运行"
+          "control": "完全掌控你的软件和设置",
+          "advanced": "部分钱包支持硬件钱包或可运行 Kaspa 全节点"
         },
         "cons": {
-          "qr": "面对面交易时，使用二维码付款不够方便",
-          "malware": "受到入侵的电脑可能使用户暴露于恶意软件、间谍软件或病毒"
+          "qr": "使用二维码当面付款不太方便",
+          "malware": "电脑上的恶意软件可能危及你的资金"
         }
       },
       "hardware": {
         "title": "硬件钱包",
         "shortTitle": "硬件",
         "pros": {
-          "secure": "存储资金最安全的方法之一",
-          "longTerm": "适合长期存储大量 KAS"
+          "secure": "私钥保存在设备中，与手机或电脑隔离",
+          "longTerm": "最适合长期持有大量 KAS"
         },
         "cons": {
-          "mobile": "移动使用时不够方便，也不适合快速交易",
-          "deviceLoss": "若没有妥善备份，设备丢失可能导致资金无法找回"
+          "mobile": "日常快速付款较慢",
+          "deviceLoss": "设备丢失且没有备份，可能意味着资金丢失"
         }
       }
     },
@@ -168,40 +170,38 @@
       "prosAndCons": "优点与缺点",
       "back": "返回",
       "next": "下一步",
-      "showWallets": "显示钱包",
-      "showMatchingWallets": "显示匹配的钱包",
+      "showCount": "显示 {count, plural, one {# 个钱包} other {# 个钱包}}",
+      "walletCount": "{count, plural, one {# 个钱包} other {# 个钱包}}",
+      "anyOs": "不确定？显示所有平台",
+      "progressLabel": "钱包查找步骤",
+      "stepLabels": {
+        "os": "平台",
+        "criteria": "评估标准",
+        "features": "功能"
+      },
       "steps": {
         "os": {
           "title": "您使用什么操作系统？",
           "subtitle": "这会将列表筛选为可在您的操作系统上运行的钱包。"
         },
-        "experience": {
-          "title": "您对 Kaspa 了解多少？",
-          "subtitle": "帮助我们显示适合您经验水平的钱包。"
-        },
         "criteria": {
           "title": "哪些评估标准对您很重要？",
-          "subtitle": "可选"
+          "subtitle": "选择你最看重的项目。只显示在每个所选项目上都评为“良好”或“尚可”的钱包。"
         },
         "features": {
           "title": "您需要哪些功能？",
-          "subtitle": "可选"
+          "subtitle": "选择你需要的功能。只显示具备全部所选功能的钱包。"
         }
-      },
-      "experience": {
-        "newDescription": "显示适合新手的钱包。",
-        "experiencedDescription": "显示所有钱包。"
       }
     },
     "filters": {
       "heading": "筛选钱包",
       "clearAll": "全部清除",
       "operatingSystem": "操作系统",
-      "userType": "用户类型",
+      "hideAdvanced": "隐藏进阶钱包",
+      "hideAdvancedHint": "隐藏面向有经验用户的钱包，例如命令行工具。",
       "criteria": "评估标准",
       "features": "功能",
-      "showNewUsers": "显示适合新手的钱包。",
-      "showExperiencedUsers": "显示所有钱包。",
       "show": "筛选条件",
       "hide": "隐藏筛选条件",
       "remove": "移除筛选条件：{filter}"
@@ -209,33 +209,45 @@
     "criteria": {
       "control": {
         "label": "控制权",
+        "short": "任何第三方都无法冻结或拿走你的资金。",
         "description": "有些钱包让您完全掌控自己的 KAS，这意味着没有第三方能够冻结或拿走您的资金。不过，保护并备份钱包仍然是您自己的责任。"
       },
       "validation": {
         "label": "验证能力",
+        "short": "运行或选择钱包使用的 Kaspa 节点。",
         "description": "有些钱包允许您控制由哪个 Kaspa 节点处理交易：它们可能自行运行节点，也可能让您指定任意可信节点。"
       },
       "transparency": {
         "label": "透明度",
+        "short": "任何人都可以审查的公开源代码。",
         "description": "有些钱包采用开源代码，并支持确定性构建。这一编译过程可重现相同的构建产物，从而帮助确认发布的软件未被篡改。"
       },
       "fees": {
         "label": "手续费",
+        "short": "自行选择支付的网络手续费。",
         "description": "有些钱包允许您在交易前完全自主设置向 Kaspa 网络支付的手续费，从而让交易及时得到确认，同时避免不必要的高额费用。"
       }
     },
     "features": {
       "two_fa": {
         "label": "2FA",
+        "short": "访问资金时需要第二个验证码。",
         "description": "双重身份验证（2FA）为钱包增加第二层安全保护。除密码外，访问资金还需要应用或短信提供的验证码。请注意，2FA 通常依赖第三方服务提供验证。"
       },
       "hardware_wallet": {
         "label": "支持硬件钱包",
+        "short": "可连接将密钥离线保存的设备。",
         "description": "部分软件钱包可与硬件钱包设备（如 Ledger 或 Tangem）配对，将私钥隔离保存在硬件设备上，同时仍可使用熟悉的软件界面。"
       },
       "multisig": {
         "label": "多重签名",
+        "short": "转移资金需要多个密钥。",
         "description": "部分钱包支持多重签名交易，需要多个密钥才能授权转账。这可用于让多个参与方分担责任，或为高价值资产增加一层保护。"
+      },
+      "hashed_addresses": {
+        "label": "哈希地址（P2SH）",
+        "short": "在花费之前隐藏你的公钥。",
+        "description": "标准 Kaspa 地址会公开你的公钥。脚本哈希支付（P2SH）地址会在你花费之前将公钥隐藏在哈希之后，从而针对未来对公钥密码学的攻击（例如来自量子计算机的攻击）提供额外保护。花费时会公开公钥，因此请将剩余资金转移到新的哈希地址。"
       }
     },
     "ratings": {
@@ -286,7 +298,9 @@
       "noMatches": "没有匹配的钱包",
       "removeFilters": "请尝试移除部分筛选条件。",
       "noLinks": "此筛选条件下没有可用链接。",
-      "aboutCriterion": "关于{criterion}"
+      "aboutCriterion": "关于{criterion}",
+      "linksFor": "{wallet} 的链接",
+      "advanced": "进阶"
     },
     "actions": {
       "app_store": "App Store",

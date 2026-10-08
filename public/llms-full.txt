@@ -671,15 +671,7 @@ Buy KAS and move it into a wallet you control.
 
 Choose a wallet that fits how you plan to hold and use KAS.
 
-Step 1 of 4
-
-1
-
-2
-
-3
-
-4
+Step 1 of 3 · Platform
 
 ### What is your operating system?
 
@@ -687,63 +679,47 @@ This filters the list to wallets that run on your OS.
 
 Mobile wallets
 
-+Portable and convenient; ideal when making transactions face-to-face
-
-+Designed to use QR codes to make quick and seamless transactions
-
-\-App marketplaces can delist/remove wallets, making future updates harder to receive
-
-\-Damage or loss of the device can potentially lead to loss of funds
+-   Always with you, and ideal for paying in person
+-   Scan QR codes to send and receive in seconds
+-   App stores can remove a wallet, which can cut off updates
+-   Losing your phone without a backup can mean losing your funds
 
 Pros and cons
 
-+Portable and convenient; ideal when making transactions face-to-face
-
-+Designed to use QR codes to make quick and seamless transactions
-
-\-App marketplaces can delist/remove wallets, making future updates harder to receive
-
-\-Damage or loss of the device can potentially lead to loss of funds
+-   Always with you, and ideal for paying in person
+-   Scan QR codes to send and receive in seconds
+-   App stores can remove a wallet, which can cut off updates
+-   Losing your phone without a backup can mean losing your funds
 
 Desktop wallets
 
-+Desktop environments can give users complete control over funds
-
-+Some desktop wallets offer hardware wallet support or full-node operation
-
-\-Less convenient for QR-code payments when making transactions in person
-
-\-Compromised computers may expose users to malware, spyware, or viruses
+-   Full control over your software and setup
+-   Some pair with hardware wallets or run a full Kaspa node
+-   Less convenient for paying in person with QR codes
+-   Malware on your computer can put your funds at risk
 
 Pros and cons
 
-+Desktop environments can give users complete control over funds
-
-+Some desktop wallets offer hardware wallet support or full-node operation
-
-\-Less convenient for QR-code payments when making transactions in person
-
-\-Compromised computers may expose users to malware, spyware, or viruses
+-   Full control over your software and setup
+-   Some pair with hardware wallets or run a full Kaspa node
+-   Less convenient for paying in person with QR codes
+-   Malware on your computer can put your funds at risk
 
 Hardware wallets
 
-+One of the most secure methods to store funds
-
-+Ideal for storing large amounts of KAS long-term
-
-\-Less convenient while mobile and not designed for quick transactions
-
-\-Loss of device without proper backup can make funds unrecoverable
+-   Private keys stay on the device, away from your phone or computer
+-   Best for holding larger amounts of KAS long-term
+-   Slower for quick, everyday payments
+-   Losing the device without a backup can mean losing your funds
 
 Pros and cons
 
-+One of the most secure methods to store funds
+-   Private keys stay on the device, away from your phone or computer
+-   Best for holding larger amounts of KAS long-term
+-   Slower for quick, everyday payments
+-   Losing the device without a backup can mean losing your funds
 
-+Ideal for storing large amounts of KAS long-term
-
-\-Less convenient while mobile and not designed for quick transactions
-
-\-Loss of device without proper backup can make funds unrecoverable
+**11** of 11 wallets
 
 Missing a wallet? [Learn how to submit it on GitHub](https://github.com/kaspamedia/kaspa-org/blob/main/docs/wallet-submissions.md)
 

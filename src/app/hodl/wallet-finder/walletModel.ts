@@ -32,9 +32,19 @@ export type WalletMatch = {
   presentation: WalletPresentation;
 };
 
+/**
+ * Why an option has no matches: no listed wallet offers it at all, only
+ * wallets for experienced users offer it, or the other selections exclude it.
+ */
+export type UnavailableReason = "unsupported" | "experienced" | "selections";
+
 export type WalletFinderModel = {
   matches: WalletMatch[];
   totalWallets: number;
+  countMatches: (patch: Partial<WalletFilters>) => number;
+  unavailableReason: (
+    option: Pick<Partial<WalletFilters>, "important" | "features">,
+  ) => UnavailableReason;
   isCriterionDisabled: (criterion: WalletCriterion) => boolean;
   isFeatureDisabled: (feature: WalletFeature) => boolean;
 };
@@ -167,12 +177,12 @@ function getMatches(wallets: KaspaWallet[], filters: WalletFilters) {
     .sort((a, b) => a.wallet.title.localeCompare(b.wallet.title));
 }
 
-function hasMatchesWithFilter(
+function countMatchesWithFilter(
   wallets: KaspaWallet[],
   filters: WalletFilters,
   patch: Partial<WalletFilters>,
 ) {
-  return getMatches(wallets, { ...filters, ...patch }).length > 0;
+  return getMatches(wallets, { ...filters, ...patch }).length;
 }
 
 export function createWalletFinderModel(
@@ -182,15 +192,31 @@ export function createWalletFinderModel(
   return {
     matches: getMatches(wallets, filters),
     totalWallets: wallets.length,
+    countMatches: (patch) => countMatchesWithFilter(wallets, filters, patch),
+    unavailableReason: (option) => {
+      const alone = { important: [], features: [], ...option };
+      if (getMatches(wallets, alone).length === 0) return "unsupported";
+      const withoutUser = { ...filters, user: undefined };
+      if (
+        filters.user === "beginner" &&
+        countMatchesWithFilter(wallets, withoutUser, {
+          important: [...filters.important, ...(option.important ?? [])],
+          features: [...filters.features, ...(option.features ?? [])],
+        }) > 0
+      ) {
+        return "experienced";
+      }
+      return "selections";
+    },
     isCriterionDisabled: (criterion) =>
       !filters.important.includes(criterion) &&
-      !hasMatchesWithFilter(wallets, filters, {
+      countMatchesWithFilter(wallets, filters, {
         important: [...filters.important, criterion],
-      }),
+      }) === 0,
     isFeatureDisabled: (feature) =>
       !filters.features.includes(feature) &&
-      !hasMatchesWithFilter(wallets, filters, {
+      countMatchesWithFilter(wallets, filters, {
         features: [...filters.features, feature],
-      }),
+      }) === 0,
   };
 }
