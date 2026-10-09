@@ -134,7 +134,7 @@
           "qr": "Pindai kode QR untuk mengirim dan menerima dalam hitungan detik"
         },
         "cons": {
-          "marketplaces": "Toko aplikasi dapat menghapus dompet sehingga pembaruan terhenti",
+          "marketplaces": "Toko aplikasi dapat menghapus dompet sehingga pembaruan dapat terhenti",
           "deviceLoss": "Kehilangan ponsel tanpa cadangan dapat berarti kehilangan dana Anda"
         }
       },
