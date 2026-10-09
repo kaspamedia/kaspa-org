@@ -1,19 +1,27 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 
 import ExternalLink from "../../components/ExternalLink";
 import { ArrowUpRightIcon } from "../../components/icons";
 import { ACCENT } from "../content";
-import { initialFilters } from "./constants";
-import FilterPanel, { type FilterPanelProps } from "./FilterPanel";
+import { initialFilters, WIZARD_STEP_IDS } from "./constants";
+import FilterPanel, {
+  InlineFilterPanel,
+  type FilterPanelProps,
+} from "./FilterPanel";
 import {
   selectOs,
   selectUser,
   toggleCriterion,
   toggleFeature,
 } from "./filterState";
+import {
+  parseWalletFinderUrl,
+  serializeWalletFinderUrl,
+  type WalletFinderMode,
+} from "./urlState";
 import { createWalletFinderModel } from "./walletModel";
 import type {
   KaspaWallet,
@@ -25,8 +33,6 @@ import type {
 } from "./types";
 import { DesktopResults, MobileResults } from "./WalletResults";
 import WizardFlow, { type WizardPanelProps } from "./WizardFlow";
-
-type WalletFinderMode = "guided" | "table";
 
 const WALLET_SUBMISSION_GUIDE_URL =
   "https://github.com/kaspamedia/kaspa-org/blob/main/docs/wallet-submissions.md";
@@ -42,7 +48,54 @@ export default function WalletFinder({ wallets }: { wallets: KaspaWallet[] }) {
   const [mode, setMode] = useState<WalletFinderMode>("guided");
   const [step, setStep] = useState(1);
   const [filters, setFilters] = useState<WalletFilters>(initialFilters);
+  const [urlReady, setUrlReady] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+  // The mode and step last written to (or read from) the URL. A change to
+  // either is a navigation and gets its own history entry; filter changes
+  // replace the current entry so Back doesn't step through every toggle.
+  const urlPositionRef = useRef<{ mode: WalletFinderMode; step: number }>({
+    mode: "guided",
+    step: 1,
+  });
+
+  useEffect(() => {
+    const applyUrl = () => {
+      const state = parseWalletFinderUrl(window.location.search) ?? {
+        mode: "guided" as const,
+        step: 1,
+        filters: initialFilters,
+      };
+      urlPositionRef.current = { mode: state.mode, step: state.step };
+      setMode(state.mode);
+      setStep(state.step);
+      // Re-apply the user type so a link can't combine "new" with
+      // experienced-only features.
+      setFilters(selectUser(state.filters, state.filters.user));
+      setUrlReady(true);
+    };
+    applyUrl();
+    window.addEventListener("popstate", applyUrl);
+    return () => window.removeEventListener("popstate", applyUrl);
+  }, []);
+
+  useEffect(() => {
+    // Wait for the URL-derived state to commit before writing history.
+    if (!urlReady) return;
+    const href = serializeWalletFinderUrl(
+      window.location.href,
+      { mode, step, filters },
+      "#wallet",
+    );
+    if (href === window.location.href) return;
+    const previous = urlPositionRef.current;
+    urlPositionRef.current = { mode, step };
+    if (previous.mode !== mode || previous.step !== step) {
+      window.history.pushState(null, "", href);
+    } else {
+      window.history.replaceState(null, "", href);
+    }
+  }, [mode, step, filters, urlReady]);
 
   const model = useMemo(
     () => createWalletFinderModel(wallets, filters),
@@ -71,6 +124,11 @@ export default function WalletFinder({ wallets }: { wallets: KaspaWallet[] }) {
 
   const enterTable = () => setMode("table");
 
+  const showMobileResults = () => {
+    setMobileFiltersOpen(false);
+    rootRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   const filterPanelProps: FilterPanelProps = {
     filters,
     onSetOs: setOs,
@@ -85,11 +143,16 @@ export default function WalletFinder({ wallets }: { wallets: KaspaWallet[] }) {
   const wizardPanelProps: WizardPanelProps = {
     step,
     filters,
+    matchCount: model.matches.length,
+    totalWallets: model.totalWallets,
+    countMatches: model.countMatches,
+    unavailableReason: model.unavailableReason,
     onSetOs: setOs,
-    onSetUser: setUser,
     onToggleCriterion: handleToggleCriterion,
     onToggleFeature: handleToggleFeature,
-    onNext: () => setStep((current) => Math.min(current + 1, 4)),
+    onGoToStep: setStep,
+    onNext: () =>
+      setStep((current) => Math.min(current + 1, WIZARD_STEP_IDS.length)),
     onBack: () => setStep((current) => Math.max(current - 1, 1)),
     onDone: enterTable,
     onSkip: enterTable,
@@ -106,13 +169,10 @@ export default function WalletFinder({ wallets }: { wallets: KaspaWallet[] }) {
       onRemove: () => setOs(undefined),
     });
   }
-  if (filters.user) {
+  if (filters.user === "beginner") {
     activeChips.push({
-      key: `user-${filters.user}`,
-      label:
-        filters.user === "beginner"
-          ? t("walletFinder.common.newUser")
-          : t("walletFinder.common.experiencedUser"),
+      key: "hide-advanced",
+      label: t("walletFinder.filters.hideAdvanced"),
       onRemove: () => setUser(undefined),
     });
   }
@@ -134,9 +194,13 @@ export default function WalletFinder({ wallets }: { wallets: KaspaWallet[] }) {
   }
 
   return (
+    // overflow-clip, not overflow-hidden: hidden makes the card a scroll
+    // container, which pins the sticky filter panel inside it instead of
+    // letting it follow the viewport.
     <div
+      ref={rootRef}
       data-wallet-finder-root
-      className="border-subtle relative mt-12 scroll-mt-24 overflow-hidden rounded-[30px] border shadow-[0_4px_6px_-1px_rgba(0,0,0,0.03),0_24px_48px_-8px_rgba(0,0,0,0.05)] md:scroll-mt-32 dark:border-[rgba(255,255,255,0.08)] dark:shadow-none"
+      className="border-subtle relative mt-12 scroll-mt-24 overflow-clip rounded-[30px] border shadow-[0_4px_6px_-1px_rgba(0,0,0,0.03),0_24px_48px_-8px_rgba(0,0,0,0.05)] md:scroll-mt-32 dark:border-[rgba(255,255,255,0.08)] dark:shadow-none"
       style={{ background: "var(--surface)" }}
     >
       <div
@@ -260,7 +324,11 @@ export default function WalletFinder({ wallets }: { wallets: KaspaWallet[] }) {
 
             {mobileFiltersOpen && (
               <div className="mb-6 lg:hidden">
-                <FilterPanel {...filterPanelProps} />
+                <InlineFilterPanel
+                  {...filterPanelProps}
+                  matchCount={model.matches.length}
+                  onShowResults={showMobileResults}
+                />
               </div>
             )}
 
@@ -279,7 +347,7 @@ export default function WalletFinder({ wallets }: { wallets: KaspaWallet[] }) {
             </div>
 
             <div className="hidden lg:grid lg:grid-cols-[256px_minmax(0,1fr)] lg:gap-6">
-              <aside className="sticky top-28 self-start">
+              <aside className="sticky top-32 self-start">
                 <FilterPanel {...filterPanelProps} />
               </aside>
               <DesktopResults

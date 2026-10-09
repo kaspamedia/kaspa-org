@@ -37,6 +37,7 @@ export const WALLET_FEATURE_IDS = [
   "two_fa",
   "hardware_wallet",
   "multisig",
+  "hashed_addresses",
 ] as const;
 
 export const WALLET_ACTION_IDS = [

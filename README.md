@@ -15,6 +15,14 @@
 - `/hodl` wallets, exchanges, and on-ramp links
 - `/build` developer resources and API/SDK entry points
 
+The `/hodl` wallet finder keeps its state in the URL, so a filtered view can be
+shared. `view=list` opens the wallet list (otherwise `step=1`–`3` selects the
+wizard step); `os`, `criteria`, and `features` take the ids from
+`src/app/hodl/wallet-finder/taxonomy.ts` (comma-separated for lists); and
+`advanced=hide` hides advanced wallets. For example,
+`/hodl?view=list&features=hashed_addresses#wallet` lists wallets that support
+hashed (P2SH) addresses.
+
 ## Local Development
 
 Install dependencies and start the dev server:

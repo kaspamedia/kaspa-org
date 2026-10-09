@@ -110,20 +110,20 @@ mean the submitter is expected to provide translations.
 
 ## Schema
 
-| Field               | Required    | Notes                                                                                                            |
-| ------------------- | ----------- | ---------------------------------------------------------------------------------------------------------------- |
-| `id`                | yes         | Stable kebab-case identifier. Must match the icon folder name.                                                   |
-| `title`             | yes         | Wallet name shown in the list. Wallets are displayed alphabetically by this value.                               |
-| `icon`              | yes         | `/hodl/wallets/<id>/icon.<ext>`.                                                                                 |
-| `user`              | yes         | `beginner` (approachable) or `experienced` (technical familiarity assumed).                                      |
-| `summary`           | yes         | Short, neutral English description. Maintainers own translated versions.                                         |
-| `compatibility`     | no          | Separate English `note` and official HTTPS `link`; opened from the info button beside the wallet name.           |
-| `platforms`         | conditional | Non-empty list of independently usable OSs. Use this or `paths`, never both.                                     |
-| `paths`             | conditional | Non-empty list of platform combinations that must be used together. Use this or `platforms`, never both.         |
-| `features`          | yes         | Default features inherited by each platform. Use `[]` if none.                                                   |
-| `check`             | yes         | Default rating per criterion (`control`, `validation`, `transparency`, `fees`).                                  |
-| `platformOverrides` | no          | Per-OS overrides for `features` and/or specific criteria in `check`. Use only when a platform genuinely differs. |
-| `actions`           | yes         | Non-empty list of acquisition paths. Each has `action`, `link`, optional `platforms` to scope to specific OSs.   |
+| Field               | Required    | Notes                                                                                                                                         |
+| ------------------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`                | yes         | Stable kebab-case identifier. Must match the icon folder name.                                                                                |
+| `title`             | yes         | Wallet name shown in the list. Wallets are displayed alphabetically by this value.                                                            |
+| `icon`              | yes         | `/hodl/wallets/<id>/icon.<ext>`.                                                                                                              |
+| `user`              | yes         | `beginner` (approachable) or `experienced` (technical familiarity assumed; labelled Advanced and hidden by the Hide advanced wallets filter). |
+| `summary`           | yes         | Short, neutral English description. Maintainers own translated versions.                                                                      |
+| `compatibility`     | no          | Separate English `note` and official HTTPS `link`; opened from the info button beside the wallet name.                                        |
+| `platforms`         | conditional | Non-empty list of independently usable OSs. Use this or `paths`, never both.                                                                  |
+| `paths`             | conditional | Non-empty list of platform combinations that must be used together. Use this or `platforms`, never both.                                      |
+| `features`          | yes         | Default features inherited by each platform. Use `[]` if none.                                                                                |
+| `check`             | yes         | Default rating per criterion (`control`, `validation`, `transparency`, `fees`).                                                               |
+| `platformOverrides` | no          | Per-OS overrides for `features` and/or specific criteria in `check`. Use only when a platform genuinely differs.                              |
+| `actions`           | yes         | Non-empty list of acquisition paths. Each has `action`, `link`, optional `platforms` to scope to specific OSs.                                |
 
 ### Rating rubric
 
@@ -156,6 +156,23 @@ source files, or an open coin app on otherwise closed firmware does not establis
 complete source availability. Missing API credentials alone do not establish
 missing source code. Comparing a downloaded binary's checksum with a published
 checksum does not establish a reproducible build from source.
+
+### Features
+
+List a feature only when the wallet supports it for Kaspa, and provide
+evidence in the pull request. Use `platformOverrides` when support differs by
+platform.
+
+| Feature            | List it when                                                                                          |
+| ------------------ | ----------------------------------------------------------------------------------------------------- |
+| `two_fa`           | Accessing or spending funds can require a second authentication factor.                               |
+| `hardware_wallet`  | The software can pair with a hardware signing device that keeps private keys off the host.            |
+| `multisig`         | Users can create or join accounts that require more than one key to spend.                            |
+| `hashed_addresses` | Users can receive to and spend from pay-to-script-hash (P2SH) addresses, including multisig accounts. |
+
+Standard Kaspa addresses contain the public key itself. P2SH addresses commit
+to a script hash and reveal the key only when spent, which helps users keep
+public keys hidden, for example in preparation for quantum-capable attacks.
 
 ### Calculated display ratings
 

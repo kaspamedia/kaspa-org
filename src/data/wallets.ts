@@ -274,7 +274,9 @@ const walletRecords = [
     summary:
       "Command-line wallet tooling for users comfortable managing keys and transactions from a terminal.",
     platforms: ["windows", "mac", "linux"],
-    features: ["multisig"],
+    // Multisig accounts receive on P2SH addresses (rusty-kaspa
+    // wallet/core/src/derivation.rs), so keys stay hidden until spent.
+    features: ["multisig", "hashed_addresses"],
     check: {
       control: "good",
       validation: "acceptable",

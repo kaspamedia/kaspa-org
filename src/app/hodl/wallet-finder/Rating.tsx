@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { useLocale, useTranslations } from "next-intl";
@@ -26,21 +26,21 @@ const TOOLTIP_WIDTH = 240;
 export function RatingSymbol({ rating }: { rating: WalletDisplayRating }) {
   if (rating === "good") {
     return (
-      <svg className="h-4 w-4 shrink-0" viewBox="0 0 16 16">
+      <svg className="h-4 w-4 shrink-0" viewBox="0 0 16 16" aria-hidden>
         <circle cx="8" cy="8" r="7" fill={RATING_META.good.color} />
       </svg>
     );
   }
   if (rating === "acceptable") {
     return (
-      <svg className="h-4 w-4 shrink-0" viewBox="0 0 16 16">
+      <svg className="h-4 w-4 shrink-0" viewBox="0 0 16 16" aria-hidden>
         <path d="M2 14L14 14L14 2z" fill={RATING_META.acceptable.color} />
       </svg>
     );
   }
   if (rating === "mixed") {
     return (
-      <svg className="h-4 w-4 shrink-0" viewBox="0 0 16 16">
+      <svg className="h-4 w-4 shrink-0" viewBox="0 0 16 16" aria-hidden>
         <path d="M8 1a7 7 0 0 0 0 14z" fill={RATING_META.mixed.color} />
         <path
           d="M8 1a7 7 0 0 1 0 14z"
@@ -52,13 +52,13 @@ export function RatingSymbol({ rating }: { rating: WalletDisplayRating }) {
   }
   if (rating === "caution") {
     return (
-      <svg className="h-4 w-4 shrink-0" viewBox="0 0 16 16">
+      <svg className="h-4 w-4 shrink-0" viewBox="0 0 16 16" aria-hidden>
         <path d="M8 2L15 14H1z" fill={RATING_META.caution.color} />
       </svg>
     );
   }
   return (
-    <svg className="h-4 w-4 shrink-0" viewBox="0 0 16 16">
+    <svg className="h-4 w-4 shrink-0" viewBox="0 0 16 16" aria-hidden>
       <rect
         x="5"
         y="5"
@@ -88,7 +88,8 @@ export function RatingTooltip({
   const locale = useLocale();
   const [visible, setVisible] = useState(false);
   const [tipRect, setTipRect] = useState<DOMRect | null>(null);
-  const ref = useRef<HTMLSpanElement>(null);
+  const ref = useRef<HTMLButtonElement>(null);
+  const tooltipId = useId();
   const tooltipRef = useRef<HTMLDivElement>(null);
   const closeTimerRef = useRef<number | undefined>(undefined);
   const hasBreakdown = breakdown.length > 0;
@@ -228,16 +229,16 @@ export function RatingTooltip({
 
   return (
     <>
-      <span
+      <button
         ref={ref}
-        role="button"
-        tabIndex={0}
+        type="button"
         aria-expanded={visible}
+        aria-describedby={visible ? tooltipId : undefined}
         aria-label={t("walletFinder.ratings.aria", {
           criterion: criterionLabel,
           rating: ratingLabel,
         })}
-        className={`inline-flex cursor-pointer ${className ?? ""}`}
+        className={`inline-flex cursor-pointer rounded-[6px] text-left focus-visible:outline-2 focus-visible:outline-offset-2 ${className ?? ""}`}
         onPointerEnter={(event) => {
           if (event.pointerType === "mouse") open();
         }}
@@ -248,24 +249,18 @@ export function RatingTooltip({
           else open();
         }}
         onKeyDown={(event) => {
-          if (event.key === "Enter" || event.key === " ") {
-            event.preventDefault();
-            event.stopPropagation();
-            if (visible) close();
-            else open();
-          } else if (event.key === "Escape") {
-            close();
-          }
+          if (event.key === "Escape") close();
         }}
       >
         {children ?? <RatingSymbol rating={rating} />}
-      </span>
+      </button>
       {visible &&
         tipRect &&
         explanation &&
         createPortal(
           <div
             ref={tooltipRef}
+            id={tooltipId}
             role="tooltip"
             tabIndex={0}
             className={`fixed z-[9999] max-h-[calc(100dvh-16px)] overflow-y-auto overscroll-contain rounded-[10px] border border-[var(--border-subtle)] bg-[var(--bg)] p-3 text-[11px] leading-[1.5] text-[var(--text-secondary)] shadow-md ${hasBreakdown ? "w-[300px]" : "w-60"}`}

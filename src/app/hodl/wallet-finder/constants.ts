@@ -46,9 +46,4 @@ export const OS_GUIDANCE_GROUPS = [
   cons: readonly string[];
 }>;
 
-export const WIZARD_STEP_IDS = [
-  "os",
-  "experience",
-  "criteria",
-  "features",
-] as const;
+export const WIZARD_STEP_IDS = ["os", "criteria", "features"] as const;

@@ -1,13 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useId, useState } from "react";
 import { useTranslations } from "next-intl";
 
 import ExternalLink from "../../components/ExternalLink";
 import { ACCENT, accentAlpha } from "../content";
 import { getStoreIcon } from "./icons";
-import InfoTooltip from "./InfoTooltip";
 import CompatibilityInfo from "./CompatibilityInfo";
 import { RatingLegend, RatingSymbol, RatingTooltip } from "./Rating";
 import type { WalletMatch } from "./walletModel";
@@ -23,6 +22,15 @@ function getActionStoreIconOs(action: WalletEntryAction): WalletOs | null {
   return null;
 }
 
+function AdvancedBadge() {
+  const t = useTranslations("hodl");
+  return (
+    <span className="ml-1 shrink-0 rounded-full border border-[var(--border-subtle)] px-2 py-px text-[10.5px] font-semibold tracking-[0.02em] text-[var(--text-tertiary)]">
+      {t("walletFinder.results.advanced")}
+    </span>
+  );
+}
+
 function WalletRow({
   match,
   isExpanded,
@@ -33,15 +41,15 @@ function WalletRow({
   onToggle: () => void;
 }) {
   const t = useTranslations("hodl");
-  const { wallet, presentation, actions: visibleActions } = match;
-  const totalColumns = walletCriteria.length + 1;
+  const { wallet, presentation, actions: visibleActions, features } = match;
+  const totalColumns = walletCriteria.length + 2;
+  const linksId = useId();
 
   return (
     <>
       <tr
         className="border-subtle group cursor-pointer border-t transition-colors hover:bg-black/[0.015] dark:hover:bg-white/[0.02]"
         onClick={onToggle}
-        aria-expanded={isExpanded}
       >
         <td className="py-4 pr-4">
           <div className="flex items-center gap-3">
@@ -50,7 +58,7 @@ function WalletRow({
               alt={wallet.title}
               width={40}
               height={40}
-              className="h-10 w-10 shrink-0 rounded-[13px] object-cover"
+              className="h-10 w-10 shrink-0 rounded-[13px] bg-black/[0.04] object-cover dark:bg-white/[0.06]"
             />
             <div>
               <div className="flex items-center gap-1">
@@ -61,10 +69,23 @@ function WalletRow({
                   {wallet.title}
                 </p>
                 <CompatibilityInfo wallet={wallet} />
+                {wallet.user === "experienced" && <AdvancedBadge />}
               </div>
               <p className="text-muted mt-0.5 text-[11.5px]">
                 {wallet.summary}
               </p>
+              {features.length > 0 && (
+                <div className="mt-1.5 flex flex-wrap gap-1">
+                  {features.map((feature) => (
+                    <span
+                      key={feature}
+                      className="text-secondary rounded-full bg-black/[0.04] px-2 py-px text-[10.5px] font-medium dark:bg-white/[0.05]"
+                    >
+                      {t(`walletFinder.features.${feature}.label`)}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </td>
@@ -80,6 +101,39 @@ function WalletRow({
             </div>
           </td>
         ))}
+
+        <td className="w-10 py-4 pl-1 text-right">
+          <button
+            type="button"
+            aria-expanded={isExpanded}
+            aria-controls={linksId}
+            aria-label={t("walletFinder.results.linksFor", {
+              wallet: wallet.title,
+            })}
+            onClick={(event) => {
+              event.stopPropagation();
+              onToggle();
+            }}
+            className="text-muted group-hover:text-secondary inline-flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-black/[0.04] focus-visible:outline-2 focus-visible:outline-offset-2 dark:hover:bg-white/[0.06]"
+          >
+            <svg
+              className={`h-4 w-4 transition-transform duration-300 ${
+                isExpanded ? "rotate-180" : ""
+              }`}
+              viewBox="0 0 16 16"
+              fill="none"
+              aria-hidden
+            >
+              <path
+                d="M4 6l4 4 4-4"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+        </td>
       </tr>
       <tr className="border-subtle border-t">
         <td colSpan={totalColumns} className="p-0">
@@ -88,7 +142,7 @@ function WalletRow({
               isExpanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
             }`}
           >
-            <div className="overflow-hidden">
+            <div className="overflow-hidden" id={linksId} inert={!isExpanded}>
               <div className="flex flex-wrap items-center gap-2 bg-black/[0.015] px-4 py-3 dark:bg-white/[0.02]">
                 {visibleActions.length === 0 ? (
                   <span className="text-muted text-[12.5px]">
@@ -133,22 +187,23 @@ function WalletCard({ match }: { match: WalletMatch }) {
 
   return (
     <div className="border-subtle rounded-[20px] border p-4 sm:p-5">
-      <div className="flex items-start gap-3">
+      <div className="flex items-center gap-3">
         <Image
           src={wallet.icon}
           alt={wallet.title}
           width={44}
           height={44}
-          className="h-11 w-11 shrink-0 rounded-[14px] object-cover"
+          className="h-11 w-11 shrink-0 rounded-[14px] bg-black/[0.04] object-cover dark:bg-white/[0.06]"
         />
         <div className="flex items-center gap-1">
           <h4
-            className="mt-0.5 text-[18px] leading-tight font-semibold tracking-[-0.02em]"
+            className="text-[18px] leading-tight font-semibold tracking-[-0.02em]"
             style={{ color: ACCENT }}
           >
             {wallet.title}
           </h4>
           <CompatibilityInfo wallet={wallet} />
+          {wallet.user === "experienced" && <AdvancedBadge />}
         </div>
       </div>
 
@@ -172,31 +227,31 @@ function WalletCard({ match }: { match: WalletMatch }) {
         </div>
       )}
 
-      <div className="mt-4 flex flex-col gap-1">
-        {walletCriteria.map((criterion) => (
-          <div
-            key={criterion.id}
-            className="flex items-center justify-between gap-3"
-          >
+      <div className="mt-4 grid grid-cols-1 gap-1.5 min-[360px]:grid-cols-2">
+        {walletCriteria.map((criterion) => {
+          const rating = presentation.ratings[criterion.id];
+          return (
             <RatingTooltip
-              rating={presentation.ratings[criterion.id]}
+              key={criterion.id}
+              rating={rating}
               criterion={criterion.id}
               breakdown={presentation.breakdowns[criterion.id]}
-              className="-mx-1.5 flex flex-1 items-center gap-2.5 rounded-[8px] px-1.5 py-1.5 transition-colors hover:bg-black/[0.03] dark:hover:bg-white/[0.04]"
+              className="min-w-0 flex-col gap-1 rounded-[12px] bg-black/[0.025] px-3 py-2.5 transition-colors hover:bg-black/[0.05] dark:bg-white/[0.03] dark:hover:bg-white/[0.06]"
             >
-              <RatingSymbol rating={presentation.ratings[criterion.id]} />
-              <span className="text-secondary text-[13px] font-medium">
+              <span className="text-secondary block text-[13px] leading-tight font-medium [overflow-wrap:anywhere]">
                 {t(`walletFinder.criteria.${criterion.id}.label`)}
               </span>
+              <span className="text-muted flex items-center gap-1.5 text-[11.5px] leading-tight">
+                <RatingSymbol rating={rating} />
+                {t(
+                  rating === "not_applicable"
+                    ? "walletFinder.ratings.notApplicableCompact"
+                    : `walletFinder.ratings.${rating}`,
+                )}
+              </span>
             </RatingTooltip>
-            <InfoTooltip
-              text={t(`walletFinder.criteria.${criterion.id}.description`)}
-              ariaLabel={t("walletFinder.results.aboutCriterion", {
-                criterion: t(`walletFinder.criteria.${criterion.id}.label`),
-              })}
-            />
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className="mt-4 flex flex-wrap gap-2">
@@ -316,7 +371,10 @@ export function DesktopResults({
         <EmptyResults />
       ) : (
         <>
-          <div className="overflow-x-auto">
+          {/* overflow-x alone makes overflow-y auto too; subpixel rounding then
+              adds a 1px vertical overflow that flashes a scrollbar (and reflows
+              the table) on every frame of a row expanding. */}
+          <div className="overflow-x-auto overflow-y-hidden">
             <table className="w-full border-collapse">
               <thead>
                 <tr>
@@ -334,6 +392,7 @@ export function DesktopResults({
                       {t(`walletFinder.criteria.${criterion.id}.label`)}
                     </th>
                   ))}
+                  <th aria-hidden className="w-10 pb-3" />
                 </tr>
               </thead>
               <tbody>

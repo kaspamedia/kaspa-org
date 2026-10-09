@@ -108,12 +108,14 @@
     "common": {
       "optional": "Opcional",
       "notAvailable": "Indisponível",
-      "notAvailableSentence": "Indisponível.",
+      "unavailable": {
+        "unsupported": "Nenhuma carteira da lista oferece isso ainda.",
+        "experienced": "Disponível apenas em carteiras avançadas.",
+        "selections": "Indisponível com as suas escolhas atuais."
+      },
       "moreInformation": "Mais informações",
       "pros": "Vantagens",
-      "cons": "Desvantagens",
-      "newUser": "Iniciante",
-      "experiencedUser": "Experiente"
+      "cons": "Desvantagens"
     },
     "operatingSystems": {
       "android": "Android",
@@ -128,36 +130,36 @@
         "title": "Carteiras para dispositivos móveis",
         "shortTitle": "Celular",
         "pros": {
-          "portable": "Portáteis e práticas; ideais para fazer transações pessoalmente",
-          "qr": "Projetadas para usar códigos QR e realizar transações rápidas e simples"
+          "portable": "Sempre com você e ideal para pagar pessoalmente",
+          "qr": "Escaneie códigos QR para enviar e receber em segundos"
         },
         "cons": {
-          "marketplaces": "As lojas de aplicativos podem remover carteiras, dificultando o recebimento de atualizações futuras",
-          "deviceLoss": "Danos ou perda do dispositivo podem levar à perda de fundos"
+          "marketplaces": "Lojas de aplicativos podem remover uma carteira e interromper as atualizações",
+          "deviceLoss": "Perder o celular sem backup pode significar perder seus fundos"
         }
       },
       "desktop": {
         "title": "Carteiras para computador",
         "shortTitle": "Computador",
         "pros": {
-          "control": "Ambientes de desktop podem dar aos usuários controle total sobre os fundos",
-          "advanced": "Algumas carteiras para computador oferecem suporte a carteiras de hardware ou à operação de um nó completo"
+          "control": "Controle total sobre seu software e sua configuração",
+          "advanced": "Algumas se conectam a carteiras de hardware ou executam um nó Kaspa completo"
         },
         "cons": {
-          "qr": "Menos práticas para pagamentos com código QR em transações presenciais",
-          "malware": "Computadores comprometidos podem expor os usuários a malware, spyware ou vírus"
+          "qr": "Menos prático para pagar pessoalmente com códigos QR",
+          "malware": "Malware no seu computador pode colocar seus fundos em risco"
         }
       },
       "hardware": {
         "title": "Carteiras de hardware",
         "shortTitle": "Hardware",
         "pros": {
-          "secure": "Um dos métodos mais seguros para guardar fundos",
-          "longTerm": "Ideais para guardar grandes quantidades de KAS a longo prazo"
+          "secure": "As chaves privadas ficam no dispositivo, longe do seu celular ou computador",
+          "longTerm": "Ideal para guardar grandes quantidades de KAS a longo prazo"
         },
         "cons": {
-          "mobile": "Menos práticas em deslocamentos e não projetadas para transações rápidas",
-          "deviceLoss": "A perda do dispositivo sem um backup adequado pode tornar os fundos irrecuperáveis"
+          "mobile": "Mais lento para pagamentos rápidos do dia a dia",
+          "deviceLoss": "Perder o dispositivo sem backup pode significar perder seus fundos"
         }
       }
     },
@@ -168,40 +170,38 @@
       "prosAndCons": "Vantagens e desvantagens",
       "back": "Voltar",
       "next": "Avançar",
-      "showWallets": "Mostrar carteiras",
-      "showMatchingWallets": "Mostrar carteiras compatíveis",
+      "showCount": "Mostrar {count, plural, one {# carteira} other {# carteiras}}",
+      "walletCount": "{count, plural, one {# carteira} other {# carteiras}}",
+      "anyOs": "Não tem certeza? Mostrar todas as plataformas",
+      "progressLabel": "Etapas da busca de carteiras",
+      "stepLabels": {
+        "os": "Plataforma",
+        "criteria": "Critérios",
+        "features": "Recursos"
+      },
       "steps": {
         "os": {
           "title": "Qual é o seu sistema operacional?",
           "subtitle": "Isso filtra a lista para mostrar carteiras que funcionam no seu sistema operacional."
         },
-        "experience": {
-          "title": "Quanto você sabe sobre a Kaspa?",
-          "subtitle": "Isso nos ajuda a mostrar carteiras adequadas ao seu nível de experiência."
-        },
         "criteria": {
           "title": "Quais critérios são importantes para você?",
-          "subtitle": "Opcional"
+          "subtitle": "Escolha o que mais importa. Só aparecem carteiras avaliadas como “Boa” ou “Aceitável” em cada escolha."
         },
         "features": {
           "title": "Quais recursos você procura?",
-          "subtitle": "Opcional"
+          "subtitle": "Escolha os recursos de que você precisa. Só aparecem carteiras que tenham todos eles."
         }
-      },
-      "experience": {
-        "newDescription": "Mostrar carteiras ideais para usuários iniciantes.",
-        "experiencedDescription": "Mostrar todas as carteiras."
       }
     },
     "filters": {
       "heading": "Filtrar carteiras",
       "clearAll": "Limpar tudo",
       "operatingSystem": "Sistema operacional",
-      "userType": "Tipo de usuário",
+      "hideAdvanced": "Ocultar carteiras avançadas",
+      "hideAdvancedHint": "Oculta carteiras feitas para usuários experientes, como ferramentas de linha de comando.",
       "criteria": "Critérios",
       "features": "Recursos",
-      "showNewUsers": "Mostrar carteiras ideais para usuários iniciantes.",
-      "showExperiencedUsers": "Mostrar todas as carteiras.",
       "show": "Filtros",
       "hide": "Ocultar filtros",
       "remove": "Remover filtro {filter}"
@@ -209,33 +209,45 @@
     "criteria": {
       "control": {
         "label": "Controle",
+        "short": "Nenhum terceiro pode congelar ou tomar seus fundos.",
         "description": "Algumas carteiras dão a você controle total sobre seus KAS. Isso significa que nenhum terceiro pode bloquear ou confiscar seus fundos. Ainda assim, você é responsável por proteger sua carteira e fazer backup dela."
       },
       "validation": {
         "label": "Validação",
+        "short": "Execute ou escolha o nó Kaspa que sua carteira usa.",
         "description": "Algumas carteiras permitem que você controle qual nó da Kaspa processa suas transações, seja executando o próprio nó, seja permitindo que você configure a carteira para usar qualquer nó de sua confiança."
       },
       "transparency": {
         "label": "Transparência",
+        "short": "Código-fonte público que qualquer pessoa pode examinar.",
         "description": "Algumas carteiras têm código aberto e podem ser compiladas de forma determinística. Esse processo garante que o código resultante possa ser reproduzido, ajudando a confirmar que ele não foi adulterado."
       },
       "fees": {
         "label": "Taxas",
+        "short": "Escolha a taxa de rede que você paga.",
         "description": "Algumas carteiras dão a você controle total sobre a definição da taxa paga à rede Kaspa antes de uma transação, para que suas transações sejam confirmadas no tempo adequado sem que você pague mais do que o necessário."
       }
     },
     "features": {
       "two_fa": {
         "label": "2FA",
+        "short": "Exige um segundo código para acessar seus fundos.",
         "description": "A autenticação de dois fatores (2FA) adiciona uma segunda camada de segurança à sua carteira. Além da senha, é necessário um código de verificação de um aplicativo ou uma mensagem de texto para acessar seus fundos. Observe que a 2FA normalmente depende de um serviço de terceiros para fornecer a verificação."
       },
       "hardware_wallet": {
         "label": "Compatibilidade com carteira de hardware",
+        "short": "Conecta-se a um dispositivo que mantém suas chaves offline.",
         "description": "Algumas carteiras de software podem ser pareadas com um dispositivo de carteira de hardware (por exemplo, Ledger ou Tangem), permitindo manter suas chaves privadas isoladas no dispositivo sem abrir mão de uma interface de software familiar."
       },
       "multisig": {
         "label": "Múltiplas assinaturas",
+        "short": "Exige mais de uma chave para movimentar fundos.",
         "description": "Algumas carteiras oferecem transações com múltiplas assinaturas, que exigem mais de uma chave para autorizar uma transferência. Isso pode ser usado para dividir a responsabilidade entre várias partes ou adicionar uma camada extra de proteção a ativos de alto valor."
+      },
+      "hashed_addresses": {
+        "label": "Endereços com hash (P2SH)",
+        "short": "Mantenha sua chave pública oculta até gastar.",
+        "description": "Endereços padrão da Kaspa revelam sua chave pública. Endereços pay-to-script-hash (P2SH) a mantêm oculta por trás de um hash até que você gaste, adicionando proteção contra futuros ataques à criptografia de chave pública, como os de computadores quânticos. Gastar revela a chave, então mova os fundos restantes para um novo endereço com hash."
       }
     },
     "ratings": {
@@ -286,7 +298,9 @@
       "noMatches": "Nenhuma carteira correspondente",
       "removeFilters": "Tente remover alguns filtros.",
       "noLinks": "Nenhum link disponível para este filtro.",
-      "aboutCriterion": "Sobre {criterion}"
+      "aboutCriterion": "Sobre {criterion}",
+      "linksFor": "Links de {wallet}",
+      "advanced": "Avançada"
     },
     "actions": {
       "app_store": "App Store",
