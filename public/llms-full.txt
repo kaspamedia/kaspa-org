@@ -179,7 +179,7 @@ Docs and community channels when you get stuck.
 
 ](https://kaspa.org/build#help)
 
-[Rusty Kaspa v2.0.1View release→](https://github.com/kaspanet/rusty-kaspa/releases/tag/v2.0.1)
+[Rusty Kaspa v2.1.0View release→](https://github.com/kaspanet/rusty-kaspa/releases/tag/v2.1.0)
 
 # Build on Kaspa
 
@@ -259,7 +259,7 @@ Node
 
 Use Rusty Kaspa for full access, UTXO indexing, and production infrastructure.
 
-[Latest release](https://github.com/kaspanet/rusty-kaspa/releases/tag/v2.0.1)[Rusty Kaspa repo](https://github.com/kaspanet/rusty-kaspa)
+[Latest release](https://github.com/kaspanet/rusty-kaspa/releases/tag/v2.1.0)[Rusty Kaspa repo](https://github.com/kaspanet/rusty-kaspa)
 
 Community APIFor quick reads or constrained environments, a community-hosted API is available. Best-effort, no SLA.
 
@@ -391,7 +391,7 @@ Query the network through public tools and the lightweight community-hosted API.
 
 Run full infrastructure or go deeper into the node stack.
 
-[Rusty Kaspa](https://github.com/kaspanet/rusty-kaspa)[Latest release](https://github.com/kaspanet/rusty-kaspa/releases/tag/v2.0.1)
+[Rusty Kaspa](https://github.com/kaspanet/rusty-kaspa)[Latest release](https://github.com/kaspanet/rusty-kaspa/releases/tag/v2.1.0)
 
 ### Testnet
 
